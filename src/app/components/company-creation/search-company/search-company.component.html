@@ -1,0 +1,52 @@
+		<div class="page-content" id="create-company">
+			<div class="container">
+				<div class="page-header">
+					<h2>CREATE COMPANY</h2>
+					<h3>SEARCH COMPANY</h3>
+				</div>
+				<div class="white-container">
+					<form  [formGroup]="myform" id="form-create-company-step1" class="form-create-company" novalidate>
+						<div class="offset-md-2">
+							<div class="form-group">
+							<div class="alert alert-danger" 
+								*ngIf="myform.get('criteria')?.invalid && (myform.get('criteria')?.touched)">
+								Select Valid Option		
+							</div>							
+							<div class="offset-md-2">
+								<label class="custom-control custom-radio">
+									<input type="radio" value="company" class="custom-control-input" formControlName="criteria">
+									<span class="custom-control-indicator"></span>
+									<span class="custom-control-description">Company</span>
+								</label>
+
+								<label class="custom-control custom-radio">
+									<input type="radio" value="cin" class="custom-control-input" formControlName="criteria">
+									<span class="custom-control-indicator"></span>
+									<span class="custom-control-description">CIN</span>
+								</label>
+							</div>
+
+								<div class="col-md-10 col-lg-8" style="margin-top: 10px">
+								<div class="input-group">
+
+									<input class="form-control"
+									placeholder="Enter Company Name or CIN" formControlName="searchText" [(ngModel)]="searchText" style="border-radius: 7px 0 0 7px;">
+									<div class="input-group-addon" ><i class="fa fa-search"></i></div>
+								</div>
+							</div>
+								<div class="alert alert-danger" 
+								*ngIf="myform.get('searchText')?.invalid && (myform.get('searchText')?.touched)">
+								Enter search string
+							</div>
+						</div>
+
+					</div>
+				</form>
+				<p class="text-right">
+					<button type="submit" class="btn btn-primary"  role="button" (click)="searchCompany()">SAVE &amp; NEXT</button>
+				</p>		
+			</div>
+		</div>
+	</div>
+
+

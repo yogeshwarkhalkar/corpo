@@ -1,0 +1,27 @@
+
+.popover {
+	max-width: 500px;
+}
+
+     input[type="file"] {
+    display: none;
+}
+
+
+  input[type="datetime-local"]::-webkit-calendar-picker-indicator{
+    color: rgba(0, 0, 0, 0);
+    opacity: 1;
+    display: block;
+    background: url("../../../../assets/images/calender.png") no-repeat;    
+    width: 20px;
+    height: 19px;
+    border-width: thin;
+   }
+
+
+
+
+
+
+
+

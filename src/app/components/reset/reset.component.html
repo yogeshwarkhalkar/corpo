@@ -1,0 +1,42 @@
+<header class="fixed-top">
+<body id="login-bg">
+		<div class="page-content" id="login">
+			<div class="container">
+				<div class="white-container-login row">
+					<div class="login-bg-container col-sm-6">
+						<h1 id="login-register-title">Corporatus Reset Password</h1>
+						<img src="assets/images/login-register-left-bg.png" class="img-responsive">
+					</div>
+					<div class="login-form-container col-sm-6">
+						<form [formGroup]="resetForm" id="form-login" class="form-login" novalidate>
+							
+							<div id="login-info">
+								<div class="form-group row">
+									<input type="password" class="form-control" id="login-username" placeholder="Enter New Password" formControlName="password">
+									<div class="alert alert-danger" *ngIf="resetForm.get('password').invalid && resetForm.get('password').touched">
+										Username required!
+									</div>
+									
+									<input type="password" class="form-control" id="login-password" placeholder="Re-type Password" formControlName="repassword">
+									<div class="alert alert-danger" *ngIf="resetForm.get('repassword').invalid && resetForm.get('repassword').touched">
+										Password required!
+									</div>
+									<div class="alert alert-danger"
+									*ngIf="resetForm.get('repassword').valid && resetForm.get('password').value != resetForm.get('repassword').value">
+									Password mismatch!
+									</div>
+									
+								</div>
+								
+								<p class="row login-button">
+									
+									<button type="button" class="btn btn-primary" [disabled]="resetForm?.invalid"
+									(click)="onReset()" routerLink="/login">Reset Password</button>
+								</p>					
+							</div>				
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>

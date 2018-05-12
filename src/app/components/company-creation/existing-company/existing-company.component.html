@@ -1,0 +1,43 @@
+		<div class="page-content" id="create-company">
+			<div class="container">
+				<div class="page-header">
+					<h2>CREATE COMPANY</h2>
+					<h3>CLIENT DETAILS</h3>
+				</div>
+				<div class="white-container">
+					<form  [formGroup]="myform" id="form-create-company-step1" class="form-create-company" novalidate>
+						<div class="offset-md-2">
+						
+						<label>Is Company Incorporated</label>
+						<div class="form-group row offset-md-1">							
+
+							<label class="custom-control custom-radio">
+								<input type="radio" value="Yes" class="custom-control-input" formControlName="inc">
+								<span class="custom-control-indicator"></span>
+								<span class="custom-control-description">Yes</span>
+							</label>
+
+							<label class="custom-control custom-radio">
+								<input type="radio" value="No" class="custom-control-input" formControlName="inc">
+								<span class="custom-control-indicator"></span>
+								<span class="custom-control-description">No</span>
+							</label>
+							
+						</div>
+						<div class="alert alert-danger" 
+							*ngIf="myform.get('inc')?.invalid && (myform.get('inc')?.touched)">
+								Select Valid Option		
+							</div>
+							
+						</div>
+						
+
+					</form>
+					<p class="text-right">
+						<button type="submit" class="btn btn-primary"  role="button" (click)="submit()">SAVE &amp; NEXT</button>
+					</p>		
+				</div>
+			</div>
+		</div>
+
+

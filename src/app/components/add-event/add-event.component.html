@@ -1,0 +1,27 @@
+<div class="page-content" id="event-workflow-details">
+	<div class="container">
+		<div class="page-header">
+			<h2>EVENT LIST</h2>
+		</div>
+		<div class="white-container">			
+			<form id="form-workflow-details-right-of-issue-of-shares" class="">
+				<table class="table" >
+					<thead>
+					<tr>
+						<th>NAME</th>
+						<th>DESCRIPTION</th>
+						<th>CLICK TO TRIGGER</th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr *ngFor="let p of processes; let i = index;">									
+						<td>{{p.name}}</td>
+						<td>{{p.description}}</td>
+						<td><a (click)="getActivity(p.id)" routerLink>ADD</a></td>
+					</tr>
+					</tbody>
+				</table>
+			</form>
+		</div>
+	</div>
+</div>

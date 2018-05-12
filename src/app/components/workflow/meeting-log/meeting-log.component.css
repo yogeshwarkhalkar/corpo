@@ -1,0 +1,17 @@
+#upload{
+    text-decoration:none;
+}
+#upload-file{
+    display:none
+}
+
+
+ label{
+    padding: 10px;
+    background: none; 
+    display: table;
+    color: #fff;
+     }
+     input[type="file"] {
+    display: none;
+}

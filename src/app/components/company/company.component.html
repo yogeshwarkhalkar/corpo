@@ -1,0 +1,36 @@
+
+<div class="page-content" id="event-workflow-details">
+	<div class="container">
+		<div class="page-header">
+			<h2>Select Company</h2>
+			
+
+		</div>
+
+
+		<div class="white-container" >
+			<label>Select Company </label>
+			<form id="form-workflow-details-right-of-issue-of-shares" [formGroup]="companyForm" novalidate>
+				<div class="form-group">
+
+					<select class="custom-select" (change)="selectCompany($event.target.value)" formControlName="companyName">
+						<option *ngFor="let company of data" [value]="company.company.id">
+							{{company.company.name}}
+						</option>
+						<div class="alert alert-danger"
+						*ngIf="companyForm.get('companyName').invalid &&
+						companyForm.get('companyName').touched">
+						Select Company
+					</div>
+				</select>
+			</div>
+		</form>
+
+		<p class="text-center">
+			<button type="button" class="btn btn-primary btn-with-icon btn-save" (click)="onSubmit()">NEXT</button>
+		</p>
+
+
+	</div>
+</div>
+</div>

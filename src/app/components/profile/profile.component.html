@@ -1,0 +1,99 @@
+	
+		<div class="page-content" id="user-profile">
+			<div class="container">
+				<div class="page-header">
+					<h2>USER PROFILE</h2>
+					<h3>Welcome {{nav.userName}}</h3>
+				</div>
+				<div class="white-container">			
+					<a ><p class="text-center align-middle"><img src="assets/images/user-profile/profile.png" alt="company icon"><br>Upload/Change photo</p></a>
+					<form [formGroup]="profileForm" id="form-user-profile" class="">
+						
+						<div class="form-group row">
+							<label for="login-name" class="col-lg-3 col-md-6 col-form-label" id="login-name-label">Login Name</label>
+							<div class="col-lg-9 col-md-6">
+							  <input type="text" class="form-control" id="login-name" placeholder="Should show existing username here" formControlName="username">
+							</div>
+						</div>
+						<div class="form-group row">
+							<label for="new-password" class="col-lg-3 col-md-6 col-form-label" id="new-password-label">Change Password</label>
+							<div class="col-lg-3 col-md-6">
+							  <input type="text" class="form-control" id="new-password" placeholder="New Password" formControlName="password">
+							</div>
+							<label for="confirm-password" class="col-lg-3 col-md-6 col-form-label" id="confirm-password-label">Confirm Password</label>
+							<div class="col-lg-3 col-md-6">
+							  <input type="text" class="form-control" id="confirm-password" placeholder="Confirm Password" formControlName="password1">
+							</div>							
+						</div>			
+						<div class="form-group row">
+							<label for="client-id" class="col-lg-3 col-md-6 col-form-label" id="client-id-label">Unique Client ID</label>
+							<div class="col-lg-3 col-md-6">
+							  <input type="text" class="form-control" id="client-id" placeholder="Unique Client ID" formControlName="clientid">
+							</div>
+							<label for="security-question" class="col-lg-3 col-md-6 col-form-label" id="security-question-label">Security Question</label>
+							<div class="col-lg-3 col-md-6">
+							  <input type="text" class="form-control" id="security-question" placeholder="Security Question" formControlName="question">
+							</div>							
+						</div>
+						<div class="form-group row">
+							<label for="date-of-birth" class="col-lg-3 col-md-6 col-form-label" id="date-of-birth-label">Date of birth</label>
+							<div class="col-lg-3 col-md-6">
+							  <input type="date" class="form-control" id="date-of-birth" placeholder="Date of birth" formControlName="dob">
+							</div>						
+						</div>								
+						<div class="form-group row client-address">
+							<label for="user-address-1" class="col-lg-3 col-md-6 col-form-label"  id="user-address-label">Address</label>
+							<div class="col-lg-9 col-md-6" formGroupName="address">
+								<input type="text" class="form-control" id="user-address-1" placeholder="Should show existing Address line 1 if any" formControlName="address1">
+								<input type="text" class="form-control" id="user-address-2" placeholder="Should show existing Address line 2 if any" formControlName="address2">
+								<input type="text" class="form-control" id="user-address-3" placeholder="Should show existing Address line 3 if any" formControlName="address3">
+								<div class="row">
+									<div class="col-sm-6">
+										<select class="custom-select" formControlName="city">
+										  <option selected>Select City</option>
+										  <option value="1">One</option>
+										  <option value="2">Two</option>
+										  <option value="3">Three</option>
+										</select>
+									</div>
+									<div class="col-sm-6">
+										<input type="text" class="form-control" id="address-pincode" placeholder="Pincode">
+									</div>									
+									<div class="col-sm-6">
+										<select class="custom-select" formControlName="state">
+										  <option selected>Select State</option>
+										  <option value="1">One</option>
+										  <option value="2">Two</option>
+										  <option value="3">Three</option>
+										</select>
+									</div>
+									<div class="col-sm-6">
+										<select class="custom-select" formControlName="country">
+										  <option selected>Select Country</option>
+										  <option value="1">One</option>
+										  <option value="2">Two</option>
+										  <option value="3">Three</option>
+										</select>
+									</div>									
+								</div>
+							</div>
+						</div>
+						<div class="form-group row">
+							<label for="client-phone" class="col-lg-3 col-md-6 col-form-label" id="phone-number-label">Phone number</label>
+							<div class="col-lg-3 col-md-6">
+							  <input type="text" class="form-control" id="client-phone" placeholder="Phone number" autocomplete="on" formControlName="phone">
+							</div>
+							<label for="client-email" class="col-lg-3 col-md-6 col-form-label" id="email-address-label">Email address</label>
+							<div class="col-lg-3 col-md-6">
+							  <input type="email" class="form-control" id="client-email" placeholder="Email Id" formControlName="email">
+							</div>
+						</div>
+					</form>
+					<p class="text-center">
+						<a class="btn btn-primary" href="#" role="button">UPDATE</a>
+					</p>
+				</div>
+			</div>
+		</div>
+		
+    

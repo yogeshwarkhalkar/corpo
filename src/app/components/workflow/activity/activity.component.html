@@ -1,0 +1,449 @@
+
+<div class="page-content" id="event-workflow-details">
+	<div class="container">
+		<div class="page-header">
+			<h2>EVENT WORKFLOW</h2>
+			<h3>{{process}}</h3>
+
+		</div>
+
+		<div class="white-container" >			
+			<a class="step-faq" id="step-one-faq" placement="left" triggers="mouseenter:mouseleave" [ngbPopover]="remark">&nbsp;</a>
+
+			<a href="#" class="steps-all" role="button" data-toggle="modal" data-target="#workflow-steps-listing-modal">&nbsp;</a>
+			
+			<form [formGroup]="activityForm"  id="form-workflow-details-right-of-issue-of-shares" novalidate>
+				<ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1"
+				[speed]="200" [showSpinner]="false" [direction]="'leftToRightIncreased'"
+				[color]="'red'" [trickleSpeed]="250" [thick]="false" [ease]="'linear'"
+				></ng-progress>
+				<div class="form-group row step-number-container">
+					<p class="col-md-2 step-number" id="step-one">Step {{stepId}}</p>
+
+				</div>
+				<input type="text" readonly class="form-control-plaintext align-text-bottom" id="error-msg" [value]="screenError">
+
+				<div class="offset-md-2 col-md-10 col-lg-8">
+					<h4 class=""><strong>{{activity}} {{meetingSerial}}</strong></h4>
+					
+					<br>
+					<div *ngIf="! objectProps">Loading ... </div>
+					<!-- Iterate over controls got from database html configuration -->
+					<div *ngFor="let prop of objectProps">
+						<!-- Case to find control types (ex. radio, checkbox, text, button, file) -->
+						<div [ngSwitch]="prop.type">
+							<!-- Show label for control -->
+							<label [attr.for]="prop">{{prop.label}}</label>
+							
+							<div *ngSwitchCase="'radio'">
+								<div class="form-group">
+
+									<label class="custom-control custom-radio" *ngFor="let option of prop.options">
+										<input type="radio" [name]="prop.key" [formControlName]="prop.key"
+										[value]="option.value" class="custom-control-input" (click)="onRadioClick(prop.key,option.value)"> 
+										<span class="custom-control-indicator"></span>
+										<span class="custom-control-description">{{option.name}}</span>
+									</label>								
+
+									<div *ngIf="!prop.options">
+										<label class="custom-control custom-radio" *ngFor="let option of directors">
+											<input type="radio" [name]="prop.key" [formControlName]="prop.key"
+											[value]="option.id" class="custom-control-input"> 
+											<span class="custom-control-indicator"></span>
+											<span class="custom-control-description">{{option.first_name}}</span>
+										</label>
+									</div>
+								</div>
+								<div *ngIf="showaddr && prop.key=='date'">
+									<input type="text" class="form-control" [value]="null" [formControlName]="prop.key" placeholder="Enter Address">
+								</div>
+								<div *ngIf="showserial && prop.key=='descr'" >
+									<input type="text" class="form-control" [value]="null" [formControlName]="prop.key" placeholder="Enter serial number" >
+								</div>
+							</div>
+
+							<div *ngSwitchCase="'checkbox'">
+
+
+								<div class="form-group">
+									<div *ngIf="prop.stakeholder">
+										<label class="custom-control custom-checkbox" *ngFor="let name of stakeholders; let i=index;">
+
+											<input type="checkbox" class="custom-control-input" [value]="prop.value" [formControlName]="prop.key" (change)="onChange(name.id, $event.target.checked)">
+											<span class="custom-control-indicator"></span>
+											<span class="custom-control-description">{{name.first_name}}</span>
+
+										</label>
+									</div>
+									<div *ngIf="prop.options">
+										<label class="custom-control custom-checkbox" *ngFor="let option of prop.options; let i=index;">
+											<input id="check-1" type="checkbox" class="custom-control-input" [value]="prop.value" [formControlName]="prop.key" (change)="onChangeCheck(prop.key, $event.target.value)">
+											<span class="custom-control-indicator"></span>
+											<span class="custom-control-description">{{option.name}}</span>
+
+										</label>
+									</div>
+									<div *ngIf="!prop.stakeholder && !prop.options">
+										<label class="custom-control custom-checkbox" *ngFor="let name of directors; let i=index;">
+											<input type="checkbox" class="custom-control-input" [value]="prop.value" [formControlName]="prop.key" (change)="onChange(name.id, $event.target.checked)">
+											<span class="custom-control-indicator"></span>
+											<span class="custom-control-description">{{name.first_name}}</span>
+
+										</label>
+									</div>
+									
+
+								</div>
+
+							</div>
+							<div class="form-group" *ngSwitchCase="'text'">
+
+								<input type="text" class="form-control" value="Name" [formControlName]="prop.key" [placeholder]="prop.placeholder">
+							</div>
+
+							<div class="form-group" *ngSwitchCase="'select'">
+								<div  *ngIf="prop.key == 'meeting'; else selectnext">
+									<select2 [data]="exampleData" [options]="options" [width]="400" [value]="agendaArray"
+									[formControlName]="prop.key" (valueChanged)="changed1($event)" ngDefaultControl >
+								</select2>
+							</div>
+							<div  *ngIf="prop.key == 'address'; else selectnext">
+								<select2 id="e1" [data]="exampleData" [options]="options" [width]="500" [value]="agendaArray" [formControlName]="prop.key" (valueChanged)="changed($event)" ngDefaultControl >
+								</select2>
+							</div>
+							<div class="form-group">
+									<!--<select class="custom-select"
+									[formControlName]="prop.key" *ngIf="prop.key=='address'" 
+									(change)="selectOther($event.target.value)" >
+									<option *ngFor="let option of agendas" [value]="option.short_agenda" >
+										{{ option.short_agenda }}
+									</option>	
+									<option>other</option>											
+								</select>-->
+								
+								<div *ngIf="prop.key=='address'">
+									<div *ngIf="showmatter">
+										<input type="text" class="form-control" placeholder="Enter Matter to be transected" (change)="selectOther($event.target.value)" (change)="addAgenda()">
+									</div>
+									<!--<button type="button" class="add-director-link" role="button" (click)="addAgenda()"><i class="fas fa-plus"></i> <strong>Add Agenda</strong></button>
+									<table>
+										<tr *ngFor="let agenda of agendaArray; let i=index;">
+
+											<td><span>{{i+1+' '+agenda}}</span>
+												<button type="button" role="button" (click)="removeAgenda(i)"><i class="fa fa-window-close"></i></button>
+											</td>
+										</tr>
+									</table>-->
+								</div>
+
+								
+								<!--<div *ngIf="matter == 'other' && prop.key=='matter'">
+									<input type="text" class="form-control" placeholder="Enter Matter to be transected" (change)="selectOther($event.target.value)">
+								</div>-->
+								<select class="custom-select" [formControlName]="prop.key" *ngIf="prop.key=='director'" (change)="onChangeCheck(prop.key,$event.target.value)">
+									<option *ngFor="let id of bmSerials" [value]="id[1]">
+										{{id[0]}}
+									</option>
+								</select>
+
+							</div>
+
+						</div>
+						<div *ngSwitchCase="'datetime-local'">
+							<div class="form-group">
+
+								<input class="form-control" type="datetime-local" name="meetingdate" style="width: 40%" [min]="today" [value]="today" [formControlName]="prop.key" (change)="dateValidator($event.target.value)">
+
+
+
+							</div>
+							
+							<!--<div class="form-group">
+								<div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+									<input type="text" class="form-control" data-target="#datetimepicker1"/>
+									<div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">                    
+										<div class="input-group-text"><i class="far fa-calendar-alt" style="font-size:36px;"></i></div>
+									</div>
+								</div>
+							</div>-->
+						</div>
+
+						<div class="form-group" *ngSwitchCase="'button1'">
+							<button type="button" (click)="this[prop.function](prop.doc_id)">{{prop.name}}</button>
+						</div>
+
+						<div class="form-group" *ngSwitchCase="'textarea'">
+							<textarea [rows]="prop.row" class="form-control" value="Name" [formControlName]="prop.key" 
+							[placeholder]="prop.placeholder"></textarea>
+						</div>					
+
+						<div *ngSwitchCase="'customcheckbox'">
+							<table> 
+
+								<tr *ngFor="let option of prop.options; let i=index; ">
+
+									<td valign="top">
+										<!--<label class="custom-control custom-checkbox" >
+											<input id="check-1" type="checkbox" [value]="option.value" [formControlName]="prop.key" class="custom-control-input">
+											<span class="custom-control-indicator"></span>
+											<span class="custom-control-description">{{option.value}}</span>
+										</label>-->
+										<label class="custom-control"><strong>{{option.doc}}</strong></label>
+									</td>
+
+									<td valign="top">
+										<div *ngIf="option.download">
+											<a id="download" href="javascript:void(0)" (click)="download()"><i class="fas fa-download" >DOWNLOAD</i></a>
+										</div>
+										<div *ngIf="option.link">
+											<a href="javascript:void(0)" (click)="download()"><i>link to form</i></a>
+										</div>
+									</td>
+
+									<td valign="top">
+										<div *ngIf="option.upload">
+											<span *ngIf="prop.use == 'filling'">
+												<a class="btn btn-secondary  document-upload" role="button" id="button{{i+1}}" >Upload Document<span class="input-group-addon"><img src="assets/images/eye-2.png"></span></a>
+												<label class="uploads">
+													<input type="file" id="resi{{i+1}}" [formControlName]="prop.key" (change)="uploadFilling(option.name,$event.target.files)">
+
+												</label>
+
+											</span>
+
+
+
+
+											<!--<a class="btn btn-secondary  document-upload" role="button" id="button{{i+1}}" >Upload Document<span class="input-group-addon"><img src="assets/images/eye-2.png"></span></a>
+											<label class="uploads">
+												<input type="file" id="resi{{i+1}}" multiple>
+											</label>-->
+										</div>
+									</td>
+								</tr>
+							</table>							
+						</div>			
+
+						<!--<div *ngSwitchCase="'button'">
+							<a href="javascript:void(0)" (click)="download()"><i class="fas fa-download" >DOWNLOAD</i></a>
+						</div>
+						<div *ngIf="show">
+							<div *ngSwitchCase="'generate'">
+								<a href="javascript:void(0)" (click)="generate()">GENERATE</a>
+							</div>
+						</div>
+						<div *ngIf="hide">
+							<div *ngSwitchCase="'download'">
+								<a href="javascript:void(0)" (click)="download()"><i class="fas fa-download">DOWNLOAD</i></a>
+							</div>
+						</div>-->
+						<div class="form-group" *ngSwitchCase="'file'">
+							<div *ngIf="prop.use=='board_meeting'">
+								<a class="btn btn-secondary  document-upload" role="button" id="button" >{{prop.title}}<span class="input-group-addon"><img src="assets/images/eye-2.png"></span></a>
+								<label class="uploads">
+									<input type="file" id="resi" [formControlName]="prop.key" (change)="uploadAgendaFiles(prop.name,$event.target.files)">
+									<div *ngIf="prop.options">
+										<span *ngFor="let option of prop.options">
+											<button type="button" (click)="this[option.function]()">{{option.name}}</button>
+										</span>
+									</div>
+								</label>							
+
+								<br>
+								<span *ngIf="uploadedFile">File Uploaded <a href="javascript:void(0)" (click)="showFiles(prop.name,uploadedFile)">link to file</a></span>	
+							</div>
+
+							<div *ngIf="prop.use=='egm_meeting'">
+								<a class="btn btn-secondary  document-upload" role="button" id="button" >{{prop.title}}<span class="input-group-addon"><img src="assets/images/eye-2.png"></span></a>
+								<label class="uploads">
+									<input type="file" id="resi" [formControlName]="prop.key" (change)="uploadAgendaFiles(prop.name,$event.target.files)">
+									<div *ngIf="prop.options">
+										<span *ngFor="let option of prop.options">
+											<button type="button" (click)="this[option.function]()">{{option.name}}</button>
+										</span>
+									</div>
+								</label>
+								<br>
+								<span *ngIf="uploadedFile">File Uploaded <a href="javascript:void(0)" (click)="showFiles(prop.name,uploadedFile)">link to file</a></span>	
+							</div>
+
+							<div *ngIf="prop.use=='agm_meeting'">
+								<a class="btn btn-secondary  document-upload" role="button" id="button" >{{prop.title}}<span class="input-group-addon"><img src="assets/images/eye-2.png"></span></a>
+								<label class="uploads">
+									<input type="file" id="resi" [formControlName]="prop.key" (change)="uploadAgendaFiles(prop.name,$event.target.files)">
+									<div *ngIf="prop.options">
+										<span *ngFor="let option of prop.options">
+											<button type="button" (click)="this[option.function]()">{{option.name}}</button>
+										</span>
+									</div>
+								</label>
+								<br>
+								<span *ngIf="uploadedFile">File Uploaded <a href="javascript:void(0)" (click)="showFiles(prop.name,uploadedFile)">link to file</a></span>	
+							</div>
+
+
+
+
+							<div *ngIf="prop.use=='resolution'">
+								<a class="btn btn-secondary  document-upload" role="button" id="button" >{{prop.title}}<span class="input-group-addon"><img src="assets/images/eye-2.png"></span></a>
+								<label class="uploads">
+									<input type="file" id="resi" [formControlName]="prop.key" (change)="uploadResolution($event.target.files)">
+								</label>
+								<br>
+								<span *ngIf="uploadedFile">File Uploaded</span>	
+							</div>
+
+							
+							<div *ngIf="!prop.use">
+								<a class="btn btn-secondary  document-upload" role="button" id="button" >Upload Document<span class="input-group-addon"><img src="assets/images/eye-2.png"></span></a>
+								<label class="uploads">
+									<input type="file" id="resi" [formControlName]="prop.key" (change)="handleFileInput($event.target.files)" multiple>
+									<div *ngIf="prop.options">
+										<span *ngFor="let option of prop.options">
+											<button type="button" (click)="this[option.function]()">{{option.name}}</button>
+										</span>
+									</div>
+								</label>
+								<br>
+								<span *ngIf="uploadedFile">File Uploaded</span>	
+							</div>
+									<!--<label class="import-file">
+									    <input type="file" multiple >
+									    <div>Import file...</div>
+									</label>-->
+
+								</div>
+
+								
+								<div class="alert alert-danger" *ngIf="activityForm.get(prop.key)?.invalid && (activityForm.get(prop.key)?.dirty || activityForm.get(prop.key)?.touched)">
+									<div *ngIf="activityForm.get(prop.key)?.errors.required">
+										<span *ngIf="prop.label; else notlabel">
+											{{ prop.label }} is required.
+										</span>
+										<ng-template #notlabel>
+											Select valid option.
+										</ng-template>
+									</div>
+									<div *ngIf="activityForm.get(prop.key)?.errors.incorrect">
+										<span *ngIf="prop.label; else notlabel">
+											{{ prop.label }} is invalid.
+										</span>
+									</div>
+								</div>
+							</div>
+
+						</div>
+						<div *ngIf="!showResolution" style="color: red">
+							{{resolutionList}}
+						</div>			
+						<div *ngIf="showResolution">
+
+							<table class="table">
+								<thead>
+									<tr>
+										<th>Meeting No.</th>
+										<th>Date</th>
+										<th>Issued To</th>
+										<th>Reason</th>
+										<th>Document</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr *ngFor="let res of objectKeys(resolutionList);let i=index; ">
+										<td>{{meetingSerial}}</td>
+										<td>{{resolutionList[res]['date']}}</td>
+										<td>{{resolutionList[res]['issueto']}}</td>
+										<td>{{resolutionList[res]['reason']}}</td>
+										<td>
+											<a href="javascript:void(0)" (click)="showResDoc(resolutionList[res]['file'])">Download</a>
+										</td>
+									</tr>
+
+								</tbody>
+
+							</table>
+						</div>				
+					</div>
+					<hr>
+				</form>
+				
+			<!--<strong>Form Value</strong>
+			<pre>{{ activityForm?.value | json }}</pre>
+			<strong>Form is valid:</strong> {{activityForm?.valid}}-->
+
+			<p class="text-center">
+				<a class="btn btn-primary btn-with-icon btn-cancel" routerLink="/dashboard" role="button">CANCEL</a>
+				<button type="button" class="btn btn-primary btn-with-icon btn-save" (click)="onSubmit()">NEXT</button>
+			</p>
+			<nav>
+				<ul class="pagination justify-content-center" >
+					<li class="page-item">
+						<a class="page-link previous" routerLink="" (click)="previousActivity()" aria-label="Previous">
+							<span aria-hidden="true"><i class="fa fa-angle-double-left fa-lg" aria-hidden="true"></i></span>
+							<span class="sr-only">Previous</span>
+						</a>
+					</li>
+					
+					<li class="page-item"><a class="page-link active" href="#">&nbsp;</a></li>
+					<li class="page-item"><a class="page-link" href="#">&nbsp;</a></li>
+					<li class="page-item"><a class="page-link" href="#">&nbsp;</a></li>
+					
+					<li class="page-item">
+						<a class="page-link next" routerLink="" (click)="nextActivity()" aria-label="Next">
+							<span aria-hidden="true"><i class="fa fa-angle-double-right fa-lg" aria-hidden="true"></i></span>
+							<span class="sr-only">Next</span>
+						</a>
+					</li>
+					
+				</ul>
+			</nav>		
+		</div>
+	</div>
+</div>
+<!-- Popup for workflow steps -->
+<div class="modal fade" id="workflow-steps-listing-modal" tabindex="-1" role="dialog" aria-labelledby="steps-listing-id" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div id="">
+				<div class="modal-header">
+					<h5>Workflow Steps Listing - {{process}}</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<i class="fa fa-times" aria-hidden="true"></i>  
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="container-fluid">
+						<div class="row">
+							<div class="col-12 tile-colour-1">
+								<div class="steps-listing">
+									<ul>
+										<li *ngFor="let step of steps; let i=index; ">
+											<span class="label">Step {{i+1}}</span>
+											<span class="data">{{step.activity.name}}</span>
+											<span class="status" *ngIf="step.company_activity.status == 'Incomplete'; else completed"><i style="color: red;">{{step.company_activity.status}}</i></span>
+											<ng-template #completed>
+												<span class="status">
+												{{step.company_activity.status}}</span>
+											</ng-template>
+										</li>
+									</ul>
+								</div>
+							</div>
+						</div> <!-- End Row -->						
+					</div>	
+				</div>					
+				<div class="modal-footer">
+				</div>
+			</div>
+		</div>
+	</div>	
+</div>		
+
+
+
+
+
+
+
+
+

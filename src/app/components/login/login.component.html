@@ -1,0 +1,160 @@
+
+<body id="login-bg" class="fixed-top">
+	<div class="page-content" id="login">
+		<div class="container">
+			<div class="white-container-login row">
+				<div class="login-bg-container col-sm-6">
+					<h1 id="login-register-title">Corporatus Login</h1>
+					<img src="assets/images/login-register-left-bg.png" class="img-responsive">
+				</div>
+				<div class="login-form-container col-sm-6">
+					<form [formGroup]="loginform" id="form-login" class="form-login" novalidate>
+						<div class="form-group row option-login-register">
+							<div class="alert alert-danger" *ngIf="msg">
+								{{msg}}
+							</div>
+							
+							<div class="">
+								<label class="custom-control custom-radio">
+									<input id="radio-login" name="radio" type="radio" class="custom-control-input" checked>
+									<span class="custom-control-indicator"></span>
+									<span class="custom-control-description">Login</span>
+								</label>
+							</div>
+							<div class="">
+								<label class="custom-control custom-radio">
+									<input id="radio-register" name="radio" type="radio" class="custom-control-input">
+									<span class="custom-control-indicator"></span>
+									<span class="custom-control-description">I wish to signup</span>
+								</label>
+							</div>
+						</div>
+						<div id="login-info">
+							<div class="form-group row">
+								<input type="text" class="form-control" id="login-username" autocomplete="on" name="email" placeholder="Email" formControlName="username">
+								<div class="alert alert-danger" *ngIf="!loginform.controls['username'].valid && loginform.controls['username'].touched">
+									Email required!
+								</div>
+
+								<input type="password" class="form-control" id="login-password" autocomplete="on" placeholder="Password" formControlName="password">
+								<div class="alert alert-danger" *ngIf="!loginform.controls['password'].valid && loginform.controls['password'].touched">
+									Password required!
+								</div>
+
+							</div>
+							<div class="text-danger">{{error}}</div>
+
+							<div class="form-group row login-remember-forgot">
+								<div class="">
+									<label class="custom-control custom-checkbox">
+										<input type="checkbox" class="custom-control-input" autocomplete="on" formControlName="remember_me">
+										<span class="custom-control-indicator"></span>
+										<span class="custom-control-description">Remember me</span>
+									</label>
+								</div>								
+								<a class="login-forgot-password" href="javascript:void(0)" 
+								(click)="open(content)">
+							Forgot Password?</a>
+
+						</div>	
+						<p class="row login-button">
+
+							<button type="submit" class="btn btn-primary" [disabled]="loginform?.invalid"
+							(click)="onLogin()">Login</button>
+						</p>					
+					</div>				
+
+					<div [formGroup]="regform" id="register-info">							
+						<div class="form-group row">
+							<div class="alert alert-danger" *ngIf="reg">
+								{{reg}}
+							</div>
+							<div class= "text-danger">{{emailcheck}}</div>
+							<input type="email" name="email" class="form-control" id="register-emailid" placeholder="Email Id" [(ngModel)]="register.email" (keydown.enter)="checkEmail($event)" (keydown.tab)="checkEmail($event)" 
+							(change)="checkEmail($event)" formControlName="email">
+
+							<div class="alert alert-danger" 
+							*ngIf="!regform.controls['email'].valid && regform.controls['email'].touched">
+							Email required!
+						</div>
+						<input type="password" class="form-control" id="register-password" placeholder="Password" [(ngModel)]="register.password" formControlName="password">
+						<div class="alert alert-danger" 
+						*ngIf="!regform.controls['password'].valid && regform.controls['password'].touched">
+						Password required!
+					</div>
+
+					<input type="password" class="form-control" id="register-password-match" placeholder="Re-type Password" formControlName="password2">
+					<div class="alert alert-danger" 
+					*ngIf="regform.controls['password2'].invalid && regform.controls['password2'].touched">
+					Password required!
+				</div>
+				<div class="alert alert-danger" 
+				*ngIf="regform.controls['password2'].valid && regform.controls['password2'].value != regform.controls['password'].value">
+				Password mismatch!
+			</div>
+
+
+			<input type="text" class="form-control" id="register-firstname" placeholder="First Name" [(ngModel)]="register.first_name" formControlName="first_name">
+			<div class="alert alert-danger" 
+			*ngIf="!regform.controls['first_name'].valid && regform.controls['first_name'].touched">
+			Frist name required!
+		</div>
+		<input type="text" class="form-control" id="register-lastname" placeholder="Last Name" [(ngModel)]="register.last_name" formControlName="last_name">
+		<div class="alert alert-danger" 
+		*ngIf="!regform.controls['last_name'].valid && regform.controls['last_name'].touched">
+		Last name required!
+	</div>
+
+
+	<input type="number" class="form-control" id="register-mobile"placeholder="Mobile Number +91-1234567890" [(ngModel)]="register.phone" formControlName="phone">
+
+	<div class="alert alert-danger" 
+	*ngIf="!regform.controls['phone'].valid && regform.controls['phone'].touched">
+	<div *ngIf="regform.controls['phone'].errors?.pattern">
+		Mobile Number not valid
+	</div>
+	<div *ngIf="regform.controls['phone'].errors?.required">
+		Mobile Number required!
+	</div>
+</div>
+
+</div>							
+<p class="row register-button">
+	<button type="submit" class="btn btn-primary" [disabled] = "regform?.invalid" (click)="onRegister()" routerLink="/login">Register</button>
+</p>											
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+
+<ng-template #content let-c="close" let-d="dismiss">
+	
+	<div class="modal-header">
+		<h4 class="modal-title">Enter Email</h4>
+		<button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="form-group">
+		<input type="text" name="email" class="form-control" [(ngModel)]="resetmodal">
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-outline-dark" (click)="c('Close click')">Reset</button>
+ 
+		
+	</div>
+	
+	
+</ng-template>
+
+
+
+
+<button class="btn btn-lg btn-outline-primary" (click)="open(content)">Launch demo modal</button>
+
+<hr>
+
+<pre>{{closeResult}}</pre>
+</body>

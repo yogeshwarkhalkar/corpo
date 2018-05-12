@@ -1,0 +1,436 @@
+		<div class="page-content" id="create-company">
+			<div class="container">
+				<div class="page-header">
+					<h2>DASHBOARD</h2>
+					<!--<a class="btn btn-light-gray btn-add-company" routerLink="/createCompany2" role="button">ADD<br/><span class="smaller">COMPANY</span></a>-->
+				</div>
+				<div class="row">
+					<!-- Company tile -->
+					<div class="col-lg-6 col-xl-4" *ngFor="let x of data">
+						<div class="company-tile">
+							<p class="cin-number text-center align-middle"><img src="assets/images/company-icon.png" alt="company icon"> CIN#{{x?.company?.cin}}</p>
+							<p class="company-name text-center">{{x?.company?.name}}</p>
+							<div class="company-specs">
+								<p class="company-location">
+									<span class="label">Location</span>
+									<span class="data">: {{x?.city?.name}}</span>
+								</p>
+								<p class="company-doi">
+									<span class="label">Date of Incorporation</span>
+									<span class="data">: {{x?.company?.date_of_inc}}</span>
+								</p>
+								<p class="company-paid-capital">
+									<span class="label">Paid-up Capital</span>
+									<span class="data">: ₹{{x?.company?.paid_up_capital}}</span>
+								</p>
+								<p class="company-auth-capital">
+									<span class="label">Authorised Capital</span>
+									<span class="data">: ₹{{x?.company?.authorised_capital}}</span>
+								</p>
+							</div>
+							<div class="corporate-action">
+								<h3>CORPORATE ACTION</h3>
+								<span *ngFor="let event of events">
+									<span *ngIf="event.company == x.company.id">
+								<a routerLink="/eventlog/{{x.company.id}}/close">
+								<ngx-gauge size="105" type="semi" thick="5" 
+								min="0" max="450" value={{event.close}}
+								cap="round" label="COMPLETED" append=""
+								foregroundColor="#00cc00" backgroundColor="#EEE">
+								</ngx-gauge></a>
+								<a routerLink="/eventlog/{{x.company.id}}/open">
+								<ngx-gauge size="105" type="semi" thick="5" 
+								min="0" max="300" value={{event.open}} 
+								cap="round" label="ONGOING" append=""
+								foregroundColor="#ffcc66" backgroundColor="#EEE">
+								</ngx-gauge></a>
+								<a class="btn btn-add-event" routerLink="/events/{{x.company.id}}" role="button"><img src="assets/images/add-event-icon.png" alt="add event icon"><br/><span>ADD EVENT</span></a>
+							</span>
+						</span>
+							</div>
+							<div class="corporate-action">
+								<h3>MEETING</h3>
+								
+								<!--<span class="completed"></span>
+								<span class="ongoing"></span>-->
+								<span *ngFor="let meeting of meetings">
+									<span *ngIf="meeting.company == x.company.id">
+								<a  routerLink="/meetinglog/{{x.company.id}}/close">
+								<ngx-gauge size="105" type="semi" thick="5" 
+								min="0" max={{meeting.close+1}} value={{meeting.close}} 
+								cap="round" label="COMPLETED" append=""
+								foregroundColor="#00cc00" backgroundColor="#EEE">
+								</ngx-gauge></a>
+								<a routerLink="/meetinglog/{{x.company.id}}/open"><ngx-gauge size="105" type="semi" thick="5"
+								min="0" max={{meeting.open+1}} value={{meeting.open}}
+								cap="round" label="ONGOING" append=""
+								foregroundColor="#ffcc66" backgroundColor="#EEE">
+								</ngx-gauge></a>
+								<a class="btn btn-add-event" href="javascript:void(0)" (click)="addBM(x.company.id)" role="button"><img src="assets/images/add-event-icon.png" alt="add event icon"><br/><span style="font-size: 14px">Add Meeting</span></a>
+							</span>
+							</span>
+							</div>
+							
+							<div class="company-registers">
+								<h3>REGISTERS</h3>
+								<a class="btn btn-light-gray directors-tile-details" href="#" role="button" (click)="directors(x?.company?.id)" data-toggle="modal" data-target="#directorsdetailsModal">DIRECTORS</a>
+								<a class="btn btn-light-gray shareholders-tile-details" href="#" role="button" (click)="shareholders(x?.company?.id)" data-toggle="modal" data-target="#shareholdersdetailsModal">SHAREHOLDERS</a>
+								<a class="btn btn-dark-gray company-tile-details" href="#" role="button" (click)="details(x)" data-toggle="modal" data-target="#companydetailsModal" >DETAILS  <i class="fa fa-arrow-right" aria-hidden="true"></i></a>
+							</div>
+						</div>
+					</div> <!-- Company tile end-->
+				</div>
+			</div>
+		</div>
+		
+		<!---------------------- Modal : Company Details popup -------------------->
+		<div class="modal fade" id="companydetailsModal" tabindex="-1" role="dialog" aria-labelledby="company-details-id" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<!-- COMPANY MASTER DATA -->
+					<div id="master-data">
+						<div class="modal-header">
+							<h5>Company Master Data</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<i class="fa fa-times" aria-hidden="true"></i>  
+							</button>
+						</div>
+						<div class="modal-body">
+							<div class="container-fluid">
+								<div class="row">
+									<div class="col-lg-6 tile-colour-1 tile-left">
+										<div class="company-data-tile company-info">
+											<h4>Company Information</h4>
+											<ul>
+												<li>
+													<span class="label">CIN</span>
+													<span class="data">{{item?.company?.cin}}</span>
+												</li>
+												<li>
+													<span class="label">RoC Code</span>
+													<span class="data">{{item?.company?.metadata?.company?.roc_code}}</span>
+												</li>
+												<li>
+													<span class="label">Company Name</span>
+													<span class="data">{{item?.company?.name}}</span>
+												</li>
+												<li>
+													<span class="label">Registration Number</span>
+													<span class="data">{{item?.company?.metadata?.company?.registration_number}}</span>
+												</li>
+												<li>
+													<span class="label">Company Category</span>
+													<span class="data">{{item?.company?.metadata?.company?.company_category}}</span>
+												</li>
+												<li>
+													<span class="label">Company Subcategory</span>
+													<span class="data">{{item?.company?.metadata?.company?.company_subcategory}}</span>
+												</li>
+												<li>
+													<span class="label">Class of Company</span>
+													<span class="data">{{item?.company?.metadata?.company?.class_of_company}}</span>
+												</li>
+												<li>
+													<span class="label">Date of Incorporation</span>
+													<span class="data">{{item?.company?.date_of_inc}}</span>
+												</li>
+											</ul>
+										</div>
+									</div>
+									<div class="col-lg-6 tile-colour-2">
+										<div class="company-data-tile">
+											<div class="company-data-tile contact-info">
+												<h4>Contact Information</h4>
+												<ul>
+													<li>
+														<span class="label">Address other than R/o where all or any books of account and papers are maintained</span>
+														<span class="data flag-red">{{item?.company?.metadata?.contact_information?.address_other_than_ro
+}}</span>
+													</li>
+													<li>
+														<span class="label">Email Id</span>
+														<span class="data">{{item?.company?.metadata?.contact_information?.email}}</span>
+													</li>
+												</ul>
+											</div>
+										</div>
+									</div>
+								</div> <!-- End Row -->
+								<div class="row">
+									<div class="col-lg-6 tile-colour-2 tile-left">
+										<div class="company-data-tile capitalization">
+											<h4>Capitalization</h4>
+											<ul>
+												<li>
+													<span class="label">Authorised Capital(Rs)</span>
+													<span class="data">{{item?.company?.authorised_capital}}</span>
+												</li>
+												<li>
+													<span class="label">Paid up Capital (Rs)	</span>
+													<span class="data">{{item?.company?.paid_up_capital}}</span>
+												</li>
+												<li>
+													<span class="label">Number of Members <span class="context-specific-info">(Applicable in case of company without share Capital)</span></span>
+													<span class="data flag-red">{{item?.company?.metadata?.capitalization?.number_of_memebrs}}</span>
+												</li>
+
+											</ul>
+										</div>
+									</div>
+									<div class="col-lg-6 tile-colour-1">
+										<div class="company-data-tile">
+											<div class="company-data-tile regulatory-info">
+												<h4>Regulatory Information</h4>
+												<ul>
+													<li>
+														<span class="label">Whether listed or not</span>
+														<span class="data flag-red">{{item?.company?.metadata?.regulatory_information?.listed}}</span>
+													</li>
+													<li>
+														<span class="label">Suspended at stock exchange</span>
+														<span class="data flag-red">{{item?.company?.metadata?.regulatory_information?.suspended}}</span>
+													</li>
+													<li>
+														<span class="label">Date of last AGM</span>
+														<span class="data flag-red">{{item?.company?.metadata?.regulatory_information?.date_of_last_agm}}</span>
+													</li>
+													<li>
+														<span class="label">Date of Balance Sheet</span>
+														<span class="data flag-red">{{item?.company?.metadata?.regulatory_information?.date_of_bs}}</span>
+													</li>
+													<li>
+														<span class="label">Company Status (for efiling)</span>
+														<span class="data">Active</span>
+													</li>
+												</ul>
+											</div>
+										</div>
+									</div>
+								</div> <!-- End Row -->
+							</div>	
+						</div>
+					</div>
+					<!-- END OF COMPANY MASTER DATA -->
+					
+					<!-- CHARGES -->
+					<div id="charges">
+						<div class="modal-header">
+							<h5>Charges</h5>
+						</div>
+						<div class="modal-body">
+							<div class="container-fluid">
+								<div class="table-responsive">
+									<table class="table">
+										<thead>
+											<tr>
+											  <th class="col1">Assets under charge</th>
+											  <th class="col2">Charge Amount</th>
+											  <th class="col3">Date of Creation</th>
+											  <th class="col4">Date of Modification</th>
+											  <th class="col5 lastcol">Status</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+											  <td class="col1"><span class="flag-red">Not Applicable</span></td>
+											  <td class="col2">No Charges Exists for Compamy/LLP</td>
+											  <td class="col3">17/05/2015</td>
+											  <td class="col4"><span class="flag-red">Not Applicable</span></td>
+											  <td class="col5 lastcol"><span class="flag-red">Not Applicable</span></td>
+											</tr>
+											<tr>
+											  <td class="col1"><span class="flag-red">Not Applicable</span></td>
+											  <td class="col2">10,000.00</td>
+											  <td class="col3">14/11/2015</td>
+											  <td class="col4"><span class="flag-red">Not Applicable</span></td>
+											  <td class="col5 lastcol"><span class="flag-red">Not Applicable</span></td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>					
+					</div>
+					<!-- END OF CHARGES -->
+					
+					<!-- DIRECTOR / SIGNATORY DETAILS -->
+					<div id="signatory-details">
+						<div class="modal-header">
+							<h5>Director/Signatory details</h5>
+						</div>
+						<div class="modal-body">
+							<div class="container-fluid">
+								<div class="table-responsive">
+									<table class="table">
+									  <thead>
+										<tr>
+										  <th class="col1">DIN/PN</th>
+										  <th class="col2">Name</th>
+										  <th class="col3">Begin date</th>
+										  <th class="col4 lastcol">End date</th>
+										</tr>
+									  </thead>
+									  <tbody>
+										<tr>
+										  <td class="col1">05263440</td>
+										  <td class="col2">Ganesh Kumar Subramaniaiyer</td>
+										  <td class="col3">17/05/2017</td>
+										  <td class="col4 lastcol"><span class="flag-red">Not Applicable</span></td>
+										</tr>
+										<tr>
+										  <td class="col1">07991249</td>
+										  <td class="col2">Shriwallabh Mahendra Aghor</td>
+										  <td class="col3">14/11/2017</td>
+										  <td class="col4 lastcol"><span class="flag-red">Not Applicable</span></td>
+										</tr>
+									  </tbody>
+									</table>
+								</div>
+							</div>	
+						</div>
+					</div>
+					<!-- END OF DIRECTOR / SIGNATORY DETAILS -->
+					
+					
+					<div class="modal-footer">
+						<!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
+						<!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!---------------------- Modal : Directors Details popup -------------------->
+		<div class="modal fade" id="directorsdetailsModal" tabindex="-1" role="dialog" aria-labelledby="directors-details-id" aria-hidden="true">
+			<div class="modal-dialog" role="document" >
+				<div class="modal-content">
+					<!-- directors MASTER DATA -->
+					<div id="master-data">
+						<div class="modal-header">
+							<h5>Directors Register</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<i class="fa fa-times" aria-hidden="true"></i>  
+							</button>
+						</div>
+						<div class="modal-body">
+							<div class="container-fluid">
+								<div class="row">
+									<div class="col-lg-6 tile-colour-1 tile-left" *ngFor="let d of director;let i = index">
+										<div class="directors-data-tile directors-info">
+											<i class="fa fa-user" aria-hidden="true"></i> 
+											<h4 class="d-inline">Director# {{i+1}}</h4>
+											<ul>
+												<li>
+													<span class="label">DIN</span>
+													<span class="data">{{d?.DIN}}</span>
+												</li>
+												<li>
+													<span class="label">Name</span>
+													<span class="data">{{d?.first_name +' '+d?.last_name}}</span>
+												</li>
+												<li>
+													<span class="label">Begin Date</span>
+													<span class="data">17/05/2017</span>
+												</li>
+												<li>
+													<span class="label">End Date</span>
+													<span class="data flag-red">Not Applicable</span>
+												</li>
+												<li>
+													<span class="label">Shareholding</span>
+													<span class="data">1234567</span>
+												</li>
+												<li>
+													<span class="label">Other Details #1</span>
+													<span class="data">Placeholder Other Details #1</span>
+												</li>
+												<li>
+													<span class="label">Other Details #2</span>
+													<span class="data">Placeholder Other Details #2</span>
+												</li>
+												<li>
+													<span class="label">Other Details #3</span>
+													<span class="data">Placeholder Other Details #3</span>
+												</li>
+											</ul>
+										</div>
+									</div>
+								</div> <!-- End Row -->								
+							</div>	
+						</div>					
+						<div class="modal-footer">
+							<!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
+							<!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+						</div>
+					</div>
+				</div>
+			</div>	
+		</div>						
+		
+		<!---------------------- Modal : shareholders Details popup -------------------->
+		<div class="modal fade" id="shareholdersdetailsModal" tabindex="-1" role="dialog" aria-labelledby="shareholders-details-id" aria-hidden="true">
+			<div class="modal-dialog" role="document" >
+				<div class="modal-content">
+					<!-- shareholders MASTER DATA -->
+					<div id="master-data">
+						<div class="modal-header">
+							<h5>Shareholders Register</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<i class="fa fa-times" aria-hidden="true"></i>  
+							</button>
+						</div>
+						<div class="modal-body">
+							<div class="container-fluid">
+								<div class="row">
+									<div class="col-lg-6 tile-colour-1 tile-left" *ngFor="let s of shareholder; let i = index">
+										<div class="shareholders-data-tile shareholders-info">
+											<i class="fa fa-user" aria-hidden="true"></i> 
+											<h4 class="d-inline">Shareholder# {{i+1}}</h4>
+											<ul>
+												<li>
+													<span class="label">DIN</span>
+													<span class="data">{{s?.DIN}}</span>
+												</li>
+												<li>
+													<span class="label">Name</span>
+													<span class="data">{{s?.first_name +' '+s?.last_name}}</span>
+												</li>
+												<li>
+													<span class="label">Begin Date</span>
+													<span class="data">17/05/2017</span>
+												</li>
+												<li>
+													<span class="label">End Date</span>
+													<span class="data flag-red">Not Applicable</span>
+												</li>
+												<li>
+													<span class="label">Shareholding</span>
+													<span class="data">1234567</span>
+												</li>
+												<li>
+													<span class="label">Other Details #1</span>
+													<span class="data">Placeholder Other Details #1</span>
+												</li>
+												<li>
+													<span class="label">Other Details #2</span>
+													<span class="data">Placeholder Other Details #2</span>
+												</li>
+												<li>
+													<span class="label">Other Details #3</span>
+													<span class="data">Placeholder Other Details #3</span>
+												</li>
+											</ul>
+										</div>
+									</div>
+									
+								</div> <!-- End Row -->							
+							</div>	
+						</div>					
+						<div class="modal-footer">
+							<!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
+							<!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+						</div>
+					</div>
+				</div>
+			</div>	
+		</div>						

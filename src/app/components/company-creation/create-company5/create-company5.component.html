@@ -1,0 +1,169 @@
+<div class="page-content" id="create-company">
+	<div class="container">
+		<div class="page-header">
+			<h2>CREATE COMPANY</h2>
+			<h3>UPLOAD DOCUMENTS</h3>
+		</div>
+		<div class="white-container">
+			<ul class="nav nav-pills create-company-steps">
+				<li class="step step1 completed">
+					<a title="step1">
+						CLIENT<br/>DETAILS
+					</a>
+				</li>
+				<li class="step step2 completed">
+					<a routerLink="/createCompany2" title="step2">
+						INCORPORATION<br/>DETAILS
+					</a>
+				</li>
+				<li class="step step3 completed">
+					<a routerLink="/createCompany3" title="step3">
+						INTELLECTUAL<br/>PROPERTY
+					</a>
+				</li>
+				<li class="step step4 completed">
+					<a routerLink="/createCompany4" title="step4">
+						CAPITALIZATION, SHAREHOLDERS<br/>&amp; DIRECTORS
+					</a>
+				</li>
+				<li class="step step5 active">
+					<a routerLink="/createCompany5" title="step5">
+						UPLOAD<br/>DOCUMENTS
+					</a>
+				</li>
+			</ul>
+
+			<form  id="form-create-company-step5" class="form-create-company" [formGroup]="form5" novalidate>
+				<p><strong>List of documents required for your applications</strong></p>
+				<div class="form-group row">
+					<div class="col-md-6">
+						<h3>1. Documents for DIN (Director Identification Number):</h3>
+						<ol type="a">
+							<li>Copy of PAN for resident of India
+								<span class="context-specific-info">(mandatory)</span>
+							</li>
+							<li>Copy of passport size photograph
+								<span class="context-specific-info">(four copies)</span>
+							</li>
+							<li>Proof of residence 
+								<span class="context-specific-info">(like voter card, passport, driving license, electricity bill, telephone bill or bank account statement). Proof of residence should not be older than 2 months/ 60 days.</span>
+							</li>
+							<li>Digital signature for the director</li>
+						</ol>
+						<i class="fa fa-info-circle context-specific-info" aria-hidden="true"></i>
+						<span class="context-specific-info">In case individual is a foreign national, copy of passport will be mandatory along with other proof. For foreign nationals all documents need to be notarized and apostilled in their respective home country.</span>
+					</div>
+
+					<div class="col-md-6">
+						<h3>2. Documents for registered office of the company:</h3>
+						<ol type="a">
+							<li>Copy of lease deed</li>
+							<li>Copy of rent paid not older than one month</li>
+							<li>Utility bill  
+								<span class="context-specific-info">(like telephone bill, water bill, electricity bill)</span>
+							</li>
+							<li>NOC letter in case of rented premises to be obtained from the landlord along with proof of ownership or occupancy authorization</li>
+							<li>In case of owned premises copy of sale deed</li>
+						</ol>
+					</div>							
+				</div>
+				<p><strong>Please note for DSC, the below documents will be required separately</strong></p>
+				<div class="form-group row">
+					<div class="col-md-6">
+						<h3>A. For Indian residents:</h3>
+						<ol type="a">
+							<li>Passport Size Photos to be affixed on the DSC applicatiton.</li>
+							<li>Copy of PAN
+								<span class="context-specific-info">(to be attested by Banker/Gazetted Officer)</span>
+							</li>
+							<li>Copy of Passport/Adhaar Card/Bank Statement/Driving license 
+								<span class="context-specific-info">(current address proof). To be attested by Banker/Gazetted Officer mentioning the phone number</span>
+							</li>
+							<li>DSC application duly filled and signed</li>
+						</ol>
+						<i class="fa fa-info-circle context-specific-info" aria-hidden="true"></i>
+						<span class="context-specific-info">Mobile no; ……………….(Phone number provided by DSC applicant should be correct as it is needed to be verified by calling e-mudhra team on the following number (080-43460300)); and email address</span>
+					</div>
+
+					<div class="col-md-6">
+						<h3>B. For foreign nationals:</h3>
+						<ol type="a">
+							<li>Passport Size Photos to be affixed on the DSC applicatiton.</li>
+							<li>Copy of Passport 
+								<span class="context-specific-info">(current address proof). Mandatory.</span>
+							</li>
+							<li>Any other poof of identity</li>
+							<li>DSC application duly filled and signed</li>
+						</ol>
+						<i class="fa fa-info-circle context-specific-info" aria-hidden="true"></i>
+						<span class="context-specific-info">All documents mentioned in point 1 to 4 (including photo on DSC) needs to be Consularized by Native Country, after Public Notary.</span>
+					</div>							
+				</div>
+				<p><strong>Upload your documents here</strong>		
+					<br><i class="fa fa-info-circle context-specific-info" aria-hidden="true"></i>
+					<span class="context-specific-info">An eye icon <img src="assets/images/eye-1.png"> against each document will appear after you have successfully uploaded your document.</span></p>
+					<div class="form-group row document-upload-block" formGroupName="files">
+
+						<a class="btn btn-secondary  document-upload" role="button" id="button1" >PROOF OF RESIDENCE<span class="input-group-addon"><img src="assets/images/eye-2.png"></span></a>
+						<label>
+							<input type="file" id="resi" style="display=none;" formControlName="residence"
+							(change)="handleFileInput($event.target.files)">
+						</label>
+						<a class="btn btn-secondary  document-upload"  role="button" id="button2" >DIGITAL SIGNATURE<span class="input-group-addon"><img src="assets/images/eye-2.png"></span></a>
+						<label >							
+							<input type="file" id="sign" style="display=none;" formControlName="digitalSignature" (change)="handleFileInput($event.target.files)">
+						</label>
+						<a class="btn btn-secondary  document-upload"  role="button" id="button3" >PAN CARD<span class="input-group-addon"><img src="assets/images/eye-0.png"></span></a>
+						<label >
+							<input type="file" id="pan" style="display=none;" formControlName="pan" (change)="handleFileInput($event.target.files)">
+						</label>
+						<a class="btn btn-secondary  document-upload"  role="button" id="button4" >PASSPORT SIZE PHOTO<span class="input-group-addon"><img src="assets/images/eye-2.png"></span></a>
+						<label >
+							<input type="file" id="photo" style="display=none;" formControlName="photo" (change)="handleFileInput($event.target.files)">
+						</label>
+						<a class="btn btn-secondary  document-upload"  role="button" id="button5" >UTLITY BILL<span class="input-group-addon"><img src="assets/images/eye-2.png"></span></a>
+						<label >
+							<input type="file" id="bill" style="display=none;" formControlName="bill" (change)="handleFileInput($event.target.files)">
+						</label>
+						<a class="btn btn-secondary  document-upload"  role="button" id="button6" >SALE DEED<span class="input-group-addon"><img src="assets/images/eye-0.png"></span></a>	
+						<label >
+							<input type="file" id="sale" style="display=none;" formControlName="saleDeed" (change)="handleFileInput($event.target.files)">
+						</label>						
+						<a class="btn btn-secondary  document-upload"  role="button" id="button7" >LEASE DEED<span class="input-group-addon"><img src="assets/images/eye-0.png"></span></a>	
+						<label >
+							<input type="file" id="lease" style="display=none;" formControlName="leaseDeed" (change)="handleFileInput($event.target.files)">
+						</label>
+						<a class="btn btn-secondary  document-upload"  role="button" id="button8">LATEST RENT RECEIPT<span class="input-group-addon"><img src="assets/images/eye-2.png"></span></a>
+						<label >
+							<input type="file" id="rent" style="display=none;" formControlName="rentReceipt" (change)="handleFileInput($event.target.files)">
+						</label>
+						<a class="btn btn-secondary  document-upload"  role="button" id="button9">BANK STATEMENT<span class="input-group-addon"><img src="assets/images/eye-0.png"></span></a>
+						<label >
+							<input type="file" id="bankStmt" style="display=none;" formControlName="bankStmt" (change)="handleFileInput($event.target.files)">
+						</label>
+						<a class="btn btn-secondary  document-upload" role="button" id="button10" >DRIVING LICENSE<span class="input-group-addon"><img src="assets/images/eye-2.png"></span></a>
+						<label >
+							<input type="file" id="license" style="display=none;" formControlName="license" (change)="handleFileInput($event.target.files)">
+						</label>
+						<a class="btn btn-secondary  document-upload"  role="button" id="button11" >PASSPORT<span class="input-group-addon"><img src="assets/images/eye-2.png"></span></a>
+						<label >
+							<input type="file" id="passport" style="display=none;" formControlName="passport" (change)="handleFileInput($event.target.files)">
+						</label>
+						<a class="btn btn-secondary  document-upload" role="button" id="button12" >AADHAR CARD<span class="input-group-addon"><img src="assets/images/eye-0.png"></span></a>		
+						<label >
+							<input type="file" id="aadhar" style="display=none;" formControlName="aadhar" (change)="handleFileInput($event.target.files)">
+						</label>					
+						<a class="btn btn-secondary  document-upload"  role="button" id="button13" >RENT NOC<span class="input-group-addon"><img src="assets/images/eye-0.png"></span></a>	
+						<label >
+							<input type="file" id="noc" style="display=none;" formControlName="rentNoc" (change)="handleFileInput($event.target.files)">
+						</label>
+					</div>						
+					<p><br><strong>Disclaimer: </strong> Kindly note, that the information asked in this term sheet shall be used only to get a basic idea on the structure of the proposed company to be incorporated. Further separate documents will need to be drafted executed for filing the incorporation application based on the information provided.</p>
+				</form>
+				{{form5.value | json}}
+				<p class="text-right">
+					<button type="submit" class="btn btn-primary" (click)="uploadFiles()" routerLink="/dashboard" [disabled]="form5?.invalid">FINISH</button>
+				</p>		
+			</div>
+		</div>
+	</div>

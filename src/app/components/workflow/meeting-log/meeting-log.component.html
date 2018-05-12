@@ -1,0 +1,168 @@
+<div class="page-content" id="create-company">
+	<div class="container">
+		<div class="page-header">
+			<h2 *ngIf="status == 'close'">COMPLETED MEETING</h2>
+			<h2 *ngIf="status == 'open'">ONGOING MEETING</h2>
+			<h3 class="page-num">PAGE <span class="current-page">{{pager.currentPage}}</span> of <span class="total-page-count">{{pager.totalPages}}</span></h3> 
+		</div>
+		<div class="white-container clearfix">
+			<button routerLink="/dashboard">back</button>
+			<form class="form-inline search-box">
+				<input class="form-control" type="search" [(ngModel)]="searchText" name="searchText" placeholder="Search within Meeting Log">
+				<a title="Search"><i class="fas fa-search"></i></a>
+			</form>
+
+			<div class="table-responsive workflow-log">
+
+				<table class="table">
+
+					<thead>
+						<tr>
+							<th class="col1">Meeting ID</th>
+							<th class="col2">Date of Meeting</th>
+							<th class="col3">Description of Meeting</th>
+							<th class="col4">Date of Notice Send</th>
+							<th class="col5">Meeting Type</th>
+							<!--	<th class="col6">Meeting Status</th>-->
+								<th class="col6">Meeting Agenda</th>
+								<th class="col7">Attendance Sheet</th>
+								<th class="col8">Minutes of Meetiing</th>
+								<th class="col9" *ngIf="status == 'close'">Resolution True Copy</th>
+							</tr>
+						</thead>
+
+						<tbody>
+							<tr *ngFor=" let data of pagedItems | search: searchText; let i=index; ">
+
+								<td *ngIf="status == 'open'; else closed" class="col1"><span class="table-cin"><a href="javascript:void(0)" (click)="goto(data.id)">{{data.serial}}</a></span></td>
+								<ng-template #closed>
+									<td class="col1"><span class="table-cin">{{data.serial}}</span></td>
+								</ng-template>
+								<td class="col2"><span class="table-workflow-id">{{data.bm_date}}</span></td>
+								<td class="col3">{{data.description}}</td>
+								<td class="col4">{{data.notice_date}}</td>
+							<td class="col5">{{data.meeting_type}}</td>
+								<!--<td class="col6">{{data.status}}</td>-->
+
+								<td class="col6 notify text-center" >
+									<a *ngIf="data.agenda_doc != null;else empty1 " href="javascript:void(0)"  (click)="showFiles('agenda_doc', data.agenda_doc)">Agenda</a>
+									<ng-template #empty1>
+										<span>Not available</span>
+									<!--<a id="upload1" href="javascript:void(0)" > upload</a>
+										<input type="file" id="upload_file1" (change)="uploadAgendaFiles(i,data.id,'agenda_doc',$event.target.files)">-->
+									</ng-template>							  	
+								</td>
+
+								<td class="col7 notify text-center" >
+									<a *ngIf="data.attendance != null; else empty2 " href="javascript:void(0)" (click)="showFiles('attendance', data.attendance)">Attendance Sheet</a>
+									<ng-template #empty2>
+										<span>Not available</span>
+									<!--<input id="upload_file2" type="file" (change)="uploadAgendaFiles(i,data.id,'attendance',$event.target.files)"/>
+										<a id="upload2" href="javascript:void(0)" > upload</a>-->
+									</ng-template>
+								</td>
+
+								<td class="col8 details text-center">
+									<a *ngIf="data.minutes_of_meeting != null ;else empty3" href="javascript:void(0)" (click)="showFiles('minutes_of_meeting', data.minutes_of_meeting)">Minutes of Meeting</a>
+									<ng-template #empty3>
+										<span>Not available</span>
+									<!--<input id="upload_file3" type="file" (change)="uploadAgendaFiles(i,data.id,'minutes_of_meeting',$event.target.files)"/>
+										<a id="upload3" href="javascript:void(0)" > upload</a>-->
+									</ng-template>
+								</td>
+
+								<td class="col9 details text-center" *ngIf="status == 'close'">
+									<a href="javascript:void(0)" (click)="generateResolution(data.id)" >Generate Resolution</a>
+									<!--data-toggle="modal" data-target="#directorsdetailsModal"
+										<a class="btn btn-light-gray directors-tile-details" href="#" role="button" (click)="directors(x?.company?.id)" data-toggle="modal" data-target="#directorsdetailsModal">DIRECTORS</a>-->
+								</td>
+							<!--<td>
+								<a class="btn btn-light-gray directors-tile-details" role="button" (click)="update(data.id)">update</a>
+							</td>-->
+
+						</tr>
+
+					</tbody>
+				</table>
+			</div>
+			<hr>
+			<nav>
+				<ul class="pagination justify-content-center">
+					<li class="page-item" [ngClass]="{disabled:pager.currentPage === 1}">
+						<a class="page-link previous" aria-label="Previous" href="javascript:void(0)" (click)="setPage(pager.currentPage - 1)">
+							<span style="display:block;margin-right:35px;clear:right" aria-hidden="true"><i class="fa fa-angle-double-left fa-lg" aria-hidden="true"></i></span>
+							
+						</a>
+					</li>
+					
+					<li class="page-item" *ngFor="let page of pager.pages" [ngClass]="{active:pager.currentPage === page}">
+						<a href="javascript:void(0)" (click)="setPage(page)">{{page}} &nbsp;</a>
+					</li>
+					<li class="page-item" [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
+						<a class="page-link next" aria-label="Next" href="javascript:void(0)" (click)="setPage(pager.currentPage + 1)">
+							<span style="display:block;margin-left:53px" aria-hidden="true"><i class="fa fa-angle-double-right fa-lg" aria-hidden="true"></i></span>
+							
+						</a>
+					</li>
+				</ul>
+			</nav>
+			<!---------------------- Modal : Directors Details popup -------------------->
+			<div class="modal fade" id="directorsdetailsModal" tabindex="-1" role="dialog" aria-labelledby="directors-details-id" aria-hidden="true">
+				<form class="modal-dialog" role="document" [formGroup]="resolutionForm">
+					<div class="modal-content">
+						<!-- directors MASTER DATA -->
+						<div id="master-data">
+							<div class="modal-header">
+								<h5>Generate Resolution</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<i class="fa fa-times" aria-hidden="true"></i>  
+								</button>
+							</div>
+							<div>
+								<span>Select Agendas</span>
+								<div class="form-group">
+									<select2 [data]="exampleData" [options]="options" [width]="500" formControlName="agenda" (valueChanged)="changed($event)" ngDefaultControl>
+									</select2>
+									<div class="alert alert-danger" 
+									*ngIf="resolutionForm.get('agenda').invalid && resolutionForm.get('agenda').touched">
+									Select Agenda
+								</div>
+							</div>
+							<span>Select Signing Director</span>
+							<div class="form-group">
+								<select class="custom-select" formControlName="director">
+									<option *ngFor="let d of directors" [value]="d.id">
+										{{ d.first_name }}
+									</option>	
+								</select>
+								<div class="alert alert-danger" 
+								*ngIf="resolutionForm.get('director').invalid && resolutionForm.get('director').touched">
+								Select Director
+							</div>
+						</div>
+
+
+
+						<span>Signing Place</span>
+						<div class="form-group">
+							<input type="text" class="form-control" formControlName="place">
+							<div class="alert alert-danger" 
+							*ngIf="resolutionForm.get('place').invalid && resolutionForm.get('place').touched">
+							Enter Signing Place
+						</div>
+					</div>
+
+
+				</div>
+
+				<div class="modal-footer">
+					<!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
+					<button type="button" class="btn btn-primary" (click)="generateResolution(1)">Generate Resolution</button>
+				</div>
+			</div>
+		</div>
+	</form>						
+</div>
+
+</div>
+</div>

@@ -1,0 +1,9 @@
+1. Download npm via  https://nodejs.org/en/download/ and install.
+2. Install Angular-cli from command line - $npm install -g @angular/cli
+3. Extract CSAngular from csapp.rar
+4. cd to CSAngular folder
+5. Install npm  via command $ npm install
+6. Extract font-awesome and copy both .css file to /node_modules/font-awesome/css
+7. copy webfonts folder to /node_modules/font-awesome
+8. run command $ng serve -o
+

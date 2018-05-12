@@ -1,0 +1,63 @@
+	
+		<div class="page-content" id="create-company">
+			<div class="container">
+				<div class="page-header">
+					<h2>WORKFLOW LOG</h2>
+					<h3 class="page-num">PAGE <span class="current-page">1</span> of <span class="total-page-count">4</span></h3> 
+				</div>
+				<div class="white-container clearfix">
+					<form class="form-inline search-box">
+						<input class="form-control" type="search" placeholder="Search within Work Log">
+						<a href="#" title="Search"><i class="fas fa-search"></i></a>
+					</form>
+					<div class="table-responsive workflow-log">
+						<table class="table">
+							<thead>
+								<tr>
+								  <th class="col1">CIN &amp; Company Name</th>
+								  <th class="col2">Workflow ID &amp; Name</th>
+								  <th class="col3">Start Date</th>
+								  <th class="col4">End Date</th>
+								  <th class="col5">Status</th>
+								  <th class="col6">Pending with</th>
+								  <th class="col7">Notify</th>
+								  <th class="col8 lastcol">Details</th>
+								</tr>
+							</thead>
+							<tbody >
+								<tr *ngFor="let data of workflowData; let i=index;">
+								  <td class="col1"><span class="table-cin">CIN#{{data.company.cin}}</span><br/><span class="table-company-name">{{data.company.name}}</span></td>
+								  <td class="col2"><span class="table-workflow-id">WID#{{data.process.id}}</span><br/><span class="table-workflow-name">{{data.process.name}}</span></td>
+								  <td class="col3">17/05/2015</td>
+								  <td class="col4">17/11/2016</td>
+								  <td class="col5 table-status-overdue">Overdue</td>
+								  <td class="col6">Username</td>
+								  <td class="col7 notify text-center"><a href="#"><img src="assets/images/icon-notify.png" alt="notify link"></a></td>
+								  <td class="col8 lastcol details text-center"><a href="#"><img src="assets/images/icon-details.png" alt="workflow details link"></a></td>
+								</tr>
+								
+							</tbody>
+						</table>
+					</div>
+					<nav>
+						<ul class="pagination justify-content-center">
+							<li class="page-item">
+								<a class="page-link previous" href="#" aria-label="Previous">
+									<span aria-hidden="true"><i class="fa fa-angle-double-left fa-lg" aria-hidden="true"></i></span>
+									<span class="sr-only">Previous</span>
+								</a>
+							</li>
+							<li class="page-item"><a class="page-link active" href="#">&nbsp;</a></li>
+							<li class="page-item"><a class="page-link" href="#">&nbsp;</a></li>
+							<li class="page-item"><a class="page-link" href="#">&nbsp;</a></li>
+							<li class="page-item">
+								<a class="page-link next" href="#" aria-label="Next">
+									<span aria-hidden="true"><i class="fa fa-angle-double-right fa-lg" aria-hidden="true"></i></span>
+									<span class="sr-only">Next</span>
+								</a>
+							</li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</div>
