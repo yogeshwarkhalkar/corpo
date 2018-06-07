@@ -12,14 +12,13 @@
 
 			<a href="#" class="steps-all" role="button" data-toggle="modal" data-target="#workflow-steps-listing-modal">&nbsp;</a>
 			
-			<form [formGroup]="activityForm"  id="form-workflow-details-right-of-issue-of-shares" novalidate>
+			<form [formGroup]="activityForm"  id="form-workflow-details-right-of-issue-of-shares" 			novalidate>
 				<ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1"
-				[speed]="200" [showSpinner]="false" [direction]="'leftToRightIncreased'"
+				[speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
 				[color]="'red'" [trickleSpeed]="250" [thick]="false" [ease]="'linear'"
 				></ng-progress>
 				<div class="form-group row step-number-container">
 					<p class="col-md-2 step-number" id="step-one">Step {{stepId}}</p>
-
 				</div>
 				<input type="text" readonly class="form-control-plaintext align-text-bottom" id="error-msg" [value]="screenError">
 
@@ -34,37 +33,54 @@
 						<div [ngSwitch]="prop.type">
 							<!-- Show label for control -->
 							<label [attr.for]="prop">{{prop.label}}</label>
-							
+							<!-----   Radio Control     ------>
 							<div *ngSwitchCase="'radio'">
 								<div class="form-group">
 
 									<label class="custom-control custom-radio" *ngFor="let option of prop.options">
-										<input type="radio" [name]="prop.key" [formControlName]="prop.key"
-										[value]="option.value" class="custom-control-input" (click)="onRadioClick(prop.key,option.value)"> 
-										<span class="custom-control-indicator"></span>
-										<span class="custom-control-description">{{option.name}}</span>
+										<span *ngIf="option.function else nofunc">
+											<input type="radio" [name]="prop.key" [formControlName]="prop.key"
+											[value]="option.value" class="custom-control-input" (click)="onRadioClick(prop.key,option.value)" (click)="this[option.function](option.value,prop.key)">
+											<span class="custom-control-indicator"></span>
+											<span class="custom-control-description">{{option.name}}</span>
+										</span>
+										<ng-template #nofunc>
+											<input type="radio" [name]="prop.key" [formControlName]="prop.key"
+											[value]="option.value" class="custom-control-input" (click)="onRadioClick(prop.key,option.value)">
+											<span class="custom-control-indicator"></span>
+											<span class="custom-control-description">{{option.name}}</span>
+										</ng-template>
+										
 									</label>								
 
 									<div *ngIf="!prop.options">
 										<label class="custom-control custom-radio" *ngFor="let option of directors">
 											<input type="radio" [name]="prop.key" [formControlName]="prop.key"
-											[value]="option.id" class="custom-control-input"> 
+											[value]="option.id" class="custom-control-input" (click)="onRadioClick(prop.key,'director')"> 
 											<span class="custom-control-indicator"></span>
 											<span class="custom-control-description">{{option.first_name}}</span>
 										</label>
+										<label class="custom-control custom-radio">
+											<input type="radio" [name]="prop.key" [formControlName]="prop.key"
+											value="secretory" class="custom-control-input" (click)="onRadioClick(prop.key,'secretory')"> 
+											<span class="custom-control-indicator"></span>
+											<span class="custom-control-description">Company Secretory</span>
+										</label>
 									</div>
 								</div>
-								<div *ngIf="showaddr && prop.key=='date'">
+								<div *ngIf="showaddr && prop.key=='date'" style="padding-bottom: 10px;">
 									<input type="text" class="form-control" [value]="null" [formControlName]="prop.key" placeholder="Enter Address">
 								</div>
-								<div *ngIf="showserial && prop.key=='descr'" >
+								<div *ngIf="showserial && prop.key=='descr'">
 									<input type="text" class="form-control" [value]="null" [formControlName]="prop.key" placeholder="Enter serial number" >
+								</div>
+								<div *ngIf="showsecretory && (prop.key=='serial' || prop.key=='upload')" style="padding-bottom: 10px;">
+									<input type="text" class="form-control" [value]="null" [formControlName]="prop.key" placeholder="Enter Company Secretory Name">
 								</div>
 							</div>
 
+							<!-----------    Checkbox Control ----------------->
 							<div *ngSwitchCase="'checkbox'">
-
-
 								<div class="form-group">
 									<div *ngIf="prop.stakeholder">
 										<label class="custom-control custom-checkbox" *ngFor="let name of stakeholders; let i=index;">
@@ -77,7 +93,7 @@
 									</div>
 									<div *ngIf="prop.options">
 										<label class="custom-control custom-checkbox" *ngFor="let option of prop.options; let i=index;">
-											<input id="check-1" type="checkbox" class="custom-control-input" [value]="prop.value" [formControlName]="prop.key" (change)="onChangeCheck(prop.key, $event.target.value)">
+											<input type="checkbox" class="custom-control-input" [value]="option.value" [formControlName]="prop.key" (change)="checkOption(prop.key, $event)">
 											<span class="custom-control-indicator"></span>
 											<span class="custom-control-description">{{option.name}}</span>
 
@@ -91,27 +107,52 @@
 
 										</label>
 									</div>
-									
-
+									<div *ngIf="prop.key == 'address_1' && showbodycorporate" style="margin-top: 10px;">
+										<input type="text" class="form-control" [value]="null" [formControlName]="prop.key" (keydown.enter)="checkEmail(prop.key,$event)" (keydown.tab)="checkEmail(prop.key,$event)" (change)="checkEmail(prop.key,$event)"
+										placeholder="Enter Body Corporate email">
+										<span *ngFor="let e of bodyEmail">
+											{{e}}<i class="fas fa-window-close" (click)="removeBodyEmail(e)"></i>
+											<br>
+										</span>
+									</div>			
 								</div>
-
 							</div>
+
+							<!----------  Text box control   -------------->
 							<div class="form-group" *ngSwitchCase="'text'">
-
-								<input type="text" class="form-control" value="Name" [formControlName]="prop.key" [placeholder]="prop.placeholder">
+								<span *ngIf="prop.key == 'company' else othertext">
+									<input type="text" class="form-control" value="Name" [formControlName]="prop.key" (keydown.enter)="checkEmail(prop.key, $event)" (keydown.tab)="checkEmail(prop.key, $event)" (change)="checkEmail(prop.key, $event)"
+									[placeholder]="prop.placeholder">
+									<span *ngFor="let e of bodyEmail">
+										{{e}}<i class="fas fa-window-close" (click)="removeBodyEmail(e)"></i>
+										<br>
+									</span>
+								</span>
+								<ng-template #othertext>
+									<input type="text" class="form-control" value="Name" [formControlName]="prop.key" [placeholder]="prop.placeholder">
+								</ng-template>
 							</div>
 
+							<!-------- Select control ------------------->
 							<div class="form-group" *ngSwitchCase="'select'">
-								<div  *ngIf="prop.key == 'meeting'; else selectnext">
+
+								<div  *ngIf="prop.key == 'agendas'; else selectnext">
 									<select2 [data]="exampleData" [options]="options" [width]="400" [value]="agendaArray"
 									[formControlName]="prop.key" (valueChanged)="changed1($event)" ngDefaultControl >
 								</select2>
 							</div>
-							<div  *ngIf="prop.key == 'address'; else selectnext">
-								<select2 id="e1" [data]="exampleData" [options]="options" [width]="500" [value]="agendaArray" [formControlName]="prop.key" (valueChanged)="changed($event)" ngDefaultControl >
-								</select2>
-							</div>
-							<div class="form-group">
+
+							<div  *ngIf="(prop.key == 'meeting')||(prop.key == 'date_1'); else selectnext">
+								<select2 [data]="allAgenda" [options]="options" [width]="500" [value]="allAgendaArray"
+								[formControlName]="prop.key" (valueChanged)="changed2($event)" ngDefaultControl >
+							</select2>
+						</div>
+
+						<div  *ngIf="prop.key == 'address'; else selectnext">
+							<select2 id="e1" [data]="exampleData" [options]="options" [width]="500" [value]="agendaArray" [formControlName]="prop.key" (valueChanged)="changed($event)" ngDefaultControl >
+							</select2>
+						</div>
+						<div class="form-group">
 									<!--<select class="custom-select"
 									[formControlName]="prop.key" *ngIf="prop.key=='address'" 
 									(change)="selectOther($event.target.value)" >
@@ -141,6 +182,7 @@
 									<input type="text" class="form-control" placeholder="Enter Matter to be transected" (change)="selectOther($event.target.value)">
 								</div>-->
 								<select class="custom-select" [formControlName]="prop.key" *ngIf="prop.key=='director'" (change)="onChangeCheck(prop.key,$event.target.value)">
+									<option value="" selected="true" disabled="disabled">Select Board Meeting</option>
 									<option *ngFor="let id of bmSerials" [value]="id[1]">
 										{{id[0]}}
 									</option>
@@ -149,6 +191,8 @@
 							</div>
 
 						</div>
+
+						<!-------- DateTime control -------------------->
 						<div *ngSwitchCase="'datetime-local'">
 							<div class="form-group">
 
@@ -168,15 +212,16 @@
 							</div>-->
 						</div>
 
+						<!-------------- Button control ----------------------->
 						<div class="form-group" *ngSwitchCase="'button1'">
 							<button type="button" (click)="this[prop.function](prop.doc_id)">{{prop.name}}</button>
 						</div>
-
+						<!--------------- Textarea control ------------------->
 						<div class="form-group" *ngSwitchCase="'textarea'">
 							<textarea [rows]="prop.row" class="form-control" value="Name" [formControlName]="prop.key" 
 							[placeholder]="prop.placeholder"></textarea>
 						</div>					
-
+						<!-------------- Custon control (Includes any control)--------------------->
 						<div *ngSwitchCase="'customcheckbox'">
 							<table> 
 
@@ -196,7 +241,7 @@
 											<a id="download" href="javascript:void(0)" (click)="download()"><i class="fas fa-download" >DOWNLOAD</i></a>
 										</div>
 										<div *ngIf="option.link">
-											<a href="javascript:void(0)" (click)="download()"><i>link to form</i></a>
+											<a [href]="option.link" target="_blank"><i>link to form</i></a>
 										</div>
 									</td>
 
@@ -206,18 +251,8 @@
 												<a class="btn btn-secondary  document-upload" role="button" id="button{{i+1}}" >Upload Document<span class="input-group-addon"><img src="assets/images/eye-2.png"></span></a>
 												<label class="uploads">
 													<input type="file" id="resi{{i+1}}" [formControlName]="prop.key" (change)="uploadFilling(option.name,$event.target.files)">
-
 												</label>
-
 											</span>
-
-
-
-
-											<!--<a class="btn btn-secondary  document-upload" role="button" id="button{{i+1}}" >Upload Document<span class="input-group-addon"><img src="assets/images/eye-2.png"></span></a>
-											<label class="uploads">
-												<input type="file" id="resi{{i+1}}" multiple>
-											</label>-->
 										</div>
 									</td>
 								</tr>
@@ -237,6 +272,8 @@
 								<a href="javascript:void(0)" (click)="download()"><i class="fas fa-download">DOWNLOAD</i></a>
 							</div>
 						</div>-->
+
+						<!---------------File upload control ---------------------->
 						<div class="form-group" *ngSwitchCase="'file'">
 							<div *ngIf="prop.use=='board_meeting'">
 								<a class="btn btn-secondary  document-upload" role="button" id="button" >{{prop.title}}<span class="input-group-addon"><img src="assets/images/eye-2.png"></span></a>
@@ -307,66 +344,66 @@
 								<br>
 								<span *ngIf="uploadedFile">File Uploaded</span>	
 							</div>
-									<!--<label class="import-file">
-									    <input type="file" multiple >
-									    <div>Import file...</div>
-									</label>-->
-
-								</div>
-
-								
-								<div class="alert alert-danger" *ngIf="activityForm.get(prop.key)?.invalid && (activityForm.get(prop.key)?.dirty || activityForm.get(prop.key)?.touched)">
-									<div *ngIf="activityForm.get(prop.key)?.errors.required">
-										<span *ngIf="prop.label; else notlabel">
-											{{ prop.label }} is required.
-										</span>
-										<ng-template #notlabel>
-											Select valid option.
-										</ng-template>
-									</div>
-									<div *ngIf="activityForm.get(prop.key)?.errors.incorrect">
-										<span *ngIf="prop.label; else notlabel">
-											{{ prop.label }} is invalid.
-										</span>
-									</div>
-								</div>
-							</div>
-
 						</div>
-						<div *ngIf="!showResolution" style="color: red">
-							{{resolutionList}}
-						</div>			
-						<div *ngIf="showResolution">
 
-							<table class="table">
-								<thead>
-									<tr>
-										<th>Meeting No.</th>
-										<th>Date</th>
-										<th>Issued To</th>
-										<th>Reason</th>
-										<th>Document</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr *ngFor="let res of objectKeys(resolutionList);let i=index; ">
-										<td>{{meetingSerial}}</td>
-										<td>{{resolutionList[res]['date']}}</td>
-										<td>{{resolutionList[res]['issueto']}}</td>
-										<td>{{resolutionList[res]['reason']}}</td>
-										<td>
-											<a href="javascript:void(0)" (click)="showResDoc(resolutionList[res]['file'])">Download</a>
-										</td>
-									</tr>
-
-								</tbody>
-
-							</table>
-						</div>				
+						
+						<!-------------- Validation message control -------------------------------->		
+						<div class="alert alert-danger" *ngIf="activityForm.get(prop.key)?.invalid && (activityForm.get(prop.key)?.dirty || activityForm.get(prop.key)?.touched)">
+							<div *ngIf="activityForm.get(prop.key)?.errors.required">
+								<span *ngIf="prop.label; else notlabel">
+									{{ prop.label }} is required.
+								</span>
+								<ng-template #notlabel>
+									Select valid option.
+								</ng-template>
+							</div>
+							<div *ngIf="activityForm.get(prop.key)?.errors.incorrect">
+								<span *ngIf="prop.label; else notlabel">
+									{{ prop.label }} is invalid.
+								</span>
+							</div>
+							<div *ngIf="activityForm.get(prop.key)?.errors.email">
+								Invalid email.
+							</div>
+						</div>
 					</div>
-					<hr>
-				</form>
-				
+				</div>
+
+				<!-------------------- Show resolution custom design------------------------>
+				<div *ngIf="!showResolution" style="color: red">
+					{{resolutionList}}
+				</div>			
+				<div *ngIf="showResolution">
+
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Meeting No.</th>
+								<th>Date</th>
+								<th>Issued To</th>
+								<th>Reason</th>
+								<th>Document</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr *ngFor="let res of objectKeys(resolutionList);let i=index; ">
+								<td>{{meetingSerial}}</td>
+								<td>{{resolutionList[res]['date']}}</td>
+								<td>{{resolutionList[res]['issueto']}}</td>
+								<td>{{resolutionList[res]['reason']}}</td>
+								<td>
+									<a href="javascript:void(0)" (click)="showResDoc(resolutionList[res]['file'])">Download</a>
+								</td>
+							</tr>
+
+						</tbody>
+
+					</table>
+				</div>				
+			</div>
+			<hr>
+		</form>
+
 			<!--<strong>Form Value</strong>
 			<pre>{{ activityForm?.value | json }}</pre>
 			<strong>Form is valid:</strong> {{activityForm?.valid}}-->
@@ -400,6 +437,7 @@
 		</div>
 	</div>
 </div>
+
 <!-- Popup for workflow steps -->
 <div class="modal fade" id="workflow-steps-listing-modal" tabindex="-1" role="dialog" aria-labelledby="steps-listing-id" aria-hidden="true">
 	<div class="modal-dialog" role="document">
@@ -419,7 +457,12 @@
 									<ul>
 										<li *ngFor="let step of steps; let i=index; ">
 											<span class="label">Step {{i+1}}</span>
-											<span class="data">{{step.activity.name}}</span>
+											
+											<span class="data" *ngIf="step.company_activity.status == 'Complete' else incomplete"><a href="javascript:void(0)" (click)="navigateActivity(step.activity.id)">{{step.activity.name}}</a></span>
+
+											<ng-template #incomplete>
+												<span class="data">{{step.activity.name}}</span>
+											</ng-template>
 											<span class="status" *ngIf="step.company_activity.status == 'Incomplete'; else completed"><i style="color: red;">{{step.company_activity.status}}</i></span>
 											<ng-template #completed>
 												<span class="status">

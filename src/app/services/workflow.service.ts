@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { UrlserviceService } from '../services/urlservice.service';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
+import { CookieService } from 'ngx-cookie';
+
 
 import 'rxjs/add/operator/toPromise';
 
@@ -9,15 +11,16 @@ import 'rxjs/add/operator/toPromise';
 export class WorkflowService {
   
 
-  constructor(private url: UrlserviceService, private http: HttpClient) { 
-    const header = new Headers();
-    header.append('Content-type', 'application/json');
+  constructor(private url: UrlserviceService, private http: HttpClient,private cookie:CookieService) { 
+    
      }
   baseurl = this.url.BASE_URL;
-
+  
 
   getActivity(process, activity):Observable<any>{
-  	return this.http.get(this.baseurl+'workflow/getActivity/'+process+'/'+activity);
+    let header = new HttpHeaders();
+  header.append('Content-type', 'application/json');
+  	return this.http.get(this.baseurl+'workflow/getActivity/'+process+'/'+activity,{headers:header});
   }
 
   getFirstActivity(process):Observable<any>{
@@ -50,6 +53,7 @@ export class WorkflowService {
   storeMeeting(data):Observable<any>{
   	return this.http.post(this.baseurl+'workflow/storeMeeting',JSON.stringify(data))
   }
+
 
   generateAgenda(data):Observable<any>{
   	return this.http.post(this.baseurl+'workflow/generateAgenda',JSON.stringify(data),

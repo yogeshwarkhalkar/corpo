@@ -7,36 +7,54 @@ import {
   HttpResponse,
   HttpErrorResponse
 } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
-import { CookieService } from 'ngx-cookie-service';
+import { CookieService } from 'ngx-cookie';
 import { NgProgress } from 'ngx-progressbar';
+import { NavbarService } from '../services/navbar.service';
+//import { AuthService } from '../services/auth.service';
 
 @Injectable()
 export class CsInterceptor implements HttpInterceptor {
-  constructor(private cookie: CookieService, public progress: NgProgress) {}
+  constructor(private cookie: CookieService, public progress: NgProgress, 
+    private route: Router, private nav:NavbarService) {}
   token:any;
+  errno:number=0;
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    this.token = this.cookie.get('session_id');
-	  //request = request.clone({'body':{'session':this.token}})    
-    //console.log(this.token,request);
-
-    //send the newly created request
-    
+    this.token = this.cookie.get('token');
+         // console.log(request);
+    if(this.token){
+     request = request.clone({
+      setHeaders: {       
+        Authorization: `Bearer ${this.cookie.get('token')}`,
+      }
+    });
+   }
+     // console.log(request);
     return next.handle(request)
-    .do(succ=>{
-    /*.do((event: HttpEvent<any>)=>{
+    
+    .do((event: HttpEvent<any>)=>{
       if (event instanceof HttpResponse) {
-        console.log(event.body);
+        // console.log(event.body);
         // do stuff with response if you want
       }
 
       }, (err: any) => {
       if (err instanceof HttpErrorResponse) {
-        if (err.status === 401) {
-          alert('error')
+        if (err.status === 401 && this.errno == 0) {
+          //alert('error')
           // redirect to the login route
-          // or show a modal
+          // or show a modal 
+          this.errno += 1;
+          this.cookie.remove('userid');
+          this.cookie.remove('session_id');
+          this.cookie.remove('token');
+
+          this.nav.hide();
+          this.nav.showLogin();
+          this.route.navigate(['/login', {_next: this.route.url}]);
+         
         }
         if (err.status === 500) {
           alert('server error')
@@ -44,19 +62,8 @@ export class CsInterceptor implements HttpInterceptor {
           // or show a modal
         }
       }
-    });*/
+    });
 
-    	//console.log(succ, Response.arguments, Request.arguments)
-      
-    	if(succ['body']){
-
-    		if(succ['body']['session'])
-    			this.cookie.set('session_id',succ['body']['session']);
-        if(succ['body']['cookies'])
-          this.cookie.set('session_id_csautomation',succ['body']['cookies']);
-      }
-
-    }, err=> console.error(err));
 	/*.catch((error, caught) => {
 	//intercept the respons error and displace it to the console
 	console.log(caught);
@@ -66,3 +73,5 @@ export class CsInterceptor implements HttpInterceptor {
 	}) as any;*/
   }
 }
+
+

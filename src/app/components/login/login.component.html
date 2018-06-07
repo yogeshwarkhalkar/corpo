@@ -70,6 +70,7 @@
 								{{reg}}
 							</div>
 							<div class= "text-danger">{{emailcheck}}</div>
+							
 							<input type="email" name="email" class="form-control" id="register-emailid" placeholder="Email Id" [(ngModel)]="register.email" (keydown.enter)="checkEmail($event)" (keydown.tab)="checkEmail($event)" 
 							(change)="checkEmail($event)" formControlName="email">
 

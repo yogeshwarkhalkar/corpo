@@ -66,12 +66,14 @@ export class ActivityComponent implements OnInit {
 	remark:any;
 
 	email:boolean=false;
-	emailSent:boolean=false;
+	emailSent:boolean;
 	is_last:boolean = false;
 	is_first:boolean = false;
 	showaddr:boolean=false;
 	showserial:boolean=false;
 	showmatter:boolean=false;
+	showsecretory:boolean=false;
+	showbodycorporate:boolean=false;
 	companyName:any;
 	cin:any;
 	address:any;
@@ -82,6 +84,7 @@ export class ActivityComponent implements OnInit {
 	matter:any;
 	agendas:any;
 	agendaArray: any[]=[];
+	allAgendaArray:any[]=[];
 	firstActivityId:any;
 	baseurl:string = this.url.BASE_URL;
 	stepId: number;
@@ -108,6 +111,7 @@ export class ActivityComponent implements OnInit {
 	pagedItems: any[];
 
 	exampleData: Array<Select2OptionData>;
+	allAgenda: Array<Select2OptionData>;
 	options: Select2Options;
 	current: string;
 	value:string[];
@@ -123,6 +127,9 @@ export class ActivityComponent implements OnInit {
 	today:any;
 	today1:any;
 
+	bodyEmail:any[]=[];
+	noticeFor:any[]=[];
+
 	constructor(private http:HttpClient, private router: Router,private url:UrlserviceService,
 		private actRoute: ActivatedRoute, private fb:FormBuilder, private location: Location,
 		private pagerService: PagerService, private auth: AuthService, private cookie: CookieService,
@@ -131,10 +138,8 @@ export class ActivityComponent implements OnInit {
 		this.eventId = localStorage.getItem('eventId');
 		console.log(this.eventId);
 
-		//this.progress.start();	
 		// Get URL parameter to determine company, process & activity id
 
-		
 		this.actRoute.params.subscribe(params=> {
 			this.id = <number>params['id']
 			this.company = params['company']
@@ -142,7 +147,7 @@ export class ActivityComponent implements OnInit {
 			this.displayFile='';
 			this.uploadedFile='';
 			
-			
+			this.emailSent = false;
 			this.showNext = false;
 			this.showResolution=false;
 			this.resolutionList = null;
@@ -201,28 +206,46 @@ export class ActivityComponent implements OnInit {
 			console.log(this.is_first);
 
 			this.showResolution=false;
-				//console.log(this.controls);
-				this.dataObject = this.controls;
+			this.dataObject = this.controls;
 
-				this.objectProps =
-				Object.keys(this.dataObject)
-				.map(prop => {
-					//console.log(prop);
-					return Object.assign({}, { key: prop} , this.dataObject[prop]);
-				});
-					//console.log(this.dataObject);
-					for(let prop of Object.keys(this.dataObject)) {
-						console.log(prop);
-						if(prop == 'email'){
-							this.email=true;
+			//Get all control names from database config
+			this.objectProps =
+			Object.keys(this.dataObject)
+			.map(prop => {
+				console.log(prop);
+				return Object.assign({}, { key: prop} , this.dataObject[prop]);
+			});
+			for(let prop of Object.keys(this.dataObject)) {
+				console.log(prop);
+				if(prop == 'email'){
+					this.email=true;
+				}
+				if(prop == 'allAgenda' || prop == 'date_1'){
+					this.workflow.getAgenda().subscribe(res=>{
+						this.allAgenda=[];
+						for(let a in res){
+							this.allAgenda.push({ id: res[a]['short_agenda'],
+								text: res[a]['short_agenda']});
+						}
+						console.log(this.allAgenda);
+						this.agendas = res;
+
+						this.options = {
+							multiple: true
 						}
 
-						this.formGroup[prop] = new FormControl(this.dataObject[prop].value || '',
-							this.mapValidators(this.dataObject[prop].validation));
-					}
+
+					})
+				}
+				// Map the validator to control
+				this.formGroup[prop] = new FormControl(this.dataObject[prop].value || '',
+					this.mapValidators(this.dataObject[prop].validation));
+
+				console.log(this.formGroup);
+			}
 
 
-					if(this.group == 1 || this.group == 4){
+			if(this.group == 1 || this.group == 4){
 					// GET director of company
 					this.http.get(this.baseurl+'workflow/getDirector/'+this.company).subscribe(res=>{
 						this.directors = res;
@@ -232,20 +255,22 @@ export class ActivityComponent implements OnInit {
 						this.stakeholders = res;
 						console.log(this.stakeholders);
 					})
+					//GET shareholder of company
 					this.http.get(this.baseurl+'workflow/getShareholder/'+this.company).subscribe(res=>{
 						this.shareholders = res;
 						console.log(this.shareholders);
 					})
-					// GET Board Meeting Serial No for company
-					this.http.get(this.baseurl+'workflow/boardMeeting/'+this.company+'/BM').subscribe(res=>{
-						console.log(res);
-						this.bmSerials = res;
-					})
 
-					
 
 				}
-				// GET company Name ,Address, city ,state
+
+				// GET Board Meeting Serial No for company
+				this.http.get(this.baseurl+'workflow/boardMeeting/'+this.company+'/BM').subscribe(res=>{
+					console.log(res);
+					this.bmSerials = res;
+				})
+
+				// GET company Name, CIN, Address, city ,state
 				this.workflow.getCompany(this.company).subscribe(res=>{
 					console.log(res);
 					this.companyName = res['company']['name'];
@@ -287,7 +312,7 @@ export class ActivityComponent implements OnInit {
 
 
 
-
+				// Get the meeting type and assign meeting specific data
 				for(let prop of this.objectProps){
 					if(prop.use == 'board_meeting'){
 						this.setfileName(prop.name);
@@ -382,11 +407,6 @@ console.log(this.id);
 }
 
 ngOnInit() {
-	/*let user = this.cookie.get('userid');
-	if(!user){
-		this.auth.logout();
-	}*/
-	
 	this.location.subscribe(x => this.stepId -= 1);
 	this.setPage(1);
 	
@@ -408,21 +428,17 @@ validateAllFormFields(formGroup: FormGroup) {
 	});
 }
 
+// Validate the past date selection for meeting date
 dateValidator(val){
 	console.log(val);
 	if(val <= this.today){
-		//this.activityForm.get('matter').setValue(null);
-		
 		this.activityForm.get('matter').setErrors({'incorrect':true});
-		//this.activityForm.get('matter').markAsTouched({onlySelf: true});
 		console.log('invalid date');
 	}
 	else{
 		this.activityForm.get('matter').setErrors(null);
 		
-
 	}
-	
 
 }    
 
@@ -436,16 +452,35 @@ private mapValidators(validators) {
 			} else if(validation === 'min') {
 				formValidators.push(Validators.min(validators[validation]));
 			}
+			else if(validation === 'email') {
+				formValidators.push(Validators.email);
+			}
 		}
 	}
 
 	return formValidators;
 }
 
-setErrors(errorString){
-	this.screenError = errorString;
-}
+// Check Notice for Body Corpotare or Individual option
+checkOption(key, event){
+	if(key == 'address_1'){
+		if(event.target.checked){
+			if(event.target.value == 'bodycorporate')
+				this.showbodycorporate = true;
+			this.noticeFor.push(event.target.value);
+			console.log(this.noticeFor);
+		}
+		else{
+			if(event.target.value == 'bodycorporate')
+				this.showbodycorporate = false;
+			let index = this.noticeFor.indexOf(event.target.value)
+			console.log(index);
+			this.noticeFor.splice(index,1);
+			console.log(this.noticeFor);
 
+		}
+	}
+}
 // Update event table on selecting existing Board Meeting
 onChangeCheck(key, selected){
 	console.log(key, selected)
@@ -499,6 +534,20 @@ onChangeCheck(key, selected){
 	this.showNext = true;
 }
 
+// Check is there any available BM to link with workflow
+checkAvailableMeeting(value,key){
+	if((this.bmSerials.length <= 0)&& value == 'Yes'){
+		this.screenError = "There is no available Board Meeting please Create New";		
+		this.validateAllFormFields(this.activityForm);
+		this.activityForm.get(key).setErrors({'required':true});
+		
+	}
+	else{
+		this.screenError = null;
+		this.activityForm.get(key).setErrors(null);
+	}
+}
+
 // Show textbox based on redio select 'Other'
 onRadioClick(key, option){
 	console.log(option, key);
@@ -513,6 +562,12 @@ onRadioClick(key, option){
 	}
 	else if(option == 'System Generated'){
 		this.showserial=false;
+	}
+	if((key=='serial' || key=='upload') && option == 'secretory'){
+		this.showsecretory = true;
+	}
+	else if((key=='serial' || key=='upload') && option == 'director'){
+		this.showsecretory = false;
 	}
 	this.showNext = true;
 }
@@ -541,20 +596,29 @@ selectOther(matter){
 
 }
 
-
+// Add Matter on selection to list
 changed(data: {value: string[]}) {
-	this.current = data.value.join(' | ');
-	console.log(data.value);
+	// this.current = data.value.join(' | ');
+
 	this.agendaArray=data.value;
+	console.log(this.agendaArray);
 	this.activityForm.get('address').setValue(' ');
 }
 
 changed1(data: {value: string[]}) {
-	console.log(data.value);
+	console.log("resolution ",data.value);
+
 	this.agendaArray=data.value;
-	this.activityForm.get('meeting').setValue(' ');
+	this.activityForm.get('agendas').setValue(' ');
 }
 
+changed2(data: {value: string[]}) {
+	console.log("resolution ",data.value);
+	this.allAgendaArray=data.value;
+}
+
+
+// Update Agenda
 updateAgenda(){
 	if(this.activityForm.valid){
 		let bm = this.activityForm.get('director').value;
@@ -564,11 +628,6 @@ updateAgenda(){
 			company:this.company,
 			agenda:this.agendaArray
 		}
-			//this.http.put(this.baseurl+'workflow/updateAgenda', JSON.stringify(data),{
-	      	//	params: new HttpParams().set('id', 'sdfsdf'),headers: new HttpHeaders().set('Content-Type','application/json')}).subscribe(ret=>{
-		//		console.log(ret);
-		//	})
-
 		this.http.post(this.baseurl+'workflow/updateAgenda', JSON.stringify(data)).subscribe(ret=>{
 			console.log(ret);
 			this.updatedAgenda = ret;
@@ -623,7 +682,7 @@ generateAttendance(docId){
 				meetingDate:new Date(res['board_meeting']['bm_date']).getTime(),
 				addr:this.address,
 				serial:res['board_meeting']['serial'],
-				place: res['board_meeting']['place']
+				place: res['board_meeting']['address']
 			}
 
 		//GET meeting date for attendance sheet name
@@ -634,6 +693,7 @@ generateAttendance(docId){
 		// Download Attendance sheet
 		this.http.post(this.baseurl+'workflow/generateAttendance',JSON.stringify(data),{responseType:'blob'}).subscribe(res=>{
 			console.log(res);
+			this.showNext = true;
 			saveAs(res,'Attendance sheet_'+d1+'.docx')
 
 		})
@@ -711,7 +771,7 @@ generateAttendance(docId){
 				meetingDate:new Date(res['board_meeting']['bm_date']).getTime(),
 				addr:this.address,
 				serial:res['board_meeting']['serial'],
-				place: res['board_meeting']['place']
+				place: res['board_meeting']['address']
 			}
 
 		//GET meeting date for attendance sheet name
@@ -722,6 +782,7 @@ generateAttendance(docId){
 		// Download Attendance sheet
 		this.http.post(this.baseurl+'workflow/generateAttendance',JSON.stringify(data),{responseType:'blob'}).subscribe(res=>{
 			console.log(res);
+			this.showNext = true;
 			saveAs(res,'Attendance sheet_'+d1+'.docx')
 
 		})
@@ -736,6 +797,8 @@ generateAttendance(docId){
 	let dirData={
 		director_present:presentDirector,
 		director_absent:absentDirector,
+		member_present:presentShareholder,
+		member_absent:absentShareholder,
 		steps:this.id
 	}
 
@@ -754,21 +817,30 @@ generateMinutes(docId){
 	let bmid = localStorage.getItem('bmId');
 	let result:any;
 	let today = new Date();
+	let position:any;
 
 	// GET meeting data to generate MOM
 	this.workflow.getBoardMeeting(bmid).subscribe(res=>{
 		result=res
 		console.log(res);
+		if(res['board_meeting']['approved_by_director']){
+			position = 'Director';
+		}
+		else
+			position  = 'Secretory';
 		let data = {
 			doc_id:docId,
+			position:position,
 			companyName: res['company']['name'],
 			address:res['board_meeting']['address'],
 			serial:res['board_meeting']['serial'],
 			agenda: res['board_meeting']['agenda'],
 			bm_date:new Date(res['board_meeting']['bm_date']).getTime(),
-			place:res['board_meeting']['place'],
+			place:res['board_meeting']['address'],
 			directorPresent:res['board_meeting']['director_present'],
-			directorAbsent:res['board_meeting']['director_absent']
+			directorAbsent:res['board_meeting']['director_absent'],
+			memberPresent:res['board_meeting']['member_present'],
+			memberAbsent:res['board_meeting']['member_absent']
 		}
 		this.exampleData=[];
 		for(let a in res['board_meeting']['agenda']){
@@ -804,19 +876,27 @@ generateMinutes(docId){
 
 // GEnerate Resolution for BM, EGM, AGM
 generateResolution(docId){
-	if(this.activityForm.get('meeting').valid && this.activityForm.get('upload').valid &&
-		this.activityForm.get('matter').valid ){
+	let meeting_type:any;
+	if(this.activityForm.get('upload').valid &&	this.activityForm.get('matter').valid ){
 		if(this.agendaArray.length <= 0){
 			this.activityForm.get('meeting').reset();			
 			this.validateAllFormFields(this.activityForm);
 			return;
 		}
+		else{
+			this.activityForm.get('meeting').clearValidators();
+		}
 
 		let bmid = localStorage.getItem('bmId');
 		let agenda:Array<any>=[];
 		let dirAddress:any;
+		let position:any;
 		let did = this.activityForm.get('upload').value;
 		let place = this.activityForm.get('matter').value;
+
+		meeting_type = localStorage.getItem('meeting_type');
+		if(meeting_type == 'EGM')
+			docId = 39;
 
 	// GET required data to generate Resolution from board_meeting table
 	this.workflow.getBoardMeeting(bmid).subscribe(res=>{
@@ -825,19 +905,29 @@ generateResolution(docId){
 		let directorName:any;
 		let din:any;
 
-		for(let d of this.directors){
-			console.log(d);
-			if(d['id'] == did)
-			{
-				directorName = d['first_name']+' '+d['last_name'];
-				din = d['DIN'];
-				dirAddress = d['address'];
+		if(this.showsecretory){
+			directorName = did;
+			din = null;
+			dirAddress = this.address;
+			position  = 'Secretory';
+		}
+		else{	
+			for(let d of this.directors){
+				console.log(d);
+				if(d['id'] == did)
+				{
+					directorName = d['first_name']+' '+d['last_name'];
+					din = d['DIN'];
+					dirAddress = d['address'];
+				}
 			}
+			position = 'Director';
+
 		}
 
 		let data = {
 			doc_id : docId,
-			resolution : this.agendaArray,
+			resolution : this.agendaArray.concat(this.allAgendaArray),
 			companyName: res['company']['name'],
 			address:res['board_meeting']['address'],
 			serial:res['board_meeting']['serial'],
@@ -845,7 +935,8 @@ generateResolution(docId){
 			place:place,
 			director_name: directorName,
 			din:din,
-			dirAddress:dirAddress
+			dirAddress:dirAddress,
+			position:position
 		}
 
 		// Download Resolution
@@ -872,7 +963,8 @@ generateResolution(docId){
 	else{
 		this.validateAllFormFields(this.activityForm);
 	}
-
+	if(meeting_type)
+		localStorage.removeItem('meeting_type');
 
 }
 
@@ -1031,6 +1123,8 @@ generateResolution(docId){
 		let description:any;
 		let venue:any;
 		let dirAddress:any;
+		let office:any;
+		let position:any;
 		let today = new Date();
 		let bmid = localStorage.getItem('bmId');
 		let currentBm = localStorage.getItem('currentBm');
@@ -1047,14 +1141,33 @@ generateResolution(docId){
 		place = this.activityForm.get('meeting').value;
 		description = this.activityForm.get('director').value;
 		serial = this.activityForm.get('descr').value;
+		if(this.allAgendaArray.length > 0)
+			this.agendaArray = this.agendaArray.concat(this.allAgendaArray);
+
+		if(this.agendaArray.length <= 0){
+			alert("Select matter to transact");
+			return;
+		}
+
+		//console.log(new Set(...this.agendaArray , ...this.allAgendaArray));
+
+
 		bmdate=getdate.getTime();
 		this.meetingDate = bmdate;
 		console.log(addr);
 		if(addr != 'Registered Office'){
+			if(addr == null || addr == "Other"){
+				alert("Enter Venue of Meeting");
+				return;
+			}
 			venue = addr;
+			office = ' ';
+
 		}	
 		else{
 			venue = this.address;
+			office = "the registered office of the Company at"
+
 		}
 
 		console.log(venue);
@@ -1063,7 +1176,13 @@ generateResolution(docId){
 
 			let today = new Date();
 			let month = today.getMonth()+1;
-			let quarter = Math.floor((month + 3) / 3);
+			if(month<=3){
+				month+=9;
+			}
+			else{
+				month-=3
+			}
+			let quarter = Math.floor((month) / 3);
 			var fiscalYr = "";
 			if (month > 3) { 
 				var nextYr1 = (today.getFullYear() + 1).toString();
@@ -1074,31 +1193,57 @@ generateResolution(docId){
 			}
 			console.log(today, month, fiscalYr);
 			if(this.meeting == 'BM'){
-				serial = 'Q'+quarter+'-BM-0'+this.meetingNo+'/-'+fiscalYr;
+				if(this.meetingNo <10)
+					serial = 'Q'+quarter+'-BM-0'+this.meetingNo+'/-'+fiscalYr;
+				else
+					serial = 'Q'+quarter+'-BM-'+this.meetingNo+'/-'+fiscalYr;
 			}
 			if(this.meeting == 'EGM'){
-				serial = 'Q'+quarter+'-EGM-0'+this.meetingNo+'/-'+fiscalYr;
+				if(this.meetingNo <10)
+					serial = 'Q'+quarter+'-EGM-0'+this.meetingNo+'/-'+fiscalYr;
+				else
+					serial = 'Q'+quarter+'-EGM-'+this.meetingNo+'/-'+fiscalYr;
+
 			}			
 			if(this.meeting == 'AGM'){
-				serial = 'Q'+quarter+'-AGM-0'+this.meetingNo+'/-'+fiscalYr;
+				if(this.meetingNo <10)
+					serial = 'Q'+quarter+'-AGM-0'+this.meetingNo+'/-'+fiscalYr;
+				else
+					serial = 'Q'+quarter+'-AGM-0'+this.meetingNo+'/-'+fiscalYr;
+
 			}			
 		}
 
-		for (var d of this.directors) {
-			
-			if(d['id'] == directorId){
-				din = d['DIN'];
-				directorName= d['first_name']+' '+d['last_name'];
-				this.signingDirector = directorName;
-				dirAddress = d['address'];
+		if(this.showsecretory){
+			if(directorId == 'secretory' || directorId == null){
+				alert("Enter Company Secretory Name");
+				return;
 			}
+			this.signingDirector = directorId;
+			directorName = directorId;
+			dirAddress = this.address;
+			din = null;
+			position = 'Secretory';
+		}
+		else{	
+			for (var d of this.directors) {
+
+				if(d['id'] == directorId){
+					din = d['DIN'];
+					directorName= d['first_name']+' '+d['last_name'];
+					this.signingDirector = directorName;
+					dirAddress = d['address'];
+				}
+			}
+			position = 'Director';
 		}
 
 		this.meetingAddress = venue;
+
 		let data = {
 			doc_id : id,
 			companyName: this.companyName,
-			approved_by_director: directorId,
+			// approved_by_director: directorId,
 			director_name:directorName,
 			din: din,
 			address: venue,
@@ -1116,15 +1261,20 @@ generateResolution(docId){
 			process:this.processId
 		}
 
-		//if(this.meeting == 'BM'){
-			for(let ser of this.meetingSerials){
-				if(ser[0] == serial)
-				{
-					alert("Serial Number Exists");
-					return;
-				}
-			}
-		//}
+		if(this.showsecretory){
+			data['approved_by_director'] = null;
+		}
+		else{
+			data['approved_by_director'] = directorId;
+		}
+
+			// for(let ser of this.meetingSerials){
+			// 	if(ser[0] == serial)
+			// 	{
+			// 		alert("Serial Number Exists");
+			// 		return;
+			// 	}
+			// }
 
 		// If meeting is already created then update meeting data
 		if(currentBm){
@@ -1136,6 +1286,7 @@ generateResolution(docId){
 				})		
 
 			});
+			localStorage.setItem('bmId',currentBm);
 		}
 		// Save the new meeting entry in database
 		else{	
@@ -1179,14 +1330,102 @@ generateResolution(docId){
 
 		/*If differance between meeting date and today's date is less than 8 days,
 		generate shorter notice and send to director with Agenda*/
-		if(( this.meeting == 'BM' && diff < 8) || (this.meeting == 'EGM' && diff < 21)){
-			let id = this.short_doc_id;
-			let directorName1:any;
-			for(let d of this.directors){
+		if((this.meeting == 'EGM' && diff < 21)){
+			let mailTo: any;
+			for(let to of this.noticeFor){
+				if(to == 'bodycorporate'){
+					mailTo = this.bodyEmail;
+					let id = this.short_doc_id;
+					let directorName1:any;
+					for(let d of mailTo){
+						//din = d['DIN'];
+						console.log(d);
+						directorName1= d;
+						let data1 = {
+							doc_id : 43,
+							companyName: this.companyName,
+							approved_by_director: directorId,
+							director_name:directorName,
+							co_director:directorName1,
+							din: din,
+							address: this.address,
+							state: this.state,
+							city: this.city,
+							agenda: this.agendaArray,
+							place: place,
+							bm_date: bmdate,
+							serial: serial,
+							venue:venue,
+							cin:this.cin,
+							dirAddress:dirAddress,
+							office:office
+						}
+						console.log(directorName1);
+						this.workflow.generateAgenda(data1).subscribe(res=>{
+							saveAs(res, ('Body Corporate Shorter Consent - EGM.docx'))
+
+							// let emailData = {
+							// 	email:d,
+							// 	meeting:this.meeting,
+							// 	company:this.companyName,
+							// 	bm_date:bmdate,
+							// 	address:this.address,
+							// 	directorName:directorName,
+							// 	to:'bodycorporate'	
+							// }
+
+							// this.http.post(this.baseurl+'workflow/sendShortNotice',JSON.stringify(emailData)).subscribe(res=>{
+							// 	console.log(res);
+
+							// },
+							// (err:HttpErrorResponse)=>{
+							// 	console.log(err)
+							// })
+
+						},
+						(err:HttpErrorResponse)=>{
+							console.log(err)
+						})		
+						data1['doc_id']=30;
+						this.workflow.generateAgenda(data1).subscribe(res=>{
+							saveAs(res, ('Body Corporate-Authorisation Form for attending EGM.docx'))
+							let emailData = {
+								email:d,
+								meeting:this.meeting,
+								company:this.companyName,
+								bm_date:bmdate,
+								address:this.address,
+								directorName:directorName,
+								to:'bodycorporate'
+							}
+
+							this.http.post(this.baseurl+'workflow/sendShortNotice',JSON.stringify(emailData)).toPromise()
+							.then((res)=>{console.log(res);})
+							.catch((err)=>{console.log(err);})
+
+							// subscribe(res=>{
+							// 	console.log(res);
+
+							// },
+							// (err:HttpErrorResponse)=>{
+							// 	console.log(err)
+							// })
+						},
+						(err:HttpErrorResponse)=>{
+							console.log(err)
+						})		
+					}
+
+				}
+				else if(to == 'individual'){
+					mailTo = this.shareholders;
+					let id = this.short_doc_id;
+					let directorName1:any;
+					for(let d of mailTo){
 				//din = d['DIN'];
 				directorName1= d['first_name']+' '+d['last_name'];		
 				let data1 = {
-					doc_id : id,
+					doc_id : 44,
 					companyName: this.companyName,
 					approved_by_director: directorId,
 					director_name:directorName,
@@ -1201,20 +1440,123 @@ generateResolution(docId){
 					serial: serial,
 					venue:venue,
 					cin:this.cin,
-					dirAddress:dirAddress
+					dirAddress:dirAddress,
+					office:office
 
 				}
 				console.log(directorName1);
 				this.workflow.generateAgenda(data1).subscribe(res=>{
-					saveAs(res, (this.meeting+' Shorter Consent - '+directorName1+' - '+serial+'.docx'))
+					saveAs(res, ('Individual Shorter Consent - EGM - '+d['first_name']+'.docx'))
+					let emailData = {
+						meeting:this.meeting,
+						company:this.companyName,
+						bm_date:bmdate,
+						address:this.address,
+						directorName:directorName,
+						to:'individual',
+						shareholder:d['first_name']+' '+d['last_name']
+					}
+					this.http.post(this.baseurl+'workflow/sendShortNotice/'+d['id'],JSON.stringify(emailData)).toPromise()
+					.then(res=>{console.log(res)})
+					.catch(err=>{console.log(err)});
+					// subscribe(res=>{
+					// 	console.log(res);
+					// },
+					// (err:HttpErrorResponse)=>{
+					// 	console.log(err)
+					// })					
 
-					this.http.get(this.baseurl+'workflow/sendToStakeholder/'+d['id']+'/'+this.companyName).subscribe(res=>{
-						console.log(res);
+				},
+				(err:HttpErrorResponse)=>{
+					console.log(err)
+				})		
+			}
+		}
+	}
 
-					},
-					(err:HttpErrorResponse)=>{
-						console.log(err)
-					})
+
+	id = this.long_doc_id;
+	console.log(this.agendaArray);
+	let data = {
+		doc_id : id,
+		companyName: this.companyName,
+		cin:this.cin,
+		approved_by_director: directorId,
+		director_name:directorName,
+		din: din,
+		address: this.address,
+		co_director:directorName,
+		state: this.state,
+		city: this.city,
+		agenda: this.agendaArray,
+		place: place,
+		bm_date: bmdate,
+		serial: serial,
+		venue:venue,
+		dirAddress:dirAddress,
+		office:office,
+		position:position
+	}
+
+	this.workflow.generateAgenda(data).subscribe(res=>{
+		saveAs(res, this.meeting+' Agenda - '+serial+'.docx');
+	},
+	(err:HttpErrorResponse)=>{
+		console.log(err)
+	})	
+}
+
+
+else if(( this.meeting == 'BM' && diff < 8)){
+	let mailTo: any;
+	mailTo = this.directors;
+	
+	let id = this.short_doc_id;
+	let directorName1:any;
+	for(let d of mailTo){
+		console.log(d);
+				//din = d['DIN'];
+				directorName1= d['first_name']+' '+d['last_name'];		
+				let data1 = {
+					doc_id : id,
+					companyName: this.companyName,
+					approved_by_director: directorId,
+					director_name:directorName,
+					co_director:directorName1,
+					din: d['DIN'],
+					address: this.address,
+					state: this.state,
+					city: this.city,
+					agenda: this.agendaArray,
+					place: place,
+					bm_date: bmdate,
+					serial: serial,
+					venue:venue,
+					cin:this.cin,
+					dirAddress:d['address'],
+					office:office
+
+				}
+				console.log(directorName1);
+				this.workflow.generateAgenda(data1).subscribe(res=>{
+					saveAs(res, (this.meeting+' Shorter Consent - '+d['first_name']+' '+d['last_name']+' - '+serial+'.docx'))
+					let emailData = {
+						meeting:this.meeting,
+						company:this.companyName,
+						bm_date:bmdate,
+						address:this.address	
+					}
+					this.http.post(this.baseurl+'workflow/sendShortNotice/'+d['id'],JSON.stringify(emailData)).toPromise()
+					.then(res=>{console.log(res)})
+					.catch(err=>{console.log(err)});
+					
+					// subscribe(res=>{
+					// 	console.log(res);
+
+					// },
+					// (err:HttpErrorResponse)=>{
+					// 	console.log(err)
+					// })
 
 				},
 				(err:HttpErrorResponse)=>{
@@ -1241,7 +1583,9 @@ generateResolution(docId){
 				bm_date: bmdate,
 				serial: serial,
 				venue:venue,
-				dirAddress:dirAddress
+				dirAddress:dirAddress,
+				office:office,
+				position:position
 			}
 
 			this.workflow.generateAgenda(data).subscribe(res=>{
@@ -1271,7 +1615,9 @@ generateResolution(docId){
 						bm_date: bmdate,
 						serial: serial,
 						venue:venue,
-						dirAddress:dirAddress
+						dirAddress:dirAddress,
+						office:office,
+						position:position
 					}
 					console.log(data);
 					this.workflow.generateAgenda(data).subscribe(res=>{
@@ -1319,6 +1665,53 @@ generateResolution(docId){
 		}
 	}
 
+	ValidateEmail(mail) 
+	{
+		if(mail){
+			let mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+			if (mail.match(mailformat))
+			{
+				return (true)
+			}
+			alert("Please enter valid email address!")
+			return (false)
+		}
+	}
+
+	checkEmail(key,event){
+
+		if (event.key === 'Tab' || event.key === 'Enter' || event.type == 'change'){
+			if(key == 'address_1'){
+				if (!this.ValidateEmail(this.activityForm.get('address_1').value)) {
+					return;
+				}
+
+				if(this.activityForm.get('address_1').valid){
+					let email = this.activityForm.get('address_1').value;
+					if(!this.bodyEmail.includes(email))
+						this.bodyEmail.push(email);    
+					this.activityForm.get('address_1').clearValidators();
+
+				}
+			}
+			else if(key == 'company'){	
+				if(this.activityForm.get('company').valid){
+					let email = this.activityForm.get('company').value;
+					this.bodyEmail.push(email);    
+					this.activityForm.get('company').reset();
+					this.activityForm.get('company').setErrors(null);
+				}
+			}
+		}
+	}
+
+	removeBodyEmail(email){
+		if(email){
+			let i = this.bodyEmail.indexOf(email);
+			this.bodyEmail.splice(i,1);
+			console.log(this.bodyEmail);
+		}
+	}
 
 	// On form submit check for valid form
 	onSubmit() {
@@ -1427,7 +1820,7 @@ generateResolution(docId){
 							let calling_process = localStorage.getItem('calling_process');	
 							let calling_act = parseInt(localStorage.getItem('calling_activity'));
 							let calling_event = localStorage.getItem('calling_event');
-							console.log(calling_act, calling_process);
+							//console.log(calling_act, calling_process);
 
 							//If calling process present navigate to calling process and activity
 							if(calling_process && calling_act){
@@ -1531,8 +1924,9 @@ uploadFiles1(id){
 }
 		//Show uploaded files for agenda, mom, attendance
 		showFiles(field,files){
-			this.http.get(this.baseurl+'workflow/showAgendaDoc/'+field+'/'+files,{responseType:'blob'}).subscribe(res=>{
-				saveAs(res,field+'.docx')
+			this.http.get(this.baseurl+'workflow/showAgendaDoc/'+field+'/'+files,{responseType:'blob',observe: 'response'}).subscribe(res=>{
+				let filename = res.headers.get('Content-Disposition');
+				saveAs(res.body,filename);
 			})
 		}
 
@@ -1576,6 +1970,7 @@ uploadFiles1(id){
 						console.log(res);
 					})				
 					this.showNext = true;
+					localStorage.removeItem('currentBm');
 
 				}
 
@@ -1662,40 +2057,60 @@ uploadFiles1(id){
 
 				}
 				if(this.emailto=='stakeholder'){
+					let data ={'file':this.uploadedFile,'agendaType':this.meeting,'serial':this.meetingSerial,
+					'company':this.companyName, 'directorName':this.signingDirector,
+					'meetingDate':this.meetingDate,
+					'address':this.meetingAddress
+				};
+				if(this.bodyEmail.length > 0){
+					for(let email of this.bodyEmail){
+						console.log(email, this.bodyEmail);
+						data['email'] = email;
+						this.http.post(this.baseurl+'workflow/sendToStakeholder',
+							JSON.stringify(data)).toPromise().then(res=>{
+								console.log(res);
+								emailCount+=1;
+								if(!errCode && (emailCount == stakeholderCount)){
+									alert("Email send to all directors and shareholders");
+									this.emailSent = true
+								}
+							},
+							(err:HttpErrorResponse)=>{
+								alert('Failed to send mail to '+email);
+								errCode=true
+								console.log(err)
+							})
+						}
+
+					}
 					for(let d of this.stakeholders){
 						let directorName= d['first_name']+' '+d['last_name'];
 						console.log(d);
-						let data ={'file':this.uploadedFile,'agendaType':this.meeting,'serial':this.meetingSerial,
-						'company':this.companyName, 'directorName':this.signingDirector,
-						'meetingDate':this.meetingDate,
-						'address':this.meetingAddress
-					};
 
-					this.http.post(this.baseurl+'workflow/sendToStakeholder/'+d['id'],
-						JSON.stringify(data)).toPromise().then(res=>{
-							console.log(res);
-							emailCount+=1;
-							if(!errCode && (emailCount == stakeholderCount)){
-								alert("Email send to all directors and shareholders");
-								this.emailSent = true
-							}
-						},
-						(err:HttpErrorResponse)=>{
-							alert('Failed to send mail to '+directorName);
-							errCode=true
-							console.log(err)
-						})
+						this.http.post(this.baseurl+'workflow/sendToStakeholder/'+d['id'],
+							JSON.stringify(data)).toPromise().then(res=>{
+								console.log(res);
+								emailCount+=1;
+								if(!errCode && (emailCount == stakeholderCount)){
+									alert("Email send to all directors and shareholders");
+									this.emailSent = true
+								}
+							},
+							(err:HttpErrorResponse)=>{
+								alert('Failed to send mail to '+directorName);
+								errCode=true
+								console.log(err)
+							})
+						}
 					}
 
 				}
-
 			}
-		}
-		else{
+			else{
 
-			if(this.emailto=='director'){
-				for(let d of this.directors){
-					let directorName= d['first_name']+' '+d['last_name'];
+				if(this.emailto=='director'){
+					for(let d of this.directors){
+						let directorName= d['first_name']+' '+d['last_name'];
 						//console.log(d);
 						let data ={'file':this.uploadedFile,'agendaType':this.meeting,'serial':this.meetingSerial,
 						'company':this.companyName, 'directorName':this.signingDirector,
@@ -1720,47 +2135,69 @@ uploadFiles1(id){
 						console.log(err)
 					})
 					}
-
 				}
 				if(this.emailto=='stakeholder'){
+					let data ={'file':this.uploadedFile,'agendaType':this.meeting,'serial':this.meetingSerial,
+					'company':this.companyName, 'directorName':this.signingDirector,
+					'meetingDate':this.meetingDate,
+					'address':this.meetingAddress
+				};
+				if(this.bodyEmail.length > 0){
+					for(let email of this.bodyEmail){
+						data['email']=email;
+						this.http.post(this.baseurl+'workflow/sendToStakeholder',
+							JSON.stringify(data)).toPromise().then(res=>{
+								console.log(res);
+								emailCount+=1;
+								if(!errCode && (emailCount == stakeholderCount)){
+									alert("Email send to all directors and shareholders");
+									this.emailSent = true
+								}
+							},
+							(err:HttpErrorResponse)=>{
+								alert('Failed to send mail to '+email);
+								errCode=true
+								console.log(err)
+							})
+						}
+					}
 					for(let d of this.stakeholders){
 						let directorName= d['first_name']+' '+d['last_name'];
 						console.log(d);
-						let data ={'file':this.uploadedFile,'agendaType':this.meeting,'serial':this.meetingSerial,
-						'company':this.companyName, 'directorName':this.signingDirector,
-						'meetingDate':this.meetingDate,
-						'address':this.meetingAddress
-					};
 
-					this.http.post(this.baseurl+'workflow/sendToStakeholder/'+d['id'],
-						JSON.stringify(data)).toPromise().then(res=>{
-							console.log(res);
-							emailCount+=1;
-							if(!errCode && (emailCount == stakeholderCount)){
-								alert("Email send to all directors and shareholders");
-								this.emailSent = true
-							}
-						},
-						(err:HttpErrorResponse)=>{
-							alert('Failed to send mail to '+directorName);
-							errCode=true
-							console.log(err)
-						})
+						this.http.post(this.baseurl+'workflow/sendToStakeholder/'+d['id'],
+							JSON.stringify(data)).toPromise().then(res=>{
+								console.log(res);
+								emailCount+=1;
+								if(!errCode && (emailCount == stakeholderCount)){
+									alert("Email send to all directors and shareholders");
+									this.emailSent = true
+								}
+							},
+							(err:HttpErrorResponse)=>{
+								alert('Failed to send mail to '+directorName);
+								errCode=true
+								console.log(err)
+							})
+						}
+
 					}
-
 				}
+				this.email = true;
 			}
-			this.email = true;
-		}
-		else{
-			alert('Upload file first');
-			this.screenError = 'Upload file first';
-			this.email = false;
-		}
+			else{
+				alert('Upload file first');
+				this.screenError = 'Upload file first';
+				this.email = false;
+			}
 
-		localStorage.removeItem('currentBm');
+		// localStorage.removeItem('currentBm');
 	}
 
+	navigateActivity(stepId){
+		this.router.navigateByUrl('/activity/'+this.company+'/'+this.processId+'/'+stepId);		
+		$('#workflow-steps-listing-modal').modal('hide')
+	}
 
 	// Get the next activity on (>>) button
 	nextActivity(){

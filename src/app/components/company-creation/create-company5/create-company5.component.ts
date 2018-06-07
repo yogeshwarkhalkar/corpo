@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { UrlserviceService } from '../../../services/urlservice.service';
 
@@ -16,14 +17,14 @@ export class CreateCompany5Component implements OnInit {
   formdata = new FormData();
   userName: any;
   constructor(private auth: AuthService, private http: HttpClient, private fb: FormBuilder,
-    private url: UrlserviceService) {
+    private url: UrlserviceService, private router:Router) {
     this.userName = localStorage.getItem('userName');
     this.form5 = this.fb.group({
       
       files: this.fb.group({
-      residence: [null],
+      residence: [null,Validators.required],
       digitalSignature:[null],
-      pan:[null],
+      pan:[null,Validators.required],
       photo:[null],
       bill:[null],
       saleDeed:[null],
@@ -103,17 +104,37 @@ export class CreateCompany5Component implements OnInit {
 
   }
 
+
+
+  validateAllFormFields(formGroup: FormGroup) {         
+  Object.keys(formGroup.controls).forEach(field => {  
+    const control = formGroup.get(field);             
+    if (control instanceof FormControl) {             
+      control.markAsTouched({ onlySelf: true });
+    } else if (control instanceof FormGroup) {        
+      this.validateAllFormFields(control);            
+    }
+  });
+}
+
   uploadFiles(){
+    if(this.form5.valid){
     console.log(this.formdata);
     this.http.post(this.baseurl+'company/uploader/',this.formdata).subscribe(res=>{
       console.log(res);
+      this.router.navigateByUrl('/dashboard');
     })
   }
+  else{
+    this.validateAllFormFields(this.form5);
+  }
+  }
 
-  handleFileInput(file: FileList){
+  handleFileInput(name,file: FileList){
     console.log(file);
     this.files = file.item(0);
     this.formdata.append("file", this.files, this.files.name);
+    alert(name +' uploaded.')
   }
 
 

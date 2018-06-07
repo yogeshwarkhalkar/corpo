@@ -107,63 +107,77 @@
 						<a class="btn btn-secondary  document-upload" role="button" id="button1" >PROOF OF RESIDENCE<span class="input-group-addon"><img src="assets/images/eye-2.png"></span></a>
 						<label>
 							<input type="file" id="resi" style="display=none;" formControlName="residence"
-							(change)="handleFileInput($event.target.files)">
-						</label>
-						<a class="btn btn-secondary  document-upload"  role="button" id="button2" >DIGITAL SIGNATURE<span class="input-group-addon"><img src="assets/images/eye-2.png"></span></a>
-						<label >							
-							<input type="file" id="sign" style="display=none;" formControlName="digitalSignature" (change)="handleFileInput($event.target.files)">
-						</label>
-						<a class="btn btn-secondary  document-upload"  role="button" id="button3" >PAN CARD<span class="input-group-addon"><img src="assets/images/eye-0.png"></span></a>
-						<label >
-							<input type="file" id="pan" style="display=none;" formControlName="pan" (change)="handleFileInput($event.target.files)">
-						</label>
-						<a class="btn btn-secondary  document-upload"  role="button" id="button4" >PASSPORT SIZE PHOTO<span class="input-group-addon"><img src="assets/images/eye-2.png"></span></a>
-						<label >
-							<input type="file" id="photo" style="display=none;" formControlName="photo" (change)="handleFileInput($event.target.files)">
-						</label>
-						<a class="btn btn-secondary  document-upload"  role="button" id="button5" >UTLITY BILL<span class="input-group-addon"><img src="assets/images/eye-2.png"></span></a>
-						<label >
-							<input type="file" id="bill" style="display=none;" formControlName="bill" (change)="handleFileInput($event.target.files)">
-						</label>
-						<a class="btn btn-secondary  document-upload"  role="button" id="button6" >SALE DEED<span class="input-group-addon"><img src="assets/images/eye-0.png"></span></a>	
-						<label >
-							<input type="file" id="sale" style="display=none;" formControlName="saleDeed" (change)="handleFileInput($event.target.files)">
-						</label>						
-						<a class="btn btn-secondary  document-upload"  role="button" id="button7" >LEASE DEED<span class="input-group-addon"><img src="assets/images/eye-0.png"></span></a>	
-						<label >
-							<input type="file" id="lease" style="display=none;" formControlName="leaseDeed" (change)="handleFileInput($event.target.files)">
-						</label>
-						<a class="btn btn-secondary  document-upload"  role="button" id="button8">LATEST RENT RECEIPT<span class="input-group-addon"><img src="assets/images/eye-2.png"></span></a>
-						<label >
-							<input type="file" id="rent" style="display=none;" formControlName="rentReceipt" (change)="handleFileInput($event.target.files)">
-						</label>
-						<a class="btn btn-secondary  document-upload"  role="button" id="button9">BANK STATEMENT<span class="input-group-addon"><img src="assets/images/eye-0.png"></span></a>
-						<label >
-							<input type="file" id="bankStmt" style="display=none;" formControlName="bankStmt" (change)="handleFileInput($event.target.files)">
-						</label>
-						<a class="btn btn-secondary  document-upload" role="button" id="button10" >DRIVING LICENSE<span class="input-group-addon"><img src="assets/images/eye-2.png"></span></a>
-						<label >
-							<input type="file" id="license" style="display=none;" formControlName="license" (change)="handleFileInput($event.target.files)">
-						</label>
-						<a class="btn btn-secondary  document-upload"  role="button" id="button11" >PASSPORT<span class="input-group-addon"><img src="assets/images/eye-2.png"></span></a>
-						<label >
-							<input type="file" id="passport" style="display=none;" formControlName="passport" (change)="handleFileInput($event.target.files)">
-						</label>
-						<a class="btn btn-secondary  document-upload" role="button" id="button12" >AADHAR CARD<span class="input-group-addon"><img src="assets/images/eye-0.png"></span></a>		
-						<label >
-							<input type="file" id="aadhar" style="display=none;" formControlName="aadhar" (change)="handleFileInput($event.target.files)">
-						</label>					
-						<a class="btn btn-secondary  document-upload"  role="button" id="button13" >RENT NOC<span class="input-group-addon"><img src="assets/images/eye-0.png"></span></a>	
-						<label >
-							<input type="file" id="noc" style="display=none;" formControlName="rentNoc" (change)="handleFileInput($event.target.files)">
-						</label>
-					</div>						
-					<p><br><strong>Disclaimer: </strong> Kindly note, that the information asked in this term sheet shall be used only to get a basic idea on the structure of the proposed company to be incorporated. Further separate documents will need to be drafted executed for filing the incorporation application based on the information provided.</p>
-				</form>
-				{{form5.value | json}}
-				<p class="text-right">
-					<button type="submit" class="btn btn-primary" (click)="uploadFiles()" routerLink="/dashboard" [disabled]="form5?.invalid">FINISH</button>
-				</p>		
-			</div>
+							(change)="handleFileInput('Proof of Residence',$event.target.files)">
+							<div class="alert alert-danger"
+							*ngIf="form5.controls['residence'].invalid && form5.controls['residence'].touched">
+							<div *ngIf="form5.controls['residence'].errors.required">
+								Upload Proof of residence
+							</div>
+
+						</div>
+					</label>
+					<a class="btn btn-secondary  document-upload"  role="button" id="button2" >DIGITAL SIGNATURE<span class="input-group-addon"><img src="assets/images/eye-2.png"></span></a>
+					<label >							
+						<input type="file" id="sign" style="display=none;" formControlName="digitalSignature" (change)="handleFileInput('Digital signature',$event.target.files)">
+					</label>
+					<a class="btn btn-secondary  document-upload"  role="button" id="button3" >PAN CARD<span class="input-group-addon"><img src="assets/images/eye-0.png"></span></a>
+					<label >
+						<input type="file" id="pan" style="display=none;" formControlName="pan" (change)="handleFileInput('PAN card',$event.target.files)">
+						<div class="alert alert-danger"
+							*ngIf="form5.controls['pan'].invalid && form5.controls['pan'].touched">
+							<div *ngIf="form5.controls['pan'].errors.required">
+								Upload PAN card
+							</div>
+							
+						</div>
+					</label>
+					<a class="btn btn-secondary  document-upload"  role="button" id="button4" >PASSPORT SIZE PHOTO<span class="input-group-addon"><img src="assets/images/eye-2.png"></span></a>
+					<label >
+						<input type="file" id="photo" style="display=none;" formControlName="photo" (change)="handleFileInput('Photo',$event.target.files)">
+					</label>
+					<a class="btn btn-secondary  document-upload"  role="button" id="button5" >UTLITY BILL<span class="input-group-addon"><img src="assets/images/eye-2.png"></span></a>
+					<label >
+						<input type="file" id="bill" style="display=none;" formControlName="bill" (change)="handleFileInput('Utility bill',$event.target.files)">
+					</label>
+					<a class="btn btn-secondary  document-upload"  role="button" id="button6" >SALE DEED<span class="input-group-addon"><img src="assets/images/eye-0.png"></span></a>	
+					<label >
+						<input type="file" id="sale" style="display=none;" formControlName="saleDeed" (change)="handleFileInput('Sale Deed',$event.target.files)">
+					</label>						
+					<a class="btn btn-secondary  document-upload"  role="button" id="button7" >LEASE DEED<span class="input-group-addon"><img src="assets/images/eye-0.png"></span></a>	
+					<label >
+						<input type="file" id="lease" style="display=none;" formControlName="leaseDeed" (change)="handleFileInput('Lease Deed',$event.target.files)">
+					</label>
+					<a class="btn btn-secondary  document-upload"  role="button" id="button8">LATEST RENT RECEIPT<span class="input-group-addon"><img src="assets/images/eye-2.png"></span></a>
+					<label >
+						<input type="file" id="rent" style="display=none;" formControlName="rentReceipt" (change)="handleFileInput('Rent Receipt',$event.target.files)">
+					</label>
+					<a class="btn btn-secondary  document-upload"  role="button" id="button9">BANK STATEMENT<span class="input-group-addon"><img src="assets/images/eye-0.png"></span></a>
+					<label >
+						<input type="file" id="bankStmt" style="display=none;" formControlName="bankStmt" (change)="handleFileInput('Bank Statement',$event.target.files)">
+					</label>
+					<a class="btn btn-secondary  document-upload" role="button" id="button10" >DRIVING LICENSE<span class="input-group-addon"><img src="assets/images/eye-2.png"></span></a>
+					<label >
+						<input type="file" id="license" style="display=none;" formControlName="license" (change)="handleFileInput('Driving license',$event.target.files)">
+					</label>
+					<a class="btn btn-secondary  document-upload"  role="button" id="button11" >PASSPORT<span class="input-group-addon"><img src="assets/images/eye-2.png"></span></a>
+					<label >
+						<input type="file" id="passport" style="display=none;" formControlName="passport" (change)="handleFileInput('Passport',$event.target.files)">
+					</label>
+					<a class="btn btn-secondary  document-upload" role="button" id="button12" >AADHAR CARD<span class="input-group-addon"><img src="assets/images/eye-0.png"></span></a>		
+					<label >
+						<input type="file" id="aadhar" style="display=none;" formControlName="aadhar" (change)="handleFileInput('Aadhar card',$event.target.files)">
+					</label>					
+					<a class="btn btn-secondary  document-upload"  role="button" id="button13" >RENT NOC<span class="input-group-addon"><img src="assets/images/eye-0.png"></span></a>	
+					<label >
+						<input type="file" id="noc" style="display=none;" formControlName="rentNoc" (change)="handleFileInput('Rent NOC',$event.target.files)">
+					</label>
+				</div>						
+				<p><br><strong>Disclaimer: </strong> Kindly note, that the information asked in this term sheet shall be used only to get a basic idea on the structure of the proposed company to be incorporated. Further separate documents will need to be drafted executed for filing the incorporation application based on the information provided.</p>
+			</form>
+			{{form5.value | json}}
+			<p class="text-right">
+				<button type="submit" class="btn btn-primary" (click)="uploadFiles()">FINISH</button>
+			</p>		
 		</div>
 	</div>
+</div>

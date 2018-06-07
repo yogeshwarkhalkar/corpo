@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { User } from '../models/user';
 import { Register } from '../models/register';
@@ -18,7 +18,13 @@ export class AuthService {
   baseurl:string = this.url.BASE_URL;
 
   login(user): Promise<any>{
-  	return this.http.post(this.baseurl+'user/login', JSON.stringify(user)).toPromise();
+    let param = new HttpParams();
+    param = param.append('email',user.email);
+    param = param.append('password',user.password);
+    const header = new Headers();
+    header.append('Content-type', 'application/json');
+     
+  	return this.http.post(this.baseurl+'user/login', JSON.stringify(user),{params:param}).toPromise();
   }
 
   register(register): Promise<any> {
@@ -37,9 +43,10 @@ export class AuthService {
     (err: HttpErrorResponse)=>{
       console.log(err);
     });
-  localStorage.clear();
+  //localStorage.clear();
   this.cookie.remove('userid');
   this.cookie.remove('session_id');
+  this.cookie.remove('token');
 
   this.nav.hide();
   this.nav.showLogin();

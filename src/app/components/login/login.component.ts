@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { CookieService, CookieOptionsProvider, CookieOptions } from 'ngx-cookie';
@@ -39,15 +39,21 @@ export class LoginComponent implements OnInit {
   resetmodal:string;
   resetEmail:string;
   closeResult: string;
+  next:string=null;
   constructor(private auth: AuthService, private router: Router, private fb: FormBuilder,private url: UrlserviceService,
                 public http: HttpClient, private nav: NavbarService, private cookie: CookieService,
-                 private ck:CookieOptionsProvider, private modalService: NgbModal) {
+                 private ck:CookieOptionsProvider, private modalService: NgbModal, private actroute:ActivatedRoute) {
       if(this.cookie.get('remember')){
       this.email = this.cookie.get('email');
       this.pass = this.cookie.get('password');
       this.remember = this.cookie.get('remember');
 
     }
+
+    this.actroute.params.subscribe(param=>{
+      this.next = param['_next'];
+      console.log(this.next);
+    });
 
    }
 
@@ -161,22 +167,25 @@ export class LoginComponent implements OnInit {
 
     this.auth.login(this.user)
     .then((user) =>{
-      if (user['message'] != 'Logged in'){
-        this.error = user['message']
+      console.log(user.token)
+      if (user.error){
+        this.error = user.error;
       }
       else{
         console.log(user);
-        let timeout = user['expiration'];
-        this.today.setSeconds(this.today.getSeconds()+timeout);
-        this.ck.options.expires = this.today;  
-        let userid = user['user']['id'];  
-        let username = user['user']['first_name'];  
-        localStorage.setItem('token', user.auth_token);
+        let userid = user['id'];  
+        let username = user['first_name'];  
+        this.cookie.put('token',user.token);
         //localStorage.setItem('userid', userid);
-        this.cookie.put('userid', userid, this.ck.options);
+        this.cookie.put('userid', userid);
         localStorage.setItem('userName', username)
         this.nav.userName = localStorage.getItem('userName');
-        this.router.navigateByUrl('/dashboard');
+        if(this.next){
+          this.router.navigateByUrl(this.next);
+        }
+        else{
+          this.router.navigateByUrl('/dashboard');
+        }
 
     }
     })

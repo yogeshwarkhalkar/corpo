@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http'
+import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { NavbarService } from '../../services/navbar.service';
@@ -28,7 +28,8 @@ export class DashboardComponent implements OnInit {
     this.nav.hideLogin();
     this.nav.show();
     this.userid = this.cookie.get('userid');
-    
+    let header = new HttpHeaders().set('Content-Type', 'application/json');
+  //header.append('Content-type', 'application/json');
   	this.http.get(this.baseurl+'company/company_api/'+this.userid).subscribe(result=>{
   		this.data = result;
   	});

@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { FormGroup, FormArray, FormControl, Validators, FormBuilder } from '@angular/forms';
+import { Router } from '@angular/router';
 import {CompanyService} from '../../../services/company.service';
 import { AuthService } from '../../../services/auth.service';
 import { UrlserviceService } from '../../../services/urlservice.service';
+
 
 
 @Component({
@@ -19,7 +21,7 @@ export class CreateCompany2Component implements OnInit {
   industry=['Advertising','Clean Tech', 'Cloud Computing','Consumer Electronics','Energy','Enterprise Software','Gaming',
   'Internet','Networking','Semiconductor','Social Media','Wireless','Digital Media','Mobile'];
   constructor(private http: HttpClient, private fb: FormBuilder, private company: CompanyService, 
-    private auth: AuthService, private url:UrlserviceService) {
+    private auth: AuthService, private url:UrlserviceService, private router:Router) {
     this.userName = localStorage.getItem('userName');
     this.form2 = this.fb.group({
       name: [null, Validators.required],
@@ -35,7 +37,7 @@ export class CreateCompany2Component implements OnInit {
       }),
       description: [null, Validators.required]      
     });
-   }
+  }
 
   cities: any;
   states: any;
@@ -48,37 +50,68 @@ export class CreateCompany2Component implements OnInit {
   		this.states = result;
 
   	})
-
-    console.log(this.form2);
-
   }
 
   onChange(industry:string, isChecked: boolean) {
-  const industryTypeArray = <FormArray>this.form2.controls.industry_type;
- 
-  if(isChecked) {
-    industryTypeArray.push(new FormControl(industry));
-  } else {
-    let index = industryTypeArray.controls.findIndex(x => x.value == industry)
-    industryTypeArray.removeAt(index);
+    const industryTypeArray = <FormArray>this.form2.controls.industry_type;
+    
+    if(isChecked) {
+      industryTypeArray.push(new FormControl(industry));
+    } else {
+      let index = industryTypeArray.controls.findIndex(x => x.value == industry)
+      industryTypeArray.removeAt(index);
+    }
   }
+
+  validateSpecialCharacters() 
+  { 
+let spclChars = "!@#$%^&*()"; // specify special characters 
+let content = this.form2.get('name').value; 
+for (var i = 0; i < content.length; i++) 
+{ 
+  if (spclChars.indexOf(content.charAt(i)) != -1) 
+  { 
+    alert ("Special characters are not allowed."); 
+    this.form2.get('name').setValue(""); 
+    return false; 
+  } 
+} 
+} 
+
+// Validator function for form
+validateAllFormFields(formGroup: FormGroup) {         
+  Object.keys(formGroup.controls).forEach(field => {  
+    const control = formGroup.get(field);             
+    if (control instanceof FormControl) {             
+      control.markAsTouched({ onlySelf: true });
+    } else if (control instanceof FormGroup) {        
+      this.validateAllFormFields(control);            
+    }
+  });
 }
 
 
-  getCity(){
-    let state= this.form2.get('address').get('state_or_province').value;
-    console.log(state);
-    this.http.get(this.baseurl+'company/getCity/'+state).subscribe(result =>{
-      this.cities = result;
+getCity(){
+  let state= this.form2.get('address').get('state_or_province').value;
+  console.log(state);
+  this.http.get(this.baseurl+'company/getCity/'+state).subscribe(result =>{
+    this.cities = result;
 
-    })
-    
-  }
+  })
+  
+}
 
-  saveInfo(){
+saveInfo(){
+  if(this.form2.valid){
     this.company.addData(this.form2.value)
+    this.router.navigateByUrl('/createCompany3');
+  }
+  else{
+    this.validateAllFormFields(this.form2)
+  }
     //this.company.storeData(this.form2.value);
   }
+  
   logout(){
     this.auth.logout()
   }

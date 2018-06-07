@@ -28,17 +28,29 @@ export class CompanyService {
   	let newData: any[] =[];
   	this.companyData.push(data);
   	newData.push(data);
-  	console.log(this.companyData);
+    console.log(newData);
+  	// console.log(this.companyData);
   	
 	this.http.post(this.baseurl+'company/createComp/'+this.userId,
   		JSON.stringify(this.companyData)).subscribe(res=>{
   		console.log(res);
   		this.companyId = res;
   		this.postStakeholders(newData);
-  	})
+  	}) 
+  } 
 
-
-  
+  updateData(data){
+    let newData: any[] =[];
+    this.companyData.push(data);
+    newData.push(data);
+    console.log(this.companyData);
+    
+  this.http.post(this.baseurl+'company/updateComp/'+this.companyId,
+      JSON.stringify(this.companyData)).subscribe(res=>{
+      console.log(res);
+      this.companyId = res;
+      this.postStakeholders(newData);
+    }) 
   } 
 
   postStakeholders(data){

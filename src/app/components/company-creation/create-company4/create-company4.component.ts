@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { Router } from '@angular/router';
 import {CompanyService} from '../../../services/company.service';
 import { AuthService } from '../../../services/auth.service';
 import { UrlserviceService } from '../../../services/urlservice.service';
@@ -23,11 +24,12 @@ export class CreateCompany4Component implements OnInit {
   get shareholder(): FormArray{
     return <FormArray>this.form4.get('shareholder');
   }
-  constructor(private http: HttpClient, private fb: FormBuilder,
+  constructor(private http: HttpClient, private fb: FormBuilder, private router:Router,
               private auth: AuthService, private company: CompanyService, private url: UrlserviceService) {
     this.userName = localStorage.getItem('userName');
     this.form4 = this.fb.group({
       authorised_capital: [null, [Validators.required, Validators.min(100000)]],
+      paid_up_capital:[null,Validators.required],
       shares: [null, Validators.required],
       shareValue: [null, [Validators.required, Validators.min(10)]],
       holdDin: [null, Validators.required],
@@ -78,7 +80,7 @@ export class CreateCompany4Component implements OnInit {
 
   buildDirector(): FormGroup{
     return this.fb.group({
-        DIN: [null, Validators.required],
+        DIN: [null],
         name: [null, Validators.required],
         address: this.fb.group({
           addressLine1: [null, Validators.required],
@@ -162,8 +164,32 @@ export class CreateCompany4Component implements OnInit {
     this.auth.logout();
   }
 
+  validateAllFormFields(formGroup) {         
+  Object.keys(formGroup.controls).forEach(field => {  
+    const control = formGroup.get(field);             
+    if (control instanceof FormControl) {             
+      // console.log(control);
+      control.markAsTouched({ onlySelf: true });
+    } else if (control instanceof FormGroup) {        
+      // console.log(control);
+      this.validateAllFormFields(control);            
+    }
+    else if (control instanceof FormArray) {        
+      console.log(control.controls);
+      for(let c of control.controls)
+      this.validateAllFormFields(c);            
+    }
+  });
+}
+
   onSubmit(){
+    if(this.form4.valid){
     this.company.storeData(this.form4.value);
+    this.router.navigateByUrl('/createCompany5');
+  }
+  else{
+    this.validateAllFormFields(this.form4);
+  }
   }
 
 }

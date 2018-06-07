@@ -244,7 +244,8 @@ setPage(page: number) {
         });
       }  
 
-      generateResolution(id){
+      generateResolution(id,type){
+        localStorage.setItem('meeting_type', type);
         this.meetingId = id;
         this.agendas=[];
         this.resolutionForm.reset();
