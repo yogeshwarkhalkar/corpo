@@ -1,3 +1,5 @@
+/*Dashboard component*/
+
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { AuthService } from '../../services/auth.service';
@@ -83,8 +85,6 @@ addBM(company){
           })  
           this.router.navigateByUrl(bmurl);
       });
-  
-  //routerLink="/activity/{{x.company.id}}/2/29"
 }
   
 logout() {

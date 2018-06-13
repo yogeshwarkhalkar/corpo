@@ -1,3 +1,5 @@
+/*Service file for add company,stakeholder & update company, stakeholder*/
+
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UrlserviceService } from '../services/urlservice.service';
@@ -16,7 +18,24 @@ export class CompanyService {
   companyData: any[] = [];
   companyId: any;
   userId = this.cookie.get('userid');
+  editCompanyData:any;
 
+  getState(val){ 
+    return this.http.get(this.baseurl+'company/getState/'+val).toPromise();
+  }
+
+  getCity(val){
+    console.log(val);
+  return this.http.get(this.baseurl+'company/getCity/'+val).toPromise();
+  }
+  
+  getData(company){
+    this.http.get(this.baseurl+'company/editCompany/'+company).toPromise()
+      .then(res=>{
+        console.log(res);
+          this.editCompanyData = res;
+      })
+  }
   
   addData(data){
   	console.log(data);
@@ -39,17 +58,14 @@ export class CompanyService {
   	}) 
   } 
 
-  updateData(data){
-    let newData: any[] =[];
-    this.companyData.push(data);
-    newData.push(data);
-    console.log(this.companyData);
+ updateData(data,company){
+    console.log(data);
     
-  this.http.post(this.baseurl+'company/updateComp/'+this.companyId,
-      JSON.stringify(this.companyData)).subscribe(res=>{
+  this.http.post(this.baseurl+'company/updateComp/'+company,
+      JSON.stringify(data)).subscribe(res=>{
       console.log(res);
       this.companyId = res;
-      this.postStakeholders(newData);
+      // this.postStakeholders(newData);
     }) 
   } 
 
@@ -59,6 +75,13 @@ export class CompanyService {
   		JSON.stringify(data)).subscribe(res=>{
   		console.log(res);
   	})
+  }
+  updateStakeholder(data){
+    this.http.post(this.baseurl+'company/updatestakeholder',
+      JSON.stringify(data)).subscribe(res=>{
+      console.log(res);
+    })
+
   } 
   	
   }

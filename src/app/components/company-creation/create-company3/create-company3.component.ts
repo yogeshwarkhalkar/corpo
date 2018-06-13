@@ -1,3 +1,5 @@
+/*Component to enter company Intellectual property details*/
+
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators,FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -14,15 +16,29 @@ export class CreateCompany3Component implements OnInit {
 	form3: FormGroup;
   show: boolean = false;
   userName:any;
+  editCompany:any;
 
   constructor(private fb: FormBuilder, private auth: AuthService, 
     private company: CompanyService, private router:Router) { 
     this.userName = localStorage.getItem('userName');
+    this.editCompany = localStorage.getItem('editCompany');
+    if(this.editCompany){
   	this.form3 = this.fb.group({
-  		trademark: [null, Validators.required],
+  		trademark: [this.company.editCompanyData['metadata']['trademark'], Validators.required],
       searchType: [null],
       prosecution: [null]
   	})
+    if(this.company.editCompanyData['metadata']['trademark'] == 'Yes'){
+      this.show=true;
+    }
+  }
+  else{
+    this.form3 = this.fb.group({
+      trademark: [null, Validators.required],
+      searchType: [null],
+      prosecution: [null]
+    })
+  }
   }
 
   ngOnInit() {
@@ -49,8 +65,14 @@ validateAllFormFields(formGroup: FormGroup) {
 
   onSubmit(){
     if(this.form3.valid){
+      if(this.editCompany){
+      this.company.updateData(this.form3.value,this.editCompany);
+      this.router.navigateByUrl('/createCompany4');
+    }
+    else{
     this.company.addData(this.form3.value);
     this.router.navigateByUrl('/createCompany4');
+  }
   }
   else{
     this.validateAllFormFields(this.form3);

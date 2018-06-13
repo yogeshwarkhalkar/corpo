@@ -1,96 +1,94 @@
+<div class="page-content" id="create-company">
+	<div class="container">
+		<div class="page-header">
+			<h2>CREATE COMPANY</h2>
+			<h3>INTELLECTUAL PROPERTY</h3>
+		</div>
+		<div class="white-container">
+			<ul class="nav nav-pills create-company-steps">
+				<li class="step step1 completed">
+					<a title="step1">
+						CLIENT<br/>DETAILS
+					</a>
+				</li>
+				<li class="step step2 completed">
+					<a routerLink="/createCompany2" title="step2">
+						INCORPORATION<br/>DETAILS
+					</a>
+				</li>
+				<li class="step step3 active">
+					<a routerLink="/createCompany3" title="step3">
+						INTELLECTUAL<br/>PROPERTY
+					</a>
+				</li>
+				<li class="step step4">
+					<a routerLink="/createCompany4" title="step4">
+						CAPITALIZATION, SHAREHOLDERS<br/>&amp; DIRECTORS
+					</a>
+				</li>
+				<li class="step step5">
+					<a routerLink="/createCompany5" title="step5">
+						UPLOAD<br/>DOCUMENTS
+					</a>
+				</li>
+			</ul>
+			<form id="form-create-company-step3" class="form-create-company" [formGroup]="form3" novalidate>
+				
+				<div class="form-group row custom-radio-type">
+					<label for="" class="col-sm-3 col-form-label">Would you like us to request a trademark search regarding the name?</label>
+					<div class="col-sm-9">
+						<label class="custom-control custom-radio">
+							<input id="radio1" type="radio" class="custom-control-input" value="Yes" formControlName="trademark" (click)="Show()">
+							<span class="custom-control-indicator"></span>
+							<span class="custom-control-description">Yes</span>
+						</label>
 
-    
-		<div class="page-content" id="create-company">
-			<div class="container">
-				<div class="page-header">
-					<h2>CREATE COMPANY</h2>
-					<h3>INTELLECTUAL PROPERTY</h3>
-				</div>
-				<div class="white-container">
-					<ul class="nav nav-pills create-company-steps">
-						<li class="step step1 completed">
-							<a title="step1">
-								CLIENT<br/>DETAILS
-							</a>
-						</li>
-						<li class="step step2 completed">
-							<a routerLink="/createCompany2" title="step2">
-								INCORPORATION<br/>DETAILS
-							</a>
-						</li>
-						<li class="step step3 active">
-							<a routerLink="/createCompany3" title="step3">
-								INTELLECTUAL<br/>PROPERTY
-							</a>
-						</li>
-						<li class="step step4">
-							<a routerLink="/createCompany4" title="step4">
-								CAPITALIZATION, SHAREHOLDERS<br/>&amp; DIRECTORS
-							</a>
-						</li>
-						<li class="step step5">
-							<a routerLink="/createCompany5" title="step5">
-								UPLOAD<br/>DOCUMENTS
-							</a>
-						</li>
-					</ul>
-					<form id="form-create-company-step3" class="form-create-company" [formGroup]="form3" novalidate>
-						
-						<div class="form-group row custom-radio-type">
-							<label for="" class="col-sm-3 col-form-label">Would you like us to request a trademark search regarding the name?</label>
-							<div class="col-sm-9">
-								<label class="custom-control custom-radio">
-									<input id="radio1" type="radio" class="custom-control-input" value="Yes" formControlName="trademark" (click)="Show()">
-									<span class="custom-control-indicator"></span>
-									<span class="custom-control-description">Yes</span>
-								</label>
-
-								<label class="custom-control custom-radio">
-									<input id="radio2" type="radio" class="custom-control-input" value="No" formControlName="trademark" (click)="Hide()">
-									<span class="custom-control-indicator"></span>
-									<span class="custom-control-description">No</span>
-								</label>
-								<div class="alert alert-danger" 
-							  *ngIf="form3.get('trademark').invalid && form3.get('trademark').touched">
-							  	Trademark search required
-							</div>
-								<p>&nbsp;</p>
-							<div *ngIf="show">
-								<label class="custom-control custom-checkbox">
-									<input id="check-mark" type="checkbox" value="Mark" class="custom-control-input"  formControlName="searchType" >
-									<span class="custom-control-indicator"></span>
-									<span class="custom-control-description">Mark(s)</span>
-								</label>
-								<label class="custom-control custom-checkbox">
-									<input id="check-name" type="checkbox" class="custom-control-input" value="Name" formControlName="searchType">
-									<span class="custom-control-indicator"></span>
-									<span class="custom-control-description">Name(s)</span>
-								</label>
-							</div>
-								
-							</div>
-						</div>
-						<p>&nbsp;</p>
-						<div class="form-group row custom-radio-type" *ngIf="show">
-							<label for="" class="col-sm-3 col-form-label">If mark or name is clear, would you like us to carry out the trademark prosecution?</label>
-							<div class="col-sm-9">
-								<label class="custom-control custom-radio">
-									<input id="radio3" type="radio" value="Yes" class="custom-control-input" formControlName="prosecution">
-									<span class="custom-control-indicator"></span>
-									<span class="custom-control-description">Yes</span>
-								</label>
-
-								<label class="custom-control custom-radio">
-									<input id="radio4" type="radio" value="No" class="custom-control-input" formControlName="prosecution">
-									<span class="custom-control-indicator"></span>
-									<span class="custom-control-description">No</span>
-								</label>
-							</div>
-						</div>
-					</form>
-					<p class="text-right">
-						<button type="submit" class="btn btn-primary"  role="button" (click)="onSubmit()">SAVE &amp; NEXT</button>
-					</p>		
+						<label class="custom-control custom-radio">
+							<input id="radio2" type="radio" class="custom-control-input" value="No" formControlName="trademark" (click)="Hide()">
+							<span class="custom-control-indicator"></span>
+							<span class="custom-control-description">No</span>
+						</label>
+						<div class="alert alert-danger" 
+						*ngIf="form3.get('trademark').invalid && form3.get('trademark').touched">
+						Trademark search required
+					</div>
+					<p>&nbsp;</p>
+					<div *ngIf="show">
+						<label class="custom-control custom-checkbox">
+							<input id="check-mark" type="checkbox" value="Mark" class="custom-control-input"  formControlName="searchType" >
+							<span class="custom-control-indicator"></span>
+							<span class="custom-control-description">Mark(s)</span>
+						</label>
+						<label class="custom-control custom-checkbox">
+							<input id="check-name" type="checkbox" class="custom-control-input" value="Name" formControlName="searchType">
+							<span class="custom-control-indicator"></span>
+							<span class="custom-control-description">Name(s)</span>
+						</label>
+					</div>
+					
 				</div>
 			</div>
-		</div>
+			<p>&nbsp;</p>
+			<div class="form-group row custom-radio-type" *ngIf="show">
+				<label for="" class="col-sm-3 col-form-label">If mark or name is clear, would you like us to carry out the trademark prosecution?</label>
+				<div class="col-sm-9">
+					<label class="custom-control custom-radio">
+						<input id="radio3" type="radio" value="Yes" class="custom-control-input" formControlName="prosecution">
+						<span class="custom-control-indicator"></span>
+						<span class="custom-control-description">Yes</span>
+					</label>
+
+					<label class="custom-control custom-radio">
+						<input id="radio4" type="radio" value="No" class="custom-control-input" formControlName="prosecution">
+						<span class="custom-control-indicator"></span>
+						<span class="custom-control-description">No</span>
+					</label>
+				</div>
+			</div>
+		</form>
+		<p class="text-right">
+			<button type="submit" class="btn btn-primary"  role="button" (click)="onSubmit()">SAVE &amp; NEXT</button>
+		</p>		
+	</div>
+</div>
+</div>

@@ -1,3 +1,5 @@
+/* Component to select company from list of companies */
+
 import { Component, OnInit } from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
 import { NavbarService } from '../../services/navbar.service';
@@ -6,6 +8,7 @@ import {HttpClient} from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { FormGroup, FormArray, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { CookieService } from 'ngx-cookie';
+import {CompanyService} from '../../services/company.service';
 
 @Component({
   selector: 'app-company',
@@ -21,7 +24,7 @@ export class CompanyComponent implements OnInit {
   status:any;
   constructor(private http: HttpClient, private auth: AuthService, private nav: NavbarService,
     private url:UrlserviceService,private router: Router, private fb: FormBuilder,
-     private actRoute: ActivatedRoute, private cookie:CookieService) { 
+     private actRoute: ActivatedRoute, private cookie:CookieService, private comp:CompanyService) { 
       this.actRoute.params.subscribe(param=>{
         this.type = param['type'];
         this.status = param['status'];
@@ -76,6 +79,12 @@ export class CompanyComponent implements OnInit {
     else if(this.status == 'all' && this.type == 'event'){
        let tempUrl = '/eventlog/'+this.companyId+'/'+'all';
         this.router.navigateByUrl(tempUrl); 
+    }
+    else if(this.type == 'company'){
+      let tempUrl = '/createCompany2';
+      localStorage.setItem('editCompany',this.companyId);
+      this.comp.getData(this.companyId);
+      this.router.navigateByUrl(tempUrl);             
     }
     else{
        this.router.navigateByUrl('/dashboard');  

@@ -1,3 +1,6 @@
+/* Http Interceptor to intercept all incoming and outgoing request.
+ Add Authorization token to all outgoing request */
+
 import { Injectable } from '@angular/core';
 import {
   HttpRequest,
@@ -43,9 +46,7 @@ export class CsInterceptor implements HttpInterceptor {
       }, (err: any) => {
       if (err instanceof HttpErrorResponse) {
         if (err.status === 401 && this.errno == 0) {
-          //alert('error')
           // redirect to the login route
-          // or show a modal 
           this.errno += 1;
           this.cookie.remove('userid');
           this.cookie.remove('session_id');
@@ -63,14 +64,6 @@ export class CsInterceptor implements HttpInterceptor {
         }
       }
     });
-
-	/*.catch((error, caught) => {
-	//intercept the respons error and displace it to the console
-	console.log(caught);
-	console.log(error.message);
-	//return the error to the method that called it
-	return Observable.throw(error);
-	}) as any;*/
   }
 }
 

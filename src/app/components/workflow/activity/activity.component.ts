@@ -1,6 +1,7 @@
+/*Component for process all activity and workflow*/
+
 import { Component, OnInit, Input, AfterViewInit,ViewChild, ElementRef } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
-//import { PlatformLocation } from '@angular/common';
 import {Location, LocationStrategy, PathLocationStrategy} from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormGroup, FormArray, FormBuilder, Validators, FormControl } from '@angular/forms';
@@ -9,6 +10,7 @@ import { UrlserviceService } from '../../../services/urlservice.service';
 import { WorkflowService } from '../../../services/workflow.service';
 import { PagerService } from '../../../services/pager.service';
 import { AuthService } from '../../../services/auth.service';
+
 
 
 import { Select2OptionData } from 'ng4-select2';
@@ -33,107 +35,100 @@ export class ActivityComponent implements OnInit {
 	@Input() public dataObject;
 
 	@ViewChild('doc') document:ElementRef;
+
 	activityForm: FormGroup;
-	objectProps;
-	reader = new FileReader();
-	company:any;
-	activity: any;
-	activityId: any;
-	controls: any;
-	process: any;
-	processId:any;
-	steps : any;
-	id: number;
-	files: File = null;
-	formdata = new FormData();
-	objectKeys = Object.keys;
 
-	group:any;
-	stakeholders:any;
-	directors:any;
-	shareholders:any;
-	directorsId : Array<any>=[];
-	stakeholdersId:Array<any>=[];
-
-
-	emailto:any;
-	next:boolean=false;
-	navigate: number=1;
-	preNav:number;
-	nextNav:number;
-	lastActivity:number;
-	actdata: any;
-	remark:any;
-
-	email:boolean=false;
-	emailSent:boolean;
-	is_last:boolean = false;
-	is_first:boolean = false;
-	showaddr:boolean=false;
-	showserial:boolean=false;
-	showmatter:boolean=false;
-	showsecretory:boolean=false;
-	showbodycorporate:boolean=false;
-	companyName:any;
-	cin:any;
-	address:any;
-	city:any;
-	state:any;
-	place:any;
-	meeting:any;
-	matter:any;
-	agendas:any;
-	agendaArray: any[]=[];
-	allAgendaArray:any[]=[];
-	firstActivityId:any;
-	baseurl:string = this.url.BASE_URL;
-	stepId: number;
-	formGroup = {};
-	meetingId:any;
-	meetingNo:any;
-	egmNo:any;
-	agmNo:any;
-	meetingSerials:any;
-	bmSerials:any;
-	meetingSerial:any;
-	isupdate:boolean=false;
-	updatedAgenda:any;
-	displayFile:any;
-	agendaDiff:any;
-	showNext:boolean=false;
-	uploadedFile:any;
-	screenError:any;
-
-	short_doc_id:any;
-	long_doc_id:any;
-
-	pager: any = {};
-	pagedItems: any[];
-
-	exampleData: Array<Select2OptionData>;
-	allAgenda: Array<Select2OptionData>;
-	options: Select2Options;
-	current: string;
-	value:string[];
-	resolutionList:any;
-	showResolution:boolean=false;
-
-	signingDirector:any;
-	meetingDate:any;
-	meetingAddress:any;
-	currentdatetime:any;
-
-	eventId:any;
-	today:any;
-	today1:any;
-
-	bodyEmail:any[]=[];
-	noticeFor:any[]=[];
+	 public objectProps;
+	baseurl:string = this.url.BASE_URL; 
+ reader = new FileReader();
+ company:any;
+ activity: any;
+ activityId: any;
+ controls: any;
+ process: any;
+ processId:any;
+ steps : any;
+ id: number;
+ files: File = null;
+ formdata = new FormData();
+ objectKeys = Object.keys;
+ group:any;
+ stakeholders:any;
+ directors:any;
+ shareholders:any;
+ directorsId : Array<any>=[];
+ stakeholdersId:Array<any>=[];
+ emailto:any;
+ next:boolean=false;
+ navigate: number=1;
+ preNav:number;
+ nextNav:number;
+ lastActivity:number;
+ actdata: any;
+ remark:any;
+ email:boolean=false;
+ emailSent:boolean;
+ is_last:boolean = false;
+ is_first:boolean = false;
+ showaddr:boolean=false;
+ showserial:boolean=false;
+ showmatter:boolean=false;
+ showsecretory:boolean=false;
+ showbodycorporate:boolean=false;
+ companyName:any;
+ cin:any;
+ address:any;
+ city:any;
+ state:any;
+ place:any;
+ meeting:any;
+ matter:any;
+ agendas:any;
+ agendaArray: any[]=[];
+ allAgendaArray:any[]=[];
+ firstActivityId:any;
+ stepId: number;
+ formGroup = {};
+ meetingId:any;
+ meetingNo:any;
+ egmNo:any;
+ agmNo:any;
+ meetingSerials:any;
+ bmSerials:any;
+ meetingSerial:any;
+ isupdate:boolean=false;
+ updatedAgenda:any;
+ displayFile:any;
+ agendaDiff:any;
+ showNext:boolean=false;
+ uploadedFile:any;
+ screenError:any;
+ short_doc_id:any;
+ long_doc_id:any;
+ pager: any = {};
+ pagedItems: any[];
+ exampleData: Array<Select2OptionData>;
+ allAgenda: Array<Select2OptionData>;
+ options: Select2Options;
+ current: string;
+ value:string[];
+ resolutionList:any;
+ showResolution:boolean=false;
+ signingDirector:any;
+ meetingDate:any;
+ meetingAddress:any;
+ currentdatetime:any;
+ eventId:any;
+ today:any;
+ today1:any;
+ bodyEmail:any[]=[];
+ noticeFor:any[]=[];
 
 	constructor(private http:HttpClient, private router: Router,private url:UrlserviceService,
 		private actRoute: ActivatedRoute, private fb:FormBuilder, private location: Location,
 		private pagerService: PagerService, private auth: AuthService, private cookie: CookieService,
 		private workflow: WorkflowService, public progress: NgProgress) {
+
 
 		this.eventId = localStorage.getItem('eventId');
 		console.log(this.eventId);
@@ -204,6 +199,23 @@ export class ActivityComponent implements OnInit {
 			this.is_first = res['process_activity']['first_activity'];
 			this.remark = res['process_activity']['remark'];
 			console.log(this.is_first);
+
+			this.workflow.updateProcessActivity(this.eventId,this.activityId).toPromise()
+			.then(updateres=>{
+				console.log(updateres);
+			})
+
+			// GET workflow steps based on workflow ID
+			this.workflow.getWorkflowSteps(this.eventId).subscribe(res=>{
+				this.steps= res;
+				console.log(this.steps)
+				this.lastActivity = this.steps.length;
+				console.log(this.lastActivity);
+			},
+			err =>{
+				this.steps = "No steps found"
+			}
+			)
 
 			this.showResolution=false;
 			this.dataObject = this.controls;
@@ -378,17 +390,7 @@ export class ActivityComponent implements OnInit {
 			});
 
 
-// GET workflow steps based on workflow ID
-this.workflow.getWorkflowSteps(this.eventId).subscribe(res=>{
-	this.steps= res;
-	console.log(this.steps)
-	this.lastActivity = this.steps.length;
-	console.log(this.lastActivity);
-},
-err =>{
-	this.steps = "No steps found"
-}
-)
+
 
 
 // GET the first activity Id to calculate steps in workflow
@@ -884,7 +886,10 @@ generateResolution(docId){
 			return;
 		}
 		else{
+			alert('reset');
 			this.activityForm.get('meeting').clearValidators();
+			this.activityForm.get('meeting').setValidators(null);
+			this.activityForm.get('meeting').updateValueAndValidity();
 		}
 
 		let bmid = localStorage.getItem('bmId');
@@ -893,6 +898,14 @@ generateResolution(docId){
 		let position:any;
 		let did = this.activityForm.get('upload').value;
 		let place = this.activityForm.get('matter').value;
+
+		if(this.allAgendaArray.length > 0){
+			for(let a of this.allAgendaArray){
+				if(!this.agendaArray.includes(a)){
+					this.agendaArray.push(a);
+				}
+			}
+		}
 
 		meeting_type = localStorage.getItem('meeting_type');
 		if(meeting_type == 'EGM')
@@ -909,7 +922,7 @@ generateResolution(docId){
 			directorName = did;
 			din = null;
 			dirAddress = this.address;
-			position  = 'Secretory';
+			position  = 'Company Secretory';
 		}
 		else{	
 			for(let d of this.directors){
@@ -923,11 +936,11 @@ generateResolution(docId){
 			}
 			position = 'Director';
 
-		}
+		}	
 
 		let data = {
 			doc_id : docId,
-			resolution : this.agendaArray.concat(this.allAgendaArray),
+			resolution : this.agendaArray,
 			companyName: res['company']['name'],
 			address:res['board_meeting']['address'],
 			serial:res['board_meeting']['serial'],
@@ -1131,8 +1144,11 @@ generateResolution(docId){
 		getdate = new Date(this.activityForm.get('matter').value);
 		storedate = new Date(this.activityForm.get('matter').value);
 
+		/*SERVER*/
+		// storedate.setMinutes(storedate.getMinutes()-(getdate.getTimezoneOffset()*2));
+		// getdate.setMinutes(getdate.getMinutes()-getdate.getTimezoneOffset());
+		/*LOCAL*/
 		storedate.setMinutes(storedate.getMinutes()-storedate.getTimezoneOffset());
-		console.log(getdate, storedate);
 
 		diff = (Math.abs(today.getTime() - getdate.getTime()))/(1000 * 60 * 60 * 24);		
 		directorId = this.activityForm.get('serial').value;
@@ -1141,8 +1157,16 @@ generateResolution(docId){
 		place = this.activityForm.get('meeting').value;
 		description = this.activityForm.get('director').value;
 		serial = this.activityForm.get('descr').value;
-		if(this.allAgendaArray.length > 0)
-			this.agendaArray = this.agendaArray.concat(this.allAgendaArray);
+		if(this.allAgendaArray.length > 0){
+			for(let a of this.allAgendaArray){
+				console.log(a);
+				if(!this.agendaArray.includes(a)){
+					this.agendaArray.push(a);
+				}
+			}
+		}
+		console.log(this.agendaArray);
+			// this.agendaArray = this.agendaArray.concat(this.allAgendaArray);
 
 		if(this.agendaArray.length <= 0){
 			alert("Select matter to transact");
@@ -1223,7 +1247,7 @@ generateResolution(docId){
 			directorName = directorId;
 			dirAddress = this.address;
 			din = null;
-			position = 'Secretory';
+			position = 'Company Secretory';
 		}
 		else{	
 			for (var d of this.directors) {
@@ -1363,25 +1387,6 @@ generateResolution(docId){
 						console.log(directorName1);
 						this.workflow.generateAgenda(data1).subscribe(res=>{
 							saveAs(res, ('Body Corporate Shorter Consent - EGM.docx'))
-
-							// let emailData = {
-							// 	email:d,
-							// 	meeting:this.meeting,
-							// 	company:this.companyName,
-							// 	bm_date:bmdate,
-							// 	address:this.address,
-							// 	directorName:directorName,
-							// 	to:'bodycorporate'	
-							// }
-
-							// this.http.post(this.baseurl+'workflow/sendShortNotice',JSON.stringify(emailData)).subscribe(res=>{
-							// 	console.log(res);
-
-							// },
-							// (err:HttpErrorResponse)=>{
-							// 	console.log(err)
-							// })
-
 						},
 						(err:HttpErrorResponse)=>{
 							console.log(err)
@@ -1403,13 +1408,6 @@ generateResolution(docId){
 							.then((res)=>{console.log(res);})
 							.catch((err)=>{console.log(err);})
 
-							// subscribe(res=>{
-							// 	console.log(res);
-
-							// },
-							// (err:HttpErrorResponse)=>{
-							// 	console.log(err)
-							// })
 						},
 						(err:HttpErrorResponse)=>{
 							console.log(err)
@@ -1422,6 +1420,7 @@ generateResolution(docId){
 					let id = this.short_doc_id;
 					let directorName1:any;
 					for(let d of mailTo){
+						console.log(d);
 				//din = d['DIN'];
 				directorName1= d['first_name']+' '+d['last_name'];		
 				let data1 = {
@@ -1430,6 +1429,7 @@ generateResolution(docId){
 					approved_by_director: directorId,
 					director_name:directorName,
 					co_director:directorName1,
+					father_name:d['fathers_name'],
 					din: din,
 					address: this.address,
 					state: this.state,
@@ -1440,7 +1440,7 @@ generateResolution(docId){
 					serial: serial,
 					venue:venue,
 					cin:this.cin,
-					dirAddress:dirAddress,
+					dirAddress:d['address'],
 					office:office
 
 				}
@@ -1459,13 +1459,6 @@ generateResolution(docId){
 					this.http.post(this.baseurl+'workflow/sendShortNotice/'+d['id'],JSON.stringify(emailData)).toPromise()
 					.then(res=>{console.log(res)})
 					.catch(err=>{console.log(err)});
-					// subscribe(res=>{
-					// 	console.log(res);
-					// },
-					// (err:HttpErrorResponse)=>{
-					// 	console.log(err)
-					// })					
-
 				},
 				(err:HttpErrorResponse)=>{
 					console.log(err)
@@ -1549,15 +1542,6 @@ else if(( this.meeting == 'BM' && diff < 8)){
 					this.http.post(this.baseurl+'workflow/sendShortNotice/'+d['id'],JSON.stringify(emailData)).toPromise()
 					.then(res=>{console.log(res)})
 					.catch(err=>{console.log(err)});
-					
-					// subscribe(res=>{
-					// 	console.log(res);
-
-					// },
-					// (err:HttpErrorResponse)=>{
-					// 	console.log(err)
-					// })
-
 				},
 				(err:HttpErrorResponse)=>{
 					console.log(err)
@@ -1634,8 +1618,8 @@ else if(( this.meeting == 'BM' && diff < 8)){
 
 		/*this.activityForm.reset();
 		this.showNext = true;
+		*/
 		this.agendaArray = [];		
-		this.exampleData=[];*/
 	}
 
 
@@ -1744,14 +1728,8 @@ else if(( this.meeting == 'BM' && diff < 8)){
 		}		
 		// Post the activity data and get next activity id
 
-		
-		
-		
-
 		this.workflow.storeProcessActivity(this.eventId,this.activityId,this.actdata).subscribe(updateres=>{
 			console.log(updateres)
-					//alert(updateres);
-			//})
 			// Get the next activity 
 			this.workflow.getNextActivity(this.processId, this.activityId, this.next, this.actdata).subscribe(res=>{
 				console.log(res);
@@ -1779,7 +1757,6 @@ else if(( this.meeting == 'BM' && diff < 8)){
 							this.http.post(this.baseurl+'workflow/storeEvent',JSON.stringify(data)).subscribe(res1=>{
 								console.log(res1);
 								localStorage.setItem('eventId',res1['id']);          
-					          //this.router.navigateByUrl('/activity/'+this.company+'/'+id+'/'+activityid)
 					          this.router.navigateByUrl('/activity/'+this.company+'/'+res['next']+'/'+activityid);
 
 					      });
@@ -1868,18 +1845,6 @@ else if(( this.meeting == 'BM' && diff < 8)){
 
 					// If next activity id present navigate to next activity
 					else{
-						/*let data = {
-							'activity_id': this.id,
-							'status': 'completed'
-						}
-						this.http.post(this.baseurl+'workflow/activity_status/',
-							JSON.stringify(data)).subscribe(res =>{
-								console.log('status updated');
-							},
-							(err: HttpErrorResponse)=>{
-								console.log(err);
-							}
-							)*/
 							let eventData = {
 								steps: parseInt(this.activityId)+ 1
 							}
@@ -2237,10 +2202,6 @@ uploadFiles1(id){
         // get pager object from service
         this.pager = this.pagerService.getPager(this.lastActivity, page);
         console.log(this.pager, this.lastActivity, page);
-
-
-        // get current page of items
-        //this.pagedItems = this.allItems.slice(this.pager.startIndex, this.pager.endIndex + 1);
     }
 
 

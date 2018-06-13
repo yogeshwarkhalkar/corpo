@@ -1,3 +1,5 @@
+/* Service for showing pagination */
+
 import { Injectable } from '@angular/core';
 import * as _ from 'underscore';
 

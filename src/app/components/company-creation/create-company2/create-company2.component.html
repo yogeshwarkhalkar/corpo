@@ -38,7 +38,7 @@
 					<label for="proposed-company-name" class="col-sm-3 col-form-label">Proposed Name of Company </label>
 					<div class="col-sm-9">
 
-						<input type="text" class="form-control" id="proposed-company-name" formControlName="name" (keydown)="validateSpecialCharacters()">
+						<input type="text" class="form-control" id="proposed-company-name" formControlName="name">
 						<i class="fa fa-info-circle context-specific-info" aria-hidden="true"></i>
 						<span class="context-specific-info">name to have a word reflecting the business activity (For Name Special character ("!@#$%^&*()") are not allow.)</span>
 						<div class="alert alert-danger"
@@ -68,123 +68,7 @@
 						</div>
 					</div>
 				</div>
-				<!--<div class="col-sm-9" formArrayName="industry_type">
-					<div class="row">
-						<div class="col-6 col-md-3">
-							<label class="custom-control custom-checkbox">
-								<input type="checkbox" class="custom-control-input" formControlName="advertising" [value]="advertising">
-								<span class="custom-control-indicator"></span>
-								<span class="custom-control-description">Advertising</span>
-							</label>
-						</div>
-						<div class="col-6 col-md-3">
-							<label class="custom-control custom-checkbox">
-								<input type="checkbox" class="custom-control-input" formControlName="clean_tech">
-								<span class="custom-control-indicator"></span>
-								<span class="custom-control-description">Clean Tech</span>
-							</label>
-						</div>
-						<div class="col-6 col-md-3">
-							<label class="custom-control custom-checkbox">
-								<input type="checkbox" class="custom-control-input" formControlName="cloud_computing">
-								<span class="custom-control-indicator"></span>
-								<span class="custom-control-description">Cloud Computing</span>
-							</label>
-						</div>
-						<div class="col-6 col-md-3">
-							<label class="custom-control custom-checkbox">
-								<input type="checkbox" class="custom-control-input" formControlName="consumer_electronic">
-								<span class="custom-control-indicator"></span>
-								<span class="custom-control-description">Consumer Electronics</span>
-							</label>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-6 col-md-3">
-							<label class="custom-control custom-checkbox">
-								<input type="checkbox" class="custom-control-input" formControlName="energy">
-								<span class="custom-control-indicator"></span>
-								<span class="custom-control-description">Energy</span>
-							</label>
-						</div>
-						<div class="col-6 col-md-3">
-							<label class="custom-control custom-checkbox">
-								<input type="checkbox" class="custom-control-input" formControlName="enterprise_software">
-								<span class="custom-control-indicator"></span>
-								<span class="custom-control-description">Enterprise Software</span>
-							</label>
-						</div>
-						<div class="col-6 col-md-3">
-							<label class="custom-control custom-checkbox">
-								<input type="checkbox" class="custom-control-input" formControlName="gaming">
-								<span class="custom-control-indicator"></span>
-								<span class="custom-control-description">Gaming</span>
-							</label>
-						</div>
-						<div class="col-6 col-md-3">
-							<label class="custom-control custom-checkbox">
-								<input type="checkbox" class="custom-control-input" formControlName="internet">
-								<span class="custom-control-indicator"></span>
-								<span class="custom-control-description">Internet</span>
-							</label>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-6 col-md-3">
-							<label class="custom-control custom-checkbox">
-								<input type="checkbox" class="custom-control-input" formControlName="networking">
-								<span class="custom-control-indicator"></span>
-								<span class="custom-control-description">Networking</span>
-							</label>
-						</div>
-						<div class="col-6 col-md-3">
-							<label class="custom-control custom-checkbox">
-								<input type="checkbox" class="custom-control-input" formControlName="semiconductor">
-								<span class="custom-control-indicator"></span>
-								<span class="custom-control-description">Semiconductor</span>
-							</label>
-						</div>
-						<div class="col-6 col-md-3">
-							<label class="custom-control custom-checkbox">
-								<input type="checkbox" class="custom-control-input" formControlName="social_media">
-								<span class="custom-control-indicator"></span>
-								<span class="custom-control-description">Social Media</span>
-							</label>
-						</div>
-						<div class="col-6 col-md-3">
-							<label class="custom-control custom-checkbox">
-								<input type="checkbox" class="custom-control-input" formControlName="wireless">
-								<span class="custom-control-indicator"></span>
-								<span class="custom-control-description">Wireless</span>
-							</label>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-6 col-md-3">
-							<label class="custom-control custom-checkbox">
-								<input type="checkbox" class="custom-control-input" formControlName="digital_media">
-								<span class="custom-control-indicator"></span>
-								<span class="custom-control-description">Digital Media</span>
-							</label>
-						</div>
-						<div class="col-6 col-md-2">
-							<label class="custom-control custom-checkbox">
-								<input type="checkbox" class="custom-control-input" formControlName="mobile">
-								<span class="custom-control-indicator"></span>
-								<span class="custom-control-description">Mobile</span>
-							</label>
-						</div>
-						<div class="col-12 col-md-7">
-							<div class="form-group row company-industry-other">
-								<label for="company-industry-other" class="col-3 col-md-4 col-form-label">Other (Specify):</label>
-								<div class="col-9 col-md-8">
-									<input type="text" class="form-control" id="company-industry-other" formControlName="other">
-								</div>
-							</div>
-						</div>
-					</div>
 
-				</div>-->
 				<div class="alert alert-danger"
 				*ngIf="form2.get('industry_type').invalid && form2.get('industry_type').touched">
 				Select one of the option

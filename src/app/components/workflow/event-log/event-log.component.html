@@ -38,15 +38,6 @@
 								<td class="col3">{{data.company_process.created_on}}</td>
 								<td class="col4">
 									<a *ngIf="data.company_process.board_meeting != null; else empty" href="javascript:void(0)" (click)="gotoMeeting(data.company_process.board_meeting)">
-										<!--<span *ngIf="data.board_meeting.meeting_type == 'BM'">
-										<span *ngIf="data.board_meeting.status == 'open'">
-									ongoing
-								</span>
-										<span *ngIf="data.board_meeting.status == 'close'">
-									completed
-								</span>
-
-								</span>-->
 									BM
 									</a>
 									<ng-template #empty>
@@ -56,15 +47,6 @@
 									</td>
 							<td class="col5">
 								<a *ngIf="data.company_process.egm != null; else empty1" href="javascript:void(0)" (click)="gotoMeeting(data.company_process.egm)">
-									<!--<span *ngIf="data.board_meeting.meeting_type == 'EGM'">
-										<span *ngIf="data.board_meeting.status == 'open'">
-									ongoing
-								</span>
-										<span *ngIf="data.board_meeting.status == 'close'">
-									completed
-								</span>
-
-								</span>-->
 								EGM
 							</a>
 									<ng-template #empty1>

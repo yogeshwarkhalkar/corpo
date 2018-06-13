@@ -15,3 +15,15 @@
      input[type="file"] {
     display: none;
 }
+
+
+.prev{
+	display:block;
+	margin-right:35px;
+	clear:right;
+}
+
+.pageNext{
+	display:block;
+	margin-left:53px;
+}

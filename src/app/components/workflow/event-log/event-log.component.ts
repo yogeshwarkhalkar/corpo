@@ -1,3 +1,5 @@
+/* Component to show all event(Workflow) log*/
+
 import { Component, OnInit, Input, forwardRef } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';

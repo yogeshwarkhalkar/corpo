@@ -1,3 +1,5 @@
+/* Pipe to search in data*/
+
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({

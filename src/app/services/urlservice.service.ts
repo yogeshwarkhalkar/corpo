@@ -1,3 +1,5 @@
+/* Service to set server url to which API service is executing*/
+
 import { Injectable } from '@angular/core';
 
 @Injectable()

@@ -23,7 +23,6 @@
 							<th class="col3">Description of Meeting</th>
 							<th class="col4">Date of Notice Send</th>
 							<th class="col5">Meeting Type</th>
-							<!--	<th class="col6">Meeting Status</th>-->
 								<th class="col6">Meeting Agenda</th>
 								<th class="col7">Attendance Sheet</th>
 								<th class="col8">Minutes of Meetiing</th>
@@ -42,14 +41,10 @@
 								<td class="col3">{{data.description}}</td>
 								<td class="col4">{{data.notice_date}}</td>
 							<td class="col5">{{data.meeting_type}}</td>
-								<!--<td class="col6">{{data.status}}</td>-->
-
 								<td class="col6 notify text-center" >
 									<a *ngIf="data.agenda_doc != null;else empty1 " href="javascript:void(0)"  (click)="showFiles('agenda_doc', data.agenda_doc)">Agenda</a>
 									<ng-template #empty1>
 										<span>Not available</span>
-									<!--<a id="upload1" href="javascript:void(0)" > upload</a>
-										<input type="file" id="upload_file1" (change)="uploadAgendaFiles(i,data.id,'agenda_doc',$event.target.files)">-->
 									</ng-template>							  	
 								</td>
 
@@ -57,8 +52,6 @@
 									<a *ngIf="data.attendance != null; else empty2 " href="javascript:void(0)" (click)="showFiles('attendance', data.attendance)">Attendance Sheet</a>
 									<ng-template #empty2>
 										<span>Not available</span>
-									<!--<input id="upload_file2" type="file" (change)="uploadAgendaFiles(i,data.id,'attendance',$event.target.files)"/>
-										<a id="upload2" href="javascript:void(0)" > upload</a>-->
 									</ng-template>
 								</td>
 
@@ -66,20 +59,12 @@
 									<a *ngIf="data.minutes_of_meeting != null ;else empty3" href="javascript:void(0)" (click)="showFiles('minutes_of_meeting', data.minutes_of_meeting)">Minutes of Meeting</a>
 									<ng-template #empty3>
 										<span>Not available</span>
-									<!--<input id="upload_file3" type="file" (change)="uploadAgendaFiles(i,data.id,'minutes_of_meeting',$event.target.files)"/>
-										<a id="upload3" href="javascript:void(0)" > upload</a>-->
 									</ng-template>
 								</td>
 
 								<td class="col9 details text-center" *ngIf="status == 'close'">
 									<a href="javascript:void(0)" (click)="generateResolution(data.id,data.meeting_type)" >Generate Resolution</a>
-									<!--data-toggle="modal" data-target="#directorsdetailsModal"
-										<a class="btn btn-light-gray directors-tile-details" href="#" role="button" (click)="directors(x?.company?.id)" data-toggle="modal" data-target="#directorsdetailsModal">DIRECTORS</a>-->
 								</td>
-							<!--<td>
-								<a class="btn btn-light-gray directors-tile-details" role="button" (click)="update(data.id)">update</a>
-							</td>-->
-
 						</tr>
 
 					</tbody>
@@ -90,7 +75,7 @@
 				<ul class="pagination justify-content-center">
 					<li class="page-item" [ngClass]="{disabled:pager.currentPage === 1}">
 						<a class="page-link previous" aria-label="Previous" href="javascript:void(0)" (click)="setPage(pager.currentPage - 1)">
-							<span style="display:block;margin-right:35px;clear:right" aria-hidden="true"><i class="fa fa-angle-double-left fa-lg" aria-hidden="true"></i></span>
+							<span class="prev" aria-hidden="true"><i class="fa fa-angle-double-left fa-lg" aria-hidden="true"></i></span>
 							
 						</a>
 					</li>
@@ -100,7 +85,7 @@
 					</li>
 					<li class="page-item" [ngClass]="{disabled:pager.currentPage === pager.totalPages}">
 						<a class="page-link next" aria-label="Next" href="javascript:void(0)" (click)="setPage(pager.currentPage + 1)">
-							<span style="display:block;margin-left:53px" aria-hidden="true"><i class="fa fa-angle-double-right fa-lg" aria-hidden="true"></i></span>
+							<span class="pageNext" aria-hidden="true"><i class="fa fa-angle-double-right fa-lg" aria-hidden="true"></i></span>
 							
 						</a>
 					</li>
@@ -156,8 +141,7 @@
 				</div>
 
 				<div class="modal-footer">
-					<!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
-					<button type="button" class="btn btn-primary" (click)="generateResolution(1)">Generate Resolution</button>
+					<button type="button" class="btn btn-primary" (click)="generateResolution(1,'BM')">Generate Resolution</button>
 				</div>
 			</div>
 		</div>

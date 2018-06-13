@@ -1,3 +1,5 @@
+/* Service to ensure user is authenticated */
+
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { AuthService } from './auth.service';

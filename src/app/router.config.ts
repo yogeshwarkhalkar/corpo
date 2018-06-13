@@ -1,3 +1,5 @@
+/* Route configuration */
+
 import { Routes } from '@angular/router';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './components/login/login.component';
@@ -16,6 +18,7 @@ import { CreateCompany2Component } from './components/company-creation/create-co
 import { CreateCompany3Component } from './components/company-creation/create-company3/create-company3.component';
 import { CreateCompany4Component } from './components/company-creation/create-company4/create-company4.component';
 import { CreateCompany5Component } from './components/company-creation/create-company5/create-company5.component';
+import { IncorporatedCompanyComponent } from './components/company-creation/incorporated-company/incorporated-company.component';
 import { WorkflowLogComponent } from './components/workflow/workflow-log/workflow-log.component';
 
 import { SupportComponent } from './components/support/support.component';
@@ -108,6 +111,11 @@ export const routerConfig : Routes = [
       {
         path: 'createCompany5',
         component: CreateCompany5Component,
+        canActivate: [EnsureAuthenticatedService]
+      },
+      {
+        path:'incorporated',
+        component: IncorporatedCompanyComponent,
         canActivate: [EnsureAuthenticatedService]
       },
       {

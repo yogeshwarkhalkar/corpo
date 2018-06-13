@@ -1,3 +1,5 @@
+/*Login component to login register user*/
+
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
@@ -247,9 +249,4 @@ export class LoginComponent implements OnInit {
       return  `with: ${reason}`;
     }
   }
-
-  
-
-
-
 }

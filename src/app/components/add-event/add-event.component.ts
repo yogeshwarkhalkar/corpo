@@ -1,3 +1,5 @@
+/*Component to trigger Event on clicking Add from Event list*/
+
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
@@ -40,12 +42,6 @@ export class AddEventComponent implements OnInit {
     this.cookie.remove('meetingSerial');
     this.http.get(this.baseurl+'workflow/getActivity/'+id).subscribe(res=>{
     if(res){
-      /*let d = new Date()
-      let day = d.getDate();
-      let month = d.getMonth()+1;
-      let year = d.getFullYear();
-      let today = [year,month,day].join('-');
-      console.log(today)*/
       let activityid=res['activity']
       let data = {
         company:this.company,
@@ -67,8 +63,6 @@ export class AddEventComponent implements OnInit {
    else{
     this.router.navigateByUrl('/dashboard') 
    }
-    //routerLink="/activity/{{company}}/{{p.id}}/1"
-
   })
 
   }

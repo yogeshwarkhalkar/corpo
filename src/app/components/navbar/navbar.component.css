@@ -1,4 +1,21 @@
 
+.logo {
+    font-style: normal;
+}
+.imgStyle {
+    height: 50px;
+}
+.navStyle{
+    height: 25px;
+}
+.Color{
+    color: white;
+}
+
+.modalPopup{
+    padding-left: 10px; 
+    padding-right: 10px;
+}
 .dropdown {
     position: relative;
     display: inline-block;

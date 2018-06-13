@@ -153,34 +153,11 @@
 							</select2>
 						</div>
 						<div class="form-group">
-									<!--<select class="custom-select"
-									[formControlName]="prop.key" *ngIf="prop.key=='address'" 
-									(change)="selectOther($event.target.value)" >
-									<option *ngFor="let option of agendas" [value]="option.short_agenda" >
-										{{ option.short_agenda }}
-									</option>	
-									<option>other</option>											
-								</select>-->
-								
 								<div *ngIf="prop.key=='address'">
 									<div *ngIf="showmatter">
 										<input type="text" class="form-control" placeholder="Enter Matter to be transected" (change)="selectOther($event.target.value)" (change)="addAgenda()">
 									</div>
-									<!--<button type="button" class="add-director-link" role="button" (click)="addAgenda()"><i class="fas fa-plus"></i> <strong>Add Agenda</strong></button>
-									<table>
-										<tr *ngFor="let agenda of agendaArray; let i=index;">
-
-											<td><span>{{i+1+' '+agenda}}</span>
-												<button type="button" role="button" (click)="removeAgenda(i)"><i class="fa fa-window-close"></i></button>
-											</td>
-										</tr>
-									</table>-->
 								</div>
-
-								
-								<!--<div *ngIf="matter == 'other' && prop.key=='matter'">
-									<input type="text" class="form-control" placeholder="Enter Matter to be transected" (change)="selectOther($event.target.value)">
-								</div>-->
 								<select class="custom-select" [formControlName]="prop.key" *ngIf="prop.key=='director'" (change)="onChangeCheck(prop.key,$event.target.value)">
 									<option value="" selected="true" disabled="disabled">Select Board Meeting</option>
 									<option *ngFor="let id of bmSerials" [value]="id[1]">
@@ -197,19 +174,7 @@
 							<div class="form-group">
 
 								<input class="form-control" type="datetime-local" name="meetingdate" style="width: 40%" [min]="today" [value]="today" [formControlName]="prop.key" (change)="dateValidator($event.target.value)">
-
-
-
 							</div>
-							
-							<!--<div class="form-group">
-								<div class="input-group date" id="datetimepicker1" data-target-input="nearest">
-									<input type="text" class="form-control" data-target="#datetimepicker1"/>
-									<div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">                    
-										<div class="input-group-text"><i class="far fa-calendar-alt" style="font-size:36px;"></i></div>
-									</div>
-								</div>
-							</div>-->
 						</div>
 
 						<!-------------- Button control ----------------------->
@@ -222,17 +187,12 @@
 							[placeholder]="prop.placeholder"></textarea>
 						</div>					
 						<!-------------- Custon control (Includes any control)--------------------->
-						<div *ngSwitchCase="'customcheckbox'">
-							<table> 
+						<div *ngSwitchCase="'customcheckbox'" >
+							<table class="form-group"> 
 
 								<tr *ngFor="let option of prop.options; let i=index; ">
 
 									<td valign="top">
-										<!--<label class="custom-control custom-checkbox" >
-											<input id="check-1" type="checkbox" [value]="option.value" [formControlName]="prop.key" class="custom-control-input">
-											<span class="custom-control-indicator"></span>
-											<span class="custom-control-description">{{option.value}}</span>
-										</label>-->
 										<label class="custom-control"><strong>{{option.doc}}</strong></label>
 									</td>
 
@@ -245,7 +205,7 @@
 										</div>
 									</td>
 
-									<td valign="top">
+									<td valign="top" class="form-group row document-upload-block">
 										<div *ngIf="option.upload">
 											<span *ngIf="prop.use == 'filling'">
 												<a class="btn btn-secondary  document-upload" role="button" id="button{{i+1}}" >Upload Document<span class="input-group-addon"><img src="assets/images/eye-2.png"></span></a>
@@ -258,21 +218,6 @@
 								</tr>
 							</table>							
 						</div>			
-
-						<!--<div *ngSwitchCase="'button'">
-							<a href="javascript:void(0)" (click)="download()"><i class="fas fa-download" >DOWNLOAD</i></a>
-						</div>
-						<div *ngIf="show">
-							<div *ngSwitchCase="'generate'">
-								<a href="javascript:void(0)" (click)="generate()">GENERATE</a>
-							</div>
-						</div>
-						<div *ngIf="hide">
-							<div *ngSwitchCase="'download'">
-								<a href="javascript:void(0)" (click)="download()"><i class="fas fa-download">DOWNLOAD</i></a>
-							</div>
-						</div>-->
-
 						<!---------------File upload control ---------------------->
 						<div class="form-group" *ngSwitchCase="'file'">
 							<div *ngIf="prop.use=='board_meeting'">
@@ -458,16 +403,16 @@
 										<li *ngFor="let step of steps; let i=index; ">
 											<span class="label">Step {{i+1}}</span>
 											
-											<span class="data" *ngIf="step.company_activity.status == 'Complete' else incomplete"><a href="javascript:void(0)" (click)="navigateActivity(step.activity.id)">{{step.activity.name}}</a></span>
+											<span class="data" *ngIf="step.company_activity.status == 'Complete' || step.company_activity.status == 'Ongoing' else incomplete"><a href="javascript:void(0)" (click)="navigateActivity(step.activity.id)">{{step.activity.name}}</a></span>
 
 											<ng-template #incomplete>
 												<span class="data">{{step.activity.name}}</span>
 											</ng-template>
-											<span class="status" *ngIf="step.company_activity.status == 'Incomplete'; else completed"><i style="color: red;">{{step.company_activity.status}}</i></span>
-											<ng-template #completed>
-												<span class="status">
+											<span class="status" *ngIf="step.company_activity.status == 'Incomplete'"><i style="color: red;">{{step.company_activity.status}}</i></span>
+											<span class="status" *ngIf="step.company_activity.status == 'Ongoing'"><i style="color: black;">{{step.company_activity.status}}</i></span>
+											<span class="status" *ngIf="step.company_activity.status == 'Complete'">
 												{{step.company_activity.status}}</span>
-											</ng-template>
+											
 										</li>
 									</ul>
 								</div>

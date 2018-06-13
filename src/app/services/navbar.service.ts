@@ -1,3 +1,5 @@
+/* Service for Navbar to show different navbar on login and logout*/
+
 import { Injectable} from '@angular/core';
 
 
@@ -9,9 +11,6 @@ visibleLogin: boolean;
 userName: any;
 
   constructor() { this.visible = false; this.visibleLogin = false; this.userName=localStorage.getItem('userName');}
-
-
-
 
   hide() { this.visible = false; }
 

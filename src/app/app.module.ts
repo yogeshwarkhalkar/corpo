@@ -52,6 +52,7 @@ import { CompanyComponent } from './components/company/company.component';
 import { routerConfig } from './router.config';
 import { ExistingCompanyComponent } from './components/company-creation/existing-company/existing-company.component';
 import { SearchCompanyComponent } from './components/company-creation/search-company/search-company.component';
+import { IncorporatedCompanyComponent } from './components/company-creation/incorporated-company/incorporated-company.component';
 
 
 
@@ -85,7 +86,10 @@ import { SearchCompanyComponent } from './components/company-creation/search-com
     
     ExistingCompanyComponent,
     
-    SearchCompanyComponent
+    SearchCompanyComponent,
+    
+    IncorporatedCompanyComponent
+    
   ],
   imports: [
     BrowserModule,

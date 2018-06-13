@@ -1,3 +1,5 @@
+/*Servics file for Authentication (register, login, logout, reset password)*/
+
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';

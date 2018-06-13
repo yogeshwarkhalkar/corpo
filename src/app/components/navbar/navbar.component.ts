@@ -1,6 +1,9 @@
+/*Navbar component*/
+
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormArray, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { NavbarService } from '../../services/navbar.service';
 import { AuthService } from '../../services/auth.service';
 import { UrlserviceService } from '../../services/urlservice.service';
@@ -16,7 +19,8 @@ export class NavbarComponent implements OnInit {
   baseurl:any;
   changed:any;
   constructor(public nav: NavbarService, private auth: AuthService, private fb:FormBuilder,
-     private http: HttpClient, private url:UrlserviceService,private cookie:CookieService) { }
+     private http: HttpClient, private url:UrlserviceService,private cookie:CookieService,
+     private router:Router) { }
   ngOnInit() {
     this.baseurl = this.url.BASE_URL;
     this.passwordForm = this.fb.group({
@@ -55,6 +59,10 @@ export class NavbarComponent implements OnInit {
     this.validateAllFormFields(this.passwordForm);
   }
 
+  }
+  addCompany(){
+    localStorage.removeItem('editCompany');
+    this.router.navigateByUrl("/createCompany2")
   }
   logout(){
   	this.auth.logout();

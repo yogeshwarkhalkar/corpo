@@ -1,3 +1,5 @@
+/* Component to show all Meeting(BM,EGM,AGM) logs */
+
 import { Component, OnInit, Input, forwardRef } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
@@ -148,30 +150,6 @@ export class MeetingLogComponent implements OnInit {
 
   }
 
-
-
-
-
-/*selectOther(matter){
-  this.matter = matter;
- }
-  addAgenda(){
-  console.log(this.matter);
-  if(this.matter && this.matter != 'other')
-    this.agendaArray.push(this.matter);
-  this.resolutionForm.get('agenda').setValue(' ');
-
-}
-removeAgenda(i){
-  console.log(i);
-  this.agendaArray.splice(i,1);
-  if(this.agendaArray.length == 0){
-    this.resolutionForm.get('agenda').invalid;
-  }
-}*/
-
-
-
 setPage(page: number) {
   if (page < 1 || page > this.pager.totalPages) {
     return;
@@ -268,78 +246,4 @@ setPage(page: number) {
         
 
       }  
-
- /*setId(id){
-    this.meetingId = id;
-    this.agendas=[];
-    this.resolutionForm.reset();
-    this.http.get(this.baseurl+'workflow/getDirector/'+this.company).subscribe(res=>{
-      this.directors = res;
-      this.http.get(this.baseurl+'workflow/getMeeting/'+this.meetingId+'/'+'board_meeting').subscribe(res=>{
-        console.log(res);
-        this.exampleData=[];
-        let result = res['board_meeting']['agenda'];
-        for(let a in result){
-          this.agendas.push(result[a]);
-          this.exampleData.push({id:result[a],text:result[a]});
-        }
-     
-        console.log(this.exampleData);
-      });
-    })
-  }
-
-
-
-  generateResolution(){
-    if (this.resolutionForm.valid) {
-      this.generateResolution1();
-    } else {
-      console.log(this.resolutionForm);
-      this.validateAllFormFields(this.resolutionForm);
-    }
-
-  }
-  generateResolution1(){
-    console.log(this.resolutionForm.value);
-    let did = this.resolutionForm.get('director').value;
-    let agenda:Array<any>=[];
-    this.http.get(this.baseurl+'workflow/getMeeting/'+this.meetingId+'/'+'board_meeting').subscribe(res=>{
-      let directorName:any;
-      let din:any;
-
-      for(let d of this.directors){
-        console.log(d);
-        if(d['id'] == did)
-        {
-          directorName = d['first_name']+' '+d['last_name'];
-          din = d['DIN'];
-        }
-      }
-
-
-      let data = {
-        doc_id : 34,
-        resolution : this.agendaArray,
-        companyName: res['company']['name'],
-        address:res['board_meeting']['address'],
-        serial:res['board_meeting']['serial'],
-        bm_date:new Date(res['board_meeting']['bm_date']).getTime(),
-        place: this.resolutionForm.get('place').value,
-        director_name: directorName,
-        din:din
-      }
-      this.http.post(this.baseurl+'workflow/generateAgenda',JSON.stringify(data),
-        {responseType:'blob'}).subscribe(res=>{
-          saveAs(res,'Resolution true copy.docx')
-        },
-        (err:HttpErrorResponse)=>{
-          console.log(err)
-        })  
-
-      })
-    //localStorage.removeItem('bmId');
-
-  }*/
-
 }
