@@ -16,16 +16,24 @@ import { CookieService } from 'ngx-cookie';
 import { NgProgress } from 'ngx-progressbar';
 import { NavbarService } from '../services/navbar.service';
 //import { AuthService } from '../services/auth.service';
+import { UserIdleService } from 'angular-user-idle';
 
 @Injectable()
 export class CsInterceptor implements HttpInterceptor {
   constructor(private cookie: CookieService, public progress: NgProgress, 
-    private route: Router, private nav:NavbarService) {}
+    private route: Router, private nav:NavbarService,private userIdle: UserIdleService) {}
   token:any;
   errno:number=0;
+  readonly googlePlayLink: string;
+  readonly appStoreLink: string;
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     this.token = this.cookie.get('token');
+
+    this.userIdle.stopTimer();
+    this.userIdle.stopWatching();
+    this.userIdle.startWatching();
+    this.userIdle.resetTimer();
          // console.log(request);
     if(this.token){
      request = request.clone({

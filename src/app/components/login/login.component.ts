@@ -5,6 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { CookieService, CookieOptionsProvider, CookieOptions } from 'ngx-cookie';
+import { UserIdleService } from 'angular-user-idle';
 
 import { AuthService } from '../../services/auth.service';
 import { User } from '../../models/user';
@@ -42,13 +43,20 @@ export class LoginComponent implements OnInit {
   resetEmail:string;
   closeResult: string;
   next:string=null;
+  readonly googlePlayLink: string;
+  readonly appStoreLink: string;
+
   constructor(private auth: AuthService, private router: Router, private fb: FormBuilder,private url: UrlserviceService,
                 public http: HttpClient, private nav: NavbarService, private cookie: CookieService,
-                 private ck:CookieOptionsProvider, private modalService: NgbModal, private actroute:ActivatedRoute) {
-      if(this.cookie.get('remember')){
-      this.email = this.cookie.get('email');
-      this.pass = this.cookie.get('password');
-      this.remember = this.cookie.get('remember');
+                 private ck:CookieOptionsProvider, private modalService: NgbModal, 
+                 private actroute:ActivatedRoute,private userIdle: UserIdleService) {
+      if(localStorage.getItem('remember')){
+      // this.email = this.cookie.get('email');
+      // this.pass = this.cookie.get('password');
+      // this.remember = this.cookie.get('remember');
+      this.email = localStorage.getItem('email');
+      this.pass = localStorage.getItem('password');
+      this.remember = localStorage.getItem('remember');
 
     }
 
@@ -86,6 +94,17 @@ export class LoginComponent implements OnInit {
 				$("#login-register-title").text("Corporatus Register");
 			});
 		});
+
+//Start watching for user inactivity.
+    this.userIdle.startWatching();
+    
+    // Start watching when user idle is starting.
+    this.userIdle.onTimerStart().subscribe(count => console.log(count));
+    
+    // Start watch when time is up.
+    this.userIdle.onTimeout().subscribe(() => 
+      this.auth.logout()
+      );
 
         localStorage.removeItem('token');
         this.cookie.remove('userid');
@@ -156,14 +175,20 @@ export class LoginComponent implements OnInit {
      if(this.user.remember_me){
         
         this.ck.options.storeUnencoded = false;   
-       this.cookie.put('email', this.user.email, this.ck.options);
+        localStorage.setItem('email',this.user.email);
+        localStorage.setItem('password',this.user.password);
+        localStorage.setItem('remember','true');
+       /*this.cookie.put('email', this.user.email, this.ck.options);
        this.cookie.put('password', this.user.password, this.ck.options);
-       this.cookie.put('remember', 'true', this.ck.options);
+       this.cookie.put('remember', 'true', this.ck.options);*/
      }
      else{
-        this.cookie.remove('email', this.ck.options);
+        localStorage.removeItem('email');
+        localStorage.removeItem('password');
+        localStorage.removeItem('remember');
+        /*this.cookie.remove('email', this.ck.options);
        this.cookie.remove('password', this.ck.options);
-       this.cookie.remove('remember', this.ck.options); 
+       this.cookie.remove('remember', this.ck.options); */
      }
      this.today = new Date();
 
@@ -234,19 +259,6 @@ export class LoginComponent implements OnInit {
         console.log(res);
         this.msg = res['msg']
       })
-    }, (reason) => {
-      this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
-
     });
-  }
-
-  private getDismissReason(reason: any): string {
-    if (reason === ModalDismissReasons.ESC) {
-      return 'by pressing ESC';
-    } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
-      return 'by clicking on a backdrop';
-    } else {
-      return  `with: ${reason}`;
-    }
   }
 }

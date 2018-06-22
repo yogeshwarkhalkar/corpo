@@ -2,7 +2,6 @@
 			<div class="container">
 				<div class="page-header">
 					<h2>DASHBOARD</h2>
-					
 				</div>
 				<div class="row">
 					<!-- Company tile -->
@@ -30,23 +29,27 @@
 							</div>
 							<div class="corporate-action">
 								<h3>CORPORATE ACTION</h3>
-								<span *ngFor="let event of events">
-									<span *ngIf="event.company == x.company.id">
-								<a routerLink="/eventlog/{{x.company.id}}/close">
+								<div *ngFor="let event of events" >
+									<div *ngIf="event.company == x.company.id" style="padding-bottom: 0px;margin-bottom: 0px;">
+								<a routerLink="/eventlog/{{x.company.id}}/close" >
+								<!-- 	{{event.close}}<br>
+									COMPLETED -->
 								<ngx-gauge size="105" type="semi" thick="5" 
 								min="0" max="450" value={{event.close}}
 								cap="round" label="COMPLETED" append=""
 								foregroundColor="#00cc00" backgroundColor="#EEE">
 								</ngx-gauge></a>
 								<a routerLink="/eventlog/{{x.company.id}}/open">
+									<!-- {{event.open}}<br>
+									ONGOING -->
 								<ngx-gauge size="105" type="semi" thick="5" 
 								min="0" max="300" value={{event.open}} 
 								cap="round" label="ONGOING" append=""
 								foregroundColor="#ffcc66" backgroundColor="#EEE">
 								</ngx-gauge></a>
 								<a class="btn btn-add-event" routerLink="/events/{{x.company.id}}" role="button"><img src="assets/images/add-event-icon.png" alt="add event icon"><br/><span>ADD EVENT</span></a>
-							</span>
-						</span>
+							</div>
+						</div>
 							</div>
 							<div class="corporate-action">
 								<h3>MEETING</h3>
@@ -56,16 +59,23 @@
 								<span *ngFor="let meeting of meetings">
 									<span *ngIf="meeting.company == x.company.id">
 								<a  routerLink="/meetinglog/{{x.company.id}}/close">
-								<ngx-gauge size="105" type="semi" thick="5" 
+									<!-- {{meeting.close}}<br>
+									COMPLETED -->
+								 <ngx-gauge size="105" type="semi" thick="5" 
 								min="0" max={{meeting.close+1}} value={{meeting.close}} 
 								cap="round" label="COMPLETED" append=""
 								foregroundColor="#00cc00" backgroundColor="#EEE">
-								</ngx-gauge></a>
-								<a routerLink="/meetinglog/{{x.company.id}}/open"><ngx-gauge size="105" type="semi" thick="5"
+								</ngx-gauge>
+								</a>
+								<a routerLink="/meetinglog/{{x.company.id}}/open">
+									<!-- {{meeting.open}}<br>
+									ONGOING -->
+								<ngx-gauge size="105" type="semi" thick="5"
 								min="0" max={{meeting.open+1}} value={{meeting.open}}
 								cap="round" label="ONGOING" append=""
 								foregroundColor="#ffcc66" backgroundColor="#EEE">
-								</ngx-gauge></a>
+								</ngx-gauge>									
+								</a>
 								<a class="btn btn-add-event" href="javascript:void(0)" (click)="addBM(x.company.id)" role="button"><img src="assets/images/add-event-icon.png" alt="add event icon"><br/><span style="font-size: 14px">Add Meeting</span></a>
 							</span>
 							</span>

@@ -1,0 +1,392 @@
+<div class="page-content" id="create-company">
+	<div class="container">
+		<div class="page-header">
+			<h2>CREATE COMPANY</h2>
+			<h3>INCORPORATION DETAILS</h3>
+		</div>
+		<div class="white-container">
+			<form id="form-create-company-step2" class="form-create-company" [formGroup]="incorporation" novalidate>
+				<div class="form-group row">
+					<label for="proposed-company-name" class="col-sm-3 col-form-label">Company Name </label>
+					<div class="col-sm-9">
+						<input type="text" class="form-control" id="proposed-company-name" formControlName="name">
+						<div class="alert alert-danger"
+						*ngIf="incorporation.get('name').invalid && incorporation.get('name').touched">
+						Enter company name
+
+					</div>
+				</div>
+
+			</div>
+			
+			<div class="form-group row client-address" formGroupName="address">
+				<label for="client-address-1" class="col-sm-3 col-form-label">Registered office address</label>
+				<div class="col-sm-9">
+					<input type="text" class="form-control" id="client-address-1" placeholder="Address line 1" formControlName="address1">
+					<div class="alert alert-danger"
+					*ngIf="incorporation.get('address').get('address1').invalid &&
+					incorporation.get('address').get('address1').touched">
+					Enter Address Line 1
+				</div>
+				<input type="text" class="form-control" id="client-address-2" placeholder="Address line 2" formControlName="address2">
+				<input type="text" class="form-control" id="client-address-3" placeholder="Address line 3" formControlName="address3">
+				<div class="row">
+					<div class="col-sm-4">
+						<select class="custom-select" formControlName="state_or_province" (change)="getCity1()">
+							<option selected>Select State</option>
+							<option *ngFor="let state of states" value={{state.id}}>
+								{{state.name}}
+							</option>
+						</select>
+						<div class="alert alert-danger"
+						*ngIf="incorporation.get('address').get('state_or_province').value == 'Select State' &&
+						incorporation.get('address').get('state_or_province').touched">
+						Select State
+					</div>
+				</div>
+				<div class="col-sm-4">
+					<select class="custom-select" formControlName="city">
+						<option selected>Select City</option>
+						<option *ngFor="let city of cities" value={{city.id}}>
+							{{city.name}}
+						</option>
+					</select>
+					<div class="alert alert-danger"
+					*ngIf="incorporation.get('address').get('city').value == 'Select City' &&
+					incorporation.get('address').get('city').touched">
+					Select City
+				</div>
+			</div>
+
+			<div class="col-sm-4">
+				<input type="text" class="form-control" id="address-pincode" value="Pincode" placeholder="Pincode" formControlName="pincode">
+				<div class="alert alert-danger"
+				*ngIf="incorporation.get('address').get('pincode').invalid && (incorporation.get('address').get('pincode').dirty || incorporation.get('address').get('pincode').touched)">
+
+				<div *ngIf="incorporation.get('address').get('pincode').errors.required">
+					Pincode is required.
+				</div>
+				<div *ngIf="incorporation.get('address').get('pincode').errors.maxlength">
+					Pincode must be 6 characters long.
+				</div>
+				<div *ngIf="incorporation.get('address').get('pincode').errors.minlength">
+					Pincode must be at least 6 characters long.
+				</div>
+			</div>										
+		</div>
+
+	</div>
+</div>
+</div>
+<div class="form-group row">
+	<label class="col-sm-3 col-form-label">Enter CIN</label>
+	<div class="col-sm-9">
+		<input class="form-control" type="text" formControlName="cin">
+		<div class="alert alert-danger"
+		*ngIf="incorporation.get('cin').invalid && incorporation.get('cin').touched">
+		Enter CIN
+	</div>
+</div>
+</div>
+<!---------------------- Director block -------------------->
+<div class="form-group row">
+	<h3 class="col-sm-3">Directors</h3>
+</div>						
+
+
+<div class="form-group row director-details">
+	<label for="director-address-1" class="col-sm-3 col-form-label">Details of directors:<br/><span class="context-specific-info">(Minimum - 2 directors, where one has to be a resident of India)</span></label>
+
+	<div class="col-sm-9 director-info" formArrayName="director">
+
+		<div *ngFor="let dirs of director.controls; let i=index">
+			<div class="form-group" [formGroupName]="i">
+
+				<label attr.for="{{i}}" class="col-form-label"><strong>Director #{{i+1}} </strong></label>
+				
+				<input type="text" class="form-control" placeholder="Director {{i+1}} DIN" formControlName="DIN">
+				<input type="text" class="form-control" placeholder="Director {{i+1}} Name" formControlName="name">
+				<div class="alert alert-danger"
+				*ngIf="director.controls[i].get('name')?.invalid && director.controls[i].get('name').touched">
+				Enter Director Name
+			</div>
+			<div formGroupName="address">
+				<input type="text" class="form-control" placeholder="Director {{i+1}} Address line 1" formControlName="addressLine1">
+				<div class="alert alert-danger"
+				*ngIf="director.controls[i].controls.address.controls.addressLine1?.invalid && director.controls[i].controls.address.controls.addressLine1?.touched">
+				Enter Address line
+			</div>
+			<input type="text" class="form-control" placeholder="Director {{i+1}} Address line 2" formControlName="addressLine2">
+			<input type="text" class="form-control" placeholder="Director {{i+1}} Address line 3" formControlName="addressLine3">
+			<div class="row">
+				
+				<div class="col-sm-4">
+					<select class="custom-select" formControlName="country"
+					(change)="getState(director.controls[i].get('address').get('country').value)">
+					<option selected>Select Country</option>
+					<option *ngFor="let country of contries" value={{country.id}}>
+						{{country.name}}
+					</option>
+					<div class="alert alert-danger"
+					*ngIf="director.controls[i].controls.address.controls.country.value == 'Select Country' && director.controls[i].controls.address.controls.country.touched">
+					Select country
+				</div>
+			</select>
+		</div>
+		<div class="col-sm-4">
+			<select class="custom-select" formControlName="state"
+			(change)="getCity(director.controls[i].controls.address.controls.state.value)">
+			<option selected>Select State</option>
+			<option *ngFor="let state of states" value={{state.id}}>
+				{{state.name}}
+			</option>
+			<div class="alert alert-danger"
+			*ngIf="director.controls[i].controls.address.controls.state?.value == 'Select State' && director.controls[i].controls.address.controls.state.touched">
+			Select State
+		</div>
+	</select>
+</div>
+<div class="col-sm-4">
+	<select class="custom-select" formControlName="city">
+		<option selected>Select City</option>
+		<option *ngFor="let city of cities" value={{city.id}}>
+			{{city.name}}
+		</option>
+		<div class="alert alert-danger"
+		*ngIf="director.controls[i].controls.address.controls.city?.value == 'Select city' && director.controls[i].controls.address.controls.city.touched">
+		Select city
+	</div>
+</select>
+</div>
+
+</div>
+</div>
+<div class="row">
+	<div class="col-sm-4">
+		<input type="text" class="form-control" placeholder="Pincode" formControlName="pincode">
+		<div class="alert alert-danger"
+		*ngIf="director.controls[i].controls.pincode?.invalid && director.controls[i].controls.pincode.touched">
+		<div *ngIf="director.controls[i].controls.pincode.errors.required">
+			Enter valid Pincode
+		</div>
+		<div *ngIf="director.controls[i].controls.pincode.errors.minlength">
+			Pincode must be at least 6 characters long.
+		</div>
+		<div *ngIf="director.controls[i].controls.pincode.errors.maxlength">
+			Pincode must be 6 characters long.
+		</div>
+	</div>
+</div>
+<div class="col-sm-4">
+	<input type="date" class="form-control" placeholder="DOB" formControlName="date_of_birth">
+	<div class="alert alert-danger"
+	*ngIf="director.controls[i].controls.date_of_birth?.invalid && director.controls[i].controls.date_of_birth.touched">
+	Enter DOB
+</div>
+</div>
+<div class="col-sm-4">
+	<input type="number" onkeydown="javascript: return event.keyCode == 69 ? false : true" class="form-control" placeholder="Mobile" formControlName="contact_number">
+	<div class="alert alert-danger"
+	*ngIf="director.controls[i].controls.contact_number?.invalid && director.controls[i].controls.contact_number.touched">
+	<div *ngIf="director.controls[i].controls.contact_number.errors.required">
+		Enter phone number
+	</div>
+	<div *ngIf="director.controls[i].controls.contact_number.errors.pattern">
+		Please enter a 10 digit number
+	</div>
+</div>
+</div>
+<div class="col-sm-4">
+	<input type="text" class="form-control" placeholder="Email" formControlName="email">
+	<div class="alert alert-danger"
+	*ngIf="director.controls[i].controls.email?.invalid && director.controls[i].controls.email.touched">
+	Enter Valid Email
+</div>
+</div>
+
+<div class="col-sm-6">
+	<select class="custom-select" formControlName="nationality">
+		<option selected>Select Nationality</option>
+		<option *ngFor="let country of nationality" value={{country.name}}>
+			{{country.name}}
+		</option>
+		<div class="alert alert-danger"
+		*ngIf="director.controls[i].controls.address.controls.nationality?.value == 'Select Nationality' && director.controls[i].controls.address.controls.nationality.touched">
+		Select Nationality
+	</div>
+</select>
+</div>
+
+<div class="col-sm-6">
+	<input type="text" class="form-control" placeholder="Father's Name" formControlName="fathers_name">
+	<div class="alert alert-danger"
+	*ngIf="director.controls[i].controls.fathers_name?.invalid && director.controls[i].controls.fathers_name.touched">
+	Enter Father's Name
+</div>
+</div>
+<div class="col-sm-6">
+	<input type="text" class="form-control" placeholder="Mother's Name" formControlName="mothers_name">
+	<div class="alert alert-danger"
+	*ngIf="director.controls[i].controls.mothers_name?.invalid && director.controls[i].controls.mothers_name.touched">
+	Enter Mother's Name
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+
+<button type="button" class="add-director-link" role="button" [disabled]="director.invalid" (click)="addDir()"><i class="fas fa-plus"></i> <strong>Add Director</strong></button>&nbsp;
+<button *ngIf="director.controls.length >2 "
+	type="button" class="add-director-link" role="button" (click)="removeDir(i)"><i class="fas fa-minus"></i> <strong>Remove Director</strong></button>
+
+</div> <!-- end of individual director information -->
+
+</div> 
+<!---------------------- Shareholder block -------------------->
+<div class="form-group row">
+	<h3 class="col-sm-3">Shareholders</h3>
+</div>						
+
+<div class="form-group row shareholder-details">
+	<label for="shareholder-address-1" class="col-sm-3 col-form-label">Details of shareholders:<br/><span class="context-specific-info">(Minimum - 2 shareholders)</span></label>
+	<div class="col-sm-9 shareholder-info" formArrayName="shareholder">
+		<div *ngFor="let sh of shareholder.controls; let i=index;">
+			<div [formGroupName]="i">
+				<label for="" class="col-form-label"><strong>Shareholder #{{i+1}} </strong></label>
+				<input type="text" class="form-control" placeholder="Shareholder {{i+1}} Name" formControlName="name">
+				<div class="alert alert-danger"
+				*ngIf="shareholder.controls[i].controls.name?.invalid && shareholder.controls[i].controls.name.touched">
+				Enter Shareholders Name
+			</div>
+			<div formGroupName="address">
+				<input type="text" class="form-control" placeholder="Shareholder {{i+1}} Address line 1" formControlName="addressLine1">
+				<div class="alert alert-danger"
+				*ngIf="shareholder.controls[i].controls.address.controls.addressLine1?.invalid && shareholder.controls[i].controls.address.controls.addressLine1.touched">
+				Enter Address of Shareholder
+			</div>
+			<input type="text" class="form-control" placeholder="Shareholder {{i+1}} Address line 2" formControlName="addressLine2">
+			<input type="text" class="form-control" placeholder="Shareholder {{i+1}} Address line 3" formControlName="addressLine3">
+			<div class="row">
+				
+				<div class="col-sm-4">
+					<select class="custom-select" formControlName="country"  (change)="getState(shareholder.controls[i].get('address').get('country').value)">
+						<option selected>Select Country</option>
+						<option *ngFor="let country of contries" value={{country.id}} >
+							{{country.name}}
+
+						</option>
+						<div class="alert alert-danger"
+						*ngIf="shareholder.controls[i].controls.address.controls.country?.invalid && shareholder.controls[i].controls.address.controls.country.touched">
+						Select Country
+					</div>
+				</select>
+			</div>
+			<div class="col-sm-4">
+				<select class="custom-select" formControlName="state" (change)="getCity(shareholder.controls[i].controls.address.controls.state.value)">
+					<option selected>Select State</option>
+					<option *ngFor="let state of states" value={{state.id}}>
+						{{state.name}}
+					</option>
+					<div class="alert alert-danger"
+					*ngIf="shareholder.controls[i].controls.address.controls.state?.invalid && shareholder.controls[i].controls.address.controls.state.touched">
+					Select State
+				</div>
+			</select>
+		</div>
+		<div class="col-sm-4">
+			<select class="custom-select" formControlName="city">
+				<option selected>Select City</option>
+				<option *ngFor="let city of cities" value={{city.id}}>
+					{{city.name}}
+				</option>
+				<div class="alert alert-danger"
+				*ngIf="shareholder.controls[i].controls.address.controls.city?.invalid && shareholder.controls[i].controls.address.controls.city.touched">
+				Select City
+			</div>
+		</select>
+	</div>
+	
+</div>
+</div>
+<div class="row">
+	<div class="col-sm-4">
+		<input type="text" class="form-control" placeholder="Pincode" formControlName="pincode">
+		<div class="alert alert-danger"
+		*ngIf="shareholder.controls[i].controls.pincode?.invalid && shareholder.controls[i].controls.pincode.touched">
+		Enter Valid Pincode
+	</div>
+</div>
+<div class="col-sm-4">
+	<input type="date" class="form-control" placeholder="DOB" formControlName="date_of_birth">
+	<div class="alert alert-danger"
+	*ngIf="shareholder.controls[i].controls.date_of_birth?.invalid && shareholder.controls[i].controls.date_of_birth.touched">
+	Enter DOB
+</div>
+</div>
+<div class="col-sm-4">
+	<input type="number" onkeydown="javascript: return event.keyCode == 69 ? false : true" class="form-control" placeholder="Mobile" formControlName="contact_number">
+	<div class="alert alert-danger"
+	*ngIf="shareholder.controls[i].controls.contact_number?.invalid && shareholder.controls[i].controls.contact_number.touched">
+	<div *ngIf="shareholder.controls[i].controls.contact_number.errors.required">
+		Enter phone number
+	</div>
+	<div *ngIf="shareholder.controls[i].controls.contact_number.errors.pattern">
+		Please enter a 10 digit number
+	</div>
+</div>
+</div>
+<div class="col-sm-4">
+	<input type="text" class="form-control" placeholder="Email" formControlName="email">
+	<div class="alert alert-danger"
+	*ngIf="shareholder.controls[i].controls.email?.invalid && shareholder.controls[i].controls.email.touched">
+	Enter Valid Email
+</div>
+</div>
+
+<div class="col-sm-6">
+	<select class="custom-select" formControlName="nationality">
+		<option selected>Select Nationality</option>
+		<option *ngFor="let country of nationality" value={{country.name}}>
+			{{country.name}}
+		</option>
+		<div class="alert alert-danger"
+		*ngIf="shareholder.controls[i].controls.address.controls.nationality?.invalid && shareholder.controls[i].controls.address.controls.nationality.touched">
+		Select Nationality
+	</div>
+</select>
+</div>
+
+<div class="col-sm-6">
+	<input type="text" class="form-control" placeholder="Father's Name" formControlName="fathers_name">
+	<div class="alert alert-danger"
+	*ngIf="shareholder.controls[i].controls.fathes_name?.invalid && shareholder.controls[i].controls.fathers_name.touched">
+	Enter Father's Name
+</div>
+</div>
+<div class="col-sm-6">
+	<input type="text" class="form-control" placeholder="Mother's Name" formControlName="mothers_name">
+	<div class="alert alert-danger"
+	*ngIf="shareholder.controls[i].controls.mothers_name?.invalid && shareholder.controls[i].controls.mothers_name.touched">
+	Enter Mother's Name
+</div>
+</div>
+</div>
+</div>
+</div>								
+<button type="button" class="add-shareholder-link" [disabled]="shareholder?.invalid" (click)="addSh()"><i class="fas fa-plus"></i> <strong>Add Shareholder</strong></button>&nbsp;
+<button *ngIf="shareholder.controls.length >2 "
+	type="button" class="add-shareholder-link" (click)="removeSh(i)"><i class="fas fa-minus"></i> <strong>Remove Shareholder</strong></button>
+
+</div> <!-- end of individual shareholder information -->
+</div> 
+
+</form>
+
+<p class="text-right">
+	<button type="submit" class="btn btn-primary" role="button" (click)="saveInfo()">  SAVE &amp; NEXT</button>
+</p>		
+</div>
+</div>
+</div>

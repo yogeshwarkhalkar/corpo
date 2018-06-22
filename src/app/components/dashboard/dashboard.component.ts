@@ -30,20 +30,19 @@ export class DashboardComponent implements OnInit {
     this.nav.hideLogin();
     this.nav.show();
     this.userid = this.cookie.get('userid');
+    localStorage.removeItem('bmId');
+    localStorage.removeItem('eventId');
     let header = new HttpHeaders().set('Content-Type', 'application/json');
-  //header.append('Content-type', 'application/json');
   	this.http.get(this.baseurl+'company/company_api/'+this.userid).subscribe(result=>{
   		this.data = result;
   	});
 
     this.http.get(this.baseurl+'workflow/meetingCount/'+this.userid).subscribe(res=>{
       this.meetings = res;
-      //console.log(this.meetings);
     })
 
     this.http.get(this.baseurl+'workflow/eventCount/'+this.userid).subscribe(res=>{
       this.events= res;
-      //console.log(this.events);
     })
   	
   }
@@ -69,6 +68,8 @@ export class DashboardComponent implements OnInit {
 addBM(company){
   localStorage.removeItem('bmId');
   this.cookie.remove('meetingSerial');
+  localStorage.removeItem('calling_process');
+  localStorage.removeItem('calling_activity');
 
   let data = {
         company:company,

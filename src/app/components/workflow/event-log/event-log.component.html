@@ -30,9 +30,9 @@
 						<tbody>
 							<tr *ngFor=" let data of pagedItems | search: searchText; let i=index; ">
 
-								<td *ngIf="status == 'open'; else closed" class="col1"><span class="table-cin"><a href="javascript:void(0)" (click)="goto(data.company_process.id)">{{data.company_process.id}}</a></span></td>
+								<td *ngIf="status == 'open'; else closed" class="col1"><span class="table-cin"><a href="javascript:void(0)" (click)="goto(data.company_process.id)">{{i+1}}</a></span></td>
 								<ng-template #closed>
-									<td class="col1"><span class="table-cin">{{data.company_process.id}}</span></td>
+									<td class="col1"><span class="table-cin">{{i+1}}</span></td>
 								</ng-template>
 								<td class="col2"><span class="table-workflow-id">{{data.process.name}}</span></td>
 								<td class="col3">{{data.company_process.created_on}}</td>

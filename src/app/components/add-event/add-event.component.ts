@@ -39,6 +39,8 @@ export class AddEventComponent implements OnInit {
   getActivity(id){
     localStorage.removeItem('bmId');
     localStorage.removeItem('eventId');
+    localStorage.removeItem('calling_process');
+    localStorage.removeItem('calling_activity');
     this.cookie.remove('meetingSerial');
     this.http.get(this.baseurl+'workflow/getActivity/'+id).subscribe(res=>{
     if(res){

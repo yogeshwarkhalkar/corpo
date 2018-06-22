@@ -23,8 +23,6 @@
         "styles.css",
         "../node_modules/font-awesome/css/fontawesome-all.css",
         "../node_modules/select2/dist/css/select2.min.css"
-        
-        
       ],
       "scripts": [
         "../node_modules/jquery/dist/jquery.min.js",

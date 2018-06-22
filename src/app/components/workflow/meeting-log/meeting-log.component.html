@@ -62,9 +62,14 @@
 									</ng-template>
 								</td>
 
+								<td *ngIf="data.meeting_type == 'AGM' && status == 'close' else resolution" class="col9 details text-center">
+									Not Available
+								</td>
+								<ng-template #resolution>
 								<td class="col9 details text-center" *ngIf="status == 'close'">
 									<a href="javascript:void(0)" (click)="generateResolution(data.id,data.meeting_type)" >Generate Resolution</a>
 								</td>
+							</ng-template>
 						</tr>
 
 					</tbody>

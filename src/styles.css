@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Raleway');
-@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+/*@import "~@angular/material/prebuilt-themes/indigo-pink.css";*/
 
 @charset "UTF-8";
 
@@ -583,9 +583,10 @@ p.cin-number{
 	font-size: 1.1em;
 	font-weight: bold;
 	color: #515151;
+	margin-bottom: 0px;
 }
 p.cin-number img{margin-top: -5px;}
-p.company-name{font-size: 1.5em; text-align: center; padding: 0 0.7em;color: #515151;}
+p.company-name{font-size: 1.5em; text-align: center; padding: 0 0.7em;color: #515151;margin-bottom: 0px;}
 .company-specs{background-color: #e0eeef; padding: 0.7em 2em;}
 .company-specs span.label{
 	width: 160px;
@@ -624,6 +625,8 @@ p.company-name{font-size: 1.5em; text-align: center; padding: 0 0.7em;color: #51
 }
 .corporate-action, .annual-compliance, .company-registers{
 	padding: 1em 0.7em;
+	padding-top: 0px;
+	padding-bottom: 0px;
 }
 .corporate-action h3, .annual-compliance h3, .company-registers h3{
 	background-image:url("assets/images/corporate-action-icon.png"); 

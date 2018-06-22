@@ -13,7 +13,7 @@ import { AuthService } from '../../../services/auth.service';
 })
 export class CreateCompany3Component implements OnInit {
 
-	form3: FormGroup;
+	intellectualProperty: FormGroup;
   show: boolean = false;
   userName:any;
   editCompany:any;
@@ -23,17 +23,19 @@ export class CreateCompany3Component implements OnInit {
     this.userName = localStorage.getItem('userName');
     this.editCompany = localStorage.getItem('editCompany');
     if(this.editCompany){
-  	this.form3 = this.fb.group({
+  
+  	this.intellectualProperty = this.fb.group({
   		trademark: [this.company.editCompanyData['metadata']['trademark'], Validators.required],
       searchType: [null],
       prosecution: [null]
   	})
+  
     if(this.company.editCompanyData['metadata']['trademark'] == 'Yes'){
       this.show=true;
     }
   }
   else{
-    this.form3 = this.fb.group({
+    this.intellectualProperty = this.fb.group({
       trademark: [null, Validators.required],
       searchType: [null],
       prosecution: [null]
@@ -64,18 +66,18 @@ validateAllFormFields(formGroup: FormGroup) {
 }
 
   onSubmit(){
-    if(this.form3.valid){
+    if(this.intellectualProperty.valid){
       if(this.editCompany){
-      this.company.updateData(this.form3.value,this.editCompany);
+      this.company.updateData(this.intellectualProperty.value,this.editCompany);
       this.router.navigateByUrl('/createCompany4');
     }
     else{
-    this.company.addData(this.form3.value);
+    this.company.addData(this.intellectualProperty.value);
     this.router.navigateByUrl('/createCompany4');
   }
   }
   else{
-    this.validateAllFormFields(this.form3);
+    this.validateAllFormFields(this.intellectualProperty);
   }
   }
 

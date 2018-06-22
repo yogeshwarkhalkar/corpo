@@ -33,7 +33,7 @@
 					</a>
 				</li>
 			</ul>
-			<form id="form-create-company-step2" class="form-create-company" [formGroup]="form2" novalidate>
+			<form id="form-create-company-step2" class="form-create-company" [formGroup]="incorporationDetails" novalidate>
 				<div class="form-group row">
 					<label for="proposed-company-name" class="col-sm-3 col-form-label">Proposed Name of Company </label>
 					<div class="col-sm-9">
@@ -42,7 +42,7 @@
 						<i class="fa fa-info-circle context-specific-info" aria-hidden="true"></i>
 						<span class="context-specific-info">name to have a word reflecting the business activity (For Name Special character ("!@#$%^&*()") are not allow.)</span>
 						<div class="alert alert-danger"
-						*ngIf="form2.get('name').invalid && form2.get('name').touched">
+						*ngIf="incorporationDetails.get('name').invalid && incorporationDetails.get('name').touched">
 						Enter company name
 
 					</div>
@@ -70,7 +70,7 @@
 				</div>
 
 				<div class="alert alert-danger"
-				*ngIf="form2.get('industry_type').invalid && form2.get('industry_type').touched">
+				*ngIf="incorporationDetails.get('industry_type').invalid && incorporationDetails.get('industry_type').touched">
 				Select one of the option
 			</div>
 		</div>
@@ -90,68 +90,15 @@
 					<span class="custom-control-description">Rented Property</span>
 				</label>
 				<div class="alert alert-danger"
-				*ngIf="form2.get('property_type').invalid && form2.get('property_type').touched">
+				*ngIf="incorporationDetails.get('property_type').invalid && incorporationDetails.get('property_type').touched">
 				Select property
 			</div>
 		</div>
 	</div>
-	<div class="form-group row client-address" formGroupName="address">
+	<div class="form-group row client-address">
 		<label for="client-address-1" class="col-sm-3 col-form-label">Registered office address</label>
-		<div class="col-sm-9">
-			<input type="text" class="form-control" id="client-address-1" placeholder="Address line 1" formControlName="address1">
-			<div class="alert alert-danger"
-			*ngIf="form2.get('address').get('address1').invalid &&
-			form2.get('address').get('address1').touched">
-			Enter Address Line 1
-		</div>
-		<input type="text" class="form-control" id="client-address-2" placeholder="Address line 2" formControlName="address2">
-		<input type="text" class="form-control" id="client-address-3" placeholder="Address line 3" formControlName="address3">
-		<div class="row">
-			<div class="col-sm-4">
-				<select class="custom-select" formControlName="state_or_province" (change)="getCity()">
-					<option selected>Select State</option>
-					<option *ngFor="let state of states" value={{state.id}}>
-						{{state.name}}
-					</option>
-				</select>
-				<div class="alert alert-danger"
-				*ngIf="form2.get('address').get('state_or_province').value == 'Select State' &&
-				form2.get('address').get('state_or_province').touched">
-				Select State
-			</div>
-		</div>
-		<div class="col-sm-4">
-			<select class="custom-select" formControlName="city">
-				<option selected>Select City</option>
-				<option *ngFor="let city of cities" value={{city.id}}>
-					{{city.name}}
-				</option>
-			</select>
-			<div class="alert alert-danger"
-			*ngIf="form2.get('address').get('city').value == 'Select City' &&
-			form2.get('address').get('city').touched">
-			Select City
-		</div>
-	</div>
-
-	<div class="col-sm-4">
-		<input type="text" class="form-control" id="address-pincode" value="Pincode" placeholder="Pincode" formControlName="pincode">
-		<div class="alert alert-danger"
-		*ngIf="form2.get('address').get('pincode').invalid && (form2.get('address').get('pincode').dirty || form2.get('address').get('pincode').touched)">
-
-		<div *ngIf="form2.get('address').get('pincode').errors.required">
-			Pincode is required.
-		</div>
-		<div *ngIf="form2.get('address').get('pincode').errors.maxlength">
-			Pincode must be 6 characters long.
-		</div>
-		<div *ngIf="form2.get('address').get('pincode').errors.minlength">
-			Pincode must be at least 6 characters long.
-		</div>
-	</div>										
-</div>
-
-</div>
+				<div class="col-sm-9">
+	<app-address [address]="incorporationDetails.get('address')"></app-address>
 </div>
 </div>
 <div class="form-group row">
@@ -159,7 +106,7 @@
 	<div class="col-sm-9">
 		<textarea class="form-control" id="business-description" rows="5" formControlName="description"></textarea>
 		<div class="alert alert-danger"
-		*ngIf="form2.get('description').invalid && form2.get('description').touched">
+		*ngIf="incorporationDetails.get('description').invalid && incorporationDetails.get('description').touched">
 		Enter company description
 	</div>
 </div>

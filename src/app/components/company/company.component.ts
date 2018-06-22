@@ -44,12 +44,11 @@ export class CompanyComponent implements OnInit {
 
   selectCompany(companyId){
   	this.companyId = companyId;
-
   }
 
   onSubmit(){
     if(!this.status && this.type == 'meeting'){
-        let tempUrl = '/activity/'+this.companyId+'/'+2+'/'+29;
+        let tempUrl = '/activity/'+this.companyId+'/2/29';
         this.router.navigateByUrl(tempUrl);
     }
     else if(!this.status && this.type == 'event'){
@@ -89,7 +88,5 @@ export class CompanyComponent implements OnInit {
     else{
        this.router.navigateByUrl('/dashboard');  
     }
-
   }
-
 }

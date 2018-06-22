@@ -14,7 +14,7 @@
 			
 			<form [formGroup]="activityForm"  id="form-workflow-details-right-of-issue-of-shares" 			novalidate>
 				<ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1"
-				[speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
+				[speed]="200" [showSpinner]="false" [direction]="'leftToRightIncreased'"
 				[color]="'red'" [trickleSpeed]="250" [thick]="false" [ease]="'linear'"
 				></ng-progress>
 				<div class="form-group row step-number-container">
@@ -32,7 +32,13 @@
 						<!-- Case to find control types (ex. radio, checkbox, text, button, file) -->
 						<div [ngSwitch]="prop.type">
 							<!-- Show label for control -->
+							<div *ngIf="(id==29 && prop.key=='address') && !callingEvent else showlabel">
+								<!-- <label [attr.for]="prop">{{prop.label}}</label> -->
+							</div>
+							<ng-template #showlabel>
 							<label [attr.for]="prop">{{prop.label}}</label>
+
+						</ng-template>
 							<!-----   Radio Control     ------>
 							<div *ngSwitchCase="'radio'">
 								<div class="form-group">
@@ -60,7 +66,7 @@
 											<span class="custom-control-indicator"></span>
 											<span class="custom-control-description">{{option.first_name}}</span>
 										</label>
-										<label class="custom-control custom-radio">
+										<label *ngIf="id != 112" class="custom-control custom-radio">
 											<input type="radio" [name]="prop.key" [formControlName]="prop.key"
 											value="secretory" class="custom-control-input" (click)="onRadioClick(prop.key,'secretory')"> 
 											<span class="custom-control-indicator"></span>
@@ -137,27 +143,31 @@
 							<div class="form-group" *ngSwitchCase="'select'">
 
 								<div  *ngIf="prop.key == 'agendas'; else selectnext">
-									<select2 [data]="exampleData" [options]="options" [width]="400" [value]="agendaArray"
+									<select2 id="e1" [data]="exampleData" [options]="options" [width]="400" [value]="agendaArray"
 									[formControlName]="prop.key" (valueChanged)="changed1($event)" ngDefaultControl >
 								</select2>
 							</div>
 
-							<div  *ngIf="(prop.key == 'meeting')||(prop.key == 'date_1'); else selectnext">
+							<div  *ngIf="(prop.key == 'meeting')||(prop.key == 'address'); else selectnext">
+								<div *ngIf="(id==29 && prop.key=='address') && !callingEvent else showselect">
+						</div>
+						<ng-template #showselect>
 								<select2 [data]="allAgenda" [options]="options" [width]="500" [value]="allAgendaArray"
 								[formControlName]="prop.key" (valueChanged)="changed2($event)" ngDefaultControl >
 							</select2>
+						</ng-template>
 						</div>
 
-						<div  *ngIf="prop.key == 'address'; else selectnext">
-							<select2 id="e1" [data]="exampleData" [options]="options" [width]="500" [value]="agendaArray" [formControlName]="prop.key" (valueChanged)="changed($event)" ngDefaultControl >
+						<div  *ngIf="prop.key == 'date_1'; else selectnext">
+							<select2  [data]="exampleData" [options]="options" [width]="500" [value]="agendaArray" [formControlName]="prop.key" (valueChanged)="changed($event)" ngDefaultControl >
 							</select2>
 						</div>
 						<div class="form-group">
-								<div *ngIf="prop.key=='address'">
+								<!-- <div *ngIf="prop.key=='date_1'">
 									<div *ngIf="showmatter">
 										<input type="text" class="form-control" placeholder="Enter Matter to be transected" (change)="selectOther($event.target.value)" (change)="addAgenda()">
 									</div>
-								</div>
+								</div> -->
 								<select class="custom-select" [formControlName]="prop.key" *ngIf="prop.key=='director'" (change)="onChangeCheck(prop.key,$event.target.value)">
 									<option value="" selected="true" disabled="disabled">Select Board Meeting</option>
 									<option *ngFor="let id of bmSerials" [value]="id[1]">
@@ -173,8 +183,9 @@
 						<div *ngSwitchCase="'datetime-local'">
 							<div class="form-group">
 
-								<input class="form-control" type="datetime-local" name="meetingdate" style="width: 40%" [min]="today" [value]="today" [formControlName]="prop.key" (change)="dateValidator($event.target.value)">
+								<input class="form-control" type="datetime-local" name="meetingdate" style="width: 50%" [min]="today" [value]="today" [formControlName]="prop.key" (change)="dateValidator($event.target.value)">
 							</div>
+							
 						</div>
 
 						<!-------------- Button control ----------------------->
@@ -232,7 +243,7 @@
 								</label>							
 
 								<br>
-								<span *ngIf="uploadedFile">File Uploaded <a href="javascript:void(0)" (click)="showFiles(prop.name,uploadedFile)">link to file</a></span>	
+								<span *ngIf="uploadedFile">File Uploaded<a href="javascript:void(0)" (click)="showFiles(prop.name,uploadedFile)">link to file</a></span>	
 							</div>
 
 							<div *ngIf="prop.use=='egm_meeting'">
@@ -355,7 +366,8 @@
 
 			<p class="text-center">
 				<a class="btn btn-primary btn-with-icon btn-cancel" routerLink="/dashboard" role="button">CANCEL</a>
-				<button type="button" class="btn btn-primary btn-with-icon btn-save" (click)="onSubmit()">NEXT</button>
+				<a class="btn btn-primary btn-with-icon btn-save" href="javascript:void(0)" role="button"(click)="onSubmit()">NEXT</a>
+				<!-- <button type="button" class="btn btn-primary btn-with-icon btn-save" (click)="onSubmit()">NEXT</button> -->
 			</p>
 			<nav>
 				<ul class="pagination justify-content-center" >
@@ -399,7 +411,7 @@
 						<div class="row">
 							<div class="col-12 tile-colour-1">
 								<div class="steps-listing">
-									<ul>
+									<ul *ngIf="steps else nosteps">
 										<li *ngFor="let step of steps; let i=index; ">
 											<span class="label">Step {{i+1}}</span>
 											
@@ -415,6 +427,9 @@
 											
 										</li>
 									</ul>
+									<ng-template #nosteps>
+										This process is completed
+									</ng-template>
 								</div>
 							</div>
 						</div> <!-- End Row -->						

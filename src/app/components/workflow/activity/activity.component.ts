@@ -11,8 +11,6 @@ import { WorkflowService } from '../../../services/workflow.service';
 import { PagerService } from '../../../services/pager.service';
 import { AuthService } from '../../../services/auth.service';
 
-
-
 import { Select2OptionData } from 'ng4-select2';
 import { CookieService } from 'ngx-cookie';
 import { NgProgress } from 'ngx-progressbar';
@@ -38,91 +36,93 @@ export class ActivityComponent implements OnInit {
 
 	activityForm: FormGroup;
 
-	 public objectProps;
+	public objectProps;
 	baseurl:string = this.url.BASE_URL; 
- reader = new FileReader();
- company:any;
- activity: any;
- activityId: any;
- controls: any;
- process: any;
- processId:any;
- steps : any;
- id: number;
- files: File = null;
- formdata = new FormData();
- objectKeys = Object.keys;
- group:any;
- stakeholders:any;
- directors:any;
- shareholders:any;
- directorsId : Array<any>=[];
- stakeholdersId:Array<any>=[];
- emailto:any;
- next:boolean=false;
- navigate: number=1;
- preNav:number;
- nextNav:number;
- lastActivity:number;
- actdata: any;
- remark:any;
- email:boolean=false;
- emailSent:boolean;
- is_last:boolean = false;
- is_first:boolean = false;
- showaddr:boolean=false;
- showserial:boolean=false;
- showmatter:boolean=false;
- showsecretory:boolean=false;
- showbodycorporate:boolean=false;
- companyName:any;
- cin:any;
- address:any;
- city:any;
- state:any;
- place:any;
- meeting:any;
- matter:any;
- agendas:any;
- agendaArray: any[]=[];
- allAgendaArray:any[]=[];
- firstActivityId:any;
- stepId: number;
- formGroup = {};
- meetingId:any;
- meetingNo:any;
- egmNo:any;
- agmNo:any;
- meetingSerials:any;
- bmSerials:any;
- meetingSerial:any;
- isupdate:boolean=false;
- updatedAgenda:any;
- displayFile:any;
- agendaDiff:any;
- showNext:boolean=false;
- uploadedFile:any;
- screenError:any;
- short_doc_id:any;
- long_doc_id:any;
- pager: any = {};
- pagedItems: any[];
- exampleData: Array<Select2OptionData>;
- allAgenda: Array<Select2OptionData>;
- options: Select2Options;
- current: string;
- value:string[];
- resolutionList:any;
- showResolution:boolean=false;
- signingDirector:any;
- meetingDate:any;
- meetingAddress:any;
- currentdatetime:any;
- eventId:any;
- today:any;
- today1:any;
- bodyEmail:any[]=[];
- noticeFor:any[]=[];
+	reader = new FileReader();
+	company:any;
+	activity: any;
+	activityId: any;
+	controls: any;
+	process: any;
+	processId:any;
+	steps : any;
+	id: number;
+	files: File = null;
+	formdata = new FormData();
+	objectKeys = Object.keys;
+	group:any;
+	stakeholders:any;
+	directors:any;
+	shareholders:any;
+	directorsId : Array<any>=[];
+	stakeholdersId:Array<any>=[];
+	emailto:any;
+	next:boolean=false;
+	navigate: number=1;
+	preNav:number;
+	nextNav:number;
+	lastActivity:number;
+	actdata: any;
+	remark:any;
+	email:boolean=false;
+	emailSent:boolean;
+	is_last:boolean = false;
+	is_first:boolean = false;
+	showaddr:boolean=false;
+	showserial:boolean=false;
+	showmatter:boolean=false;
+	showsecretory:boolean=false;
+	showbodycorporate:boolean=false;
+	companyName:any;
+	cin:any;
+	address:any;
+	city:any;
+	state:any;
+	place:any;
+	meeting:any;
+	matter:any;
+	agendas:any;
+	agendaArray: any[]=[];
+	allAgendaArray:any[]=[];
+	firstActivityId:any;
+	stepId: number;
+	formGroup = {};
+	meetingId:any;
+	meetingNo:any;
+	egmNo:any;
+	agmNo:any;
+	meetingSerials:any;
+	bmSerials:any;
+	meetingSerial:any;
+	isupdate:boolean=false;
+	updatedAgenda:any;
+	displayFile:any;
+	agendaDiff:any;
+	showNext:boolean=false;
+	uploadedFile:any;
+	screenError:any;
+	short_doc_id:any;
+	long_doc_id:any;
+	pager: any = {};
+	pagedItems: any[];
+	exampleData: Array<Select2OptionData>;
+	allAgenda: Array<Select2OptionData>;
+	options: Select2Options;
+	current: string;
+	value:string[];
+	resolutionList:any;
+	showResolution:boolean=false;
+	signingDirector:any;
+	meetingDate:any;
+	meetingAddress:any;
+	currentdatetime:any;
+	uploadedCompanyDoc:any;
+	eventId:any;
+	today:any;
+	today1:any;
+	bodyEmail:any[]=[];
+	noticeFor:any[]=[];
+	callingEvent:any;
 
 	constructor(private http:HttpClient, private router: Router,private url:UrlserviceService,
 		private actRoute: ActivatedRoute, private fb:FormBuilder, private location: Location,
@@ -163,10 +163,13 @@ export class ActivityComponent implements OnInit {
 			if(!this.meetingSerial)
 				this.meetingSerial = this.cookie.get('meetingSerial');
 
-
+			let calling_process = localStorage.getItem('calling_process');	
+			this.callingEvent = calling_process;
+			let calling_act = parseInt(localStorage.getItem('calling_activity'));
 			if((this.processId == 2 && this.id == 29)){
-
-				this.workflow.getAgenda().subscribe(res=>{
+				
+				if(!(calling_process && calling_act)){
+					this.workflow.getAgenda().subscribe(res=>{
 							//console.log(this.agendas);
 							this.exampleData=[];
 
@@ -175,6 +178,36 @@ export class ActivityComponent implements OnInit {
 									text: res[a]['short_agenda']});
 							}
 							console.log(this.exampleData);
+							this.agendas = res;
+
+							this.options = {
+								multiple: true
+							}
+
+							
+						})
+				}
+			}
+			else if(this.processId != 2 || (calling_process && calling_act)){
+				let agendaProcess = this.processId;
+				if(calling_process && calling_act){
+					agendaProcess = calling_process;
+				}
+				this.workflow.getProcessAgenda(agendaProcess).subscribe(res=>{
+							//console.log(this.agendas);
+							this.exampleData=[];
+
+							for(let a in res){
+								this.exampleData.push({ id: res[a]['short_agenda'],
+									text: res[a]['short_agenda']});
+								if(this.agendaArray.length < res.length){
+									this.agendaArray.push(res[a]['short_agenda']);
+								}
+								
+
+							}
+							console.log(this.exampleData);
+							console.log(this.agendaArray);
 							this.agendas = res;
 
 							this.options = {
@@ -200,10 +233,11 @@ export class ActivityComponent implements OnInit {
 			this.remark = res['process_activity']['remark'];
 			console.log(this.is_first);
 
-			this.workflow.updateProcessActivity(this.eventId,this.activityId).toPromise()
-			.then(updateres=>{
-				console.log(updateres);
-			})
+			if(this.eventId){
+				this.workflow.updateProcessActivity(this.eventId,this.activityId).toPromise()
+				.then(updateres=>{
+					console.log(updateres);
+				})
 
 			// GET workflow steps based on workflow ID
 			this.workflow.getWorkflowSteps(this.eventId).subscribe(res=>{
@@ -214,25 +248,27 @@ export class ActivityComponent implements OnInit {
 			},
 			err =>{
 				this.steps = "No steps found"
-			}
-			)
+			})
+		}
 
-			this.showResolution=false;
-			this.dataObject = this.controls;
+		this.showResolution=false;
+		this.dataObject = this.controls;
 
 			//Get all control names from database config
 			this.objectProps =
 			Object.keys(this.dataObject)
 			.map(prop => {
-				console.log(prop);
+				
 				return Object.assign({}, { key: prop} , this.dataObject[prop]);
 			});
 			for(let prop of Object.keys(this.dataObject)) {
+				
 				console.log(prop);
 				if(prop == 'email'){
 					this.email=true;
 				}
-				if(prop == 'allAgenda' || prop == 'date_1'){
+				if(prop == 'allAgenda' || prop == 'address'){
+
 					this.workflow.getAgenda().subscribe(res=>{
 						this.allAgenda=[];
 						for(let a in res){
@@ -240,6 +276,7 @@ export class ActivityComponent implements OnInit {
 								text: res[a]['short_agenda']});
 						}
 						console.log(this.allAgenda);
+						console.log(this.exampleData);
 						this.agendas = res;
 
 						this.options = {
@@ -294,7 +331,9 @@ export class ActivityComponent implements OnInit {
 				})
 
 				this.activityForm = this.fb.group(this.formGroup);
+
 				jQuery(document).ready( function($) {
+
 					$('#button').click(function(){
 						$('#resi').click();
 					});      
@@ -503,21 +542,21 @@ onChangeCheck(key, selected){
 			console.log(today.toDateString());
 			console.log(today.toISOString());
 			console.log(today.toLocaleString());
-			//if(bmDate > today.toISOString())
-			//{
-		//		this.screenError = "Without completing Board Meeting you can't trigger EGM";
-		//		this.next = false;
-		//	}
-		//	else{
+			// if(bmDate > today.toISOString())
+			// {
+			// 	this.screenError = "Without completing Board Meeting you can't trigger EGM";
+			// 	this.showNext = false;
+			// }
+			// else{
 
-			this.exampleData=[];
+				this.exampleData=[];
 
-			for(let a in agenda){
-				console.log(a)
-				this.exampleData.push({ id: agenda[a],
-					text: agenda[a]});
-			}
-			console.log(this.exampleData);
+				for(let a in agenda){
+					console.log(a)
+					this.exampleData.push({ id: agenda[a],
+						text: agenda[a]});
+				}
+				console.log(this.exampleData);
 				//this.agendas = res;
 
 				this.options = {
@@ -529,9 +568,9 @@ onChangeCheck(key, selected){
 				this.showNext = true;
 
 
-		//	}
+			// }
 
-	});
+		});
 	}
 	this.showNext = true;
 }
@@ -542,11 +581,13 @@ checkAvailableMeeting(value,key){
 		this.screenError = "There is no available Board Meeting please Create New";		
 		this.validateAllFormFields(this.activityForm);
 		this.activityForm.get(key).setErrors({'required':true});
+		this.showNext  = false;
 		
 	}
 	else{
 		this.screenError = null;
 		this.activityForm.get(key).setErrors(null);
+		this.showNext  =true;
 	}
 }
 
@@ -580,6 +621,7 @@ setfileName(name){
 	console.log(name);
 	let bmid = localStorage.getItem('bmId');
 	this.http.get(this.baseurl+'workflow/getFilename/'+bmid+'/'+name).subscribe(res=>{
+		console.log(res);
 		this.uploadedFile = res;
 	})
 
@@ -601,17 +643,17 @@ selectOther(matter){
 // Add Matter on selection to list
 changed(data: {value: string[]}) {
 	// this.current = data.value.join(' | ');
-
 	this.agendaArray=data.value;
 	console.log(this.agendaArray);
-	this.activityForm.get('address').setValue(' ');
+	this.activityForm.get('date_1').setValue(' ');
 }
 
 changed1(data: {value: string[]}) {
 	console.log("resolution ",data.value);
 
 	this.agendaArray=data.value;
-	this.activityForm.get('agendas').setValue(' ');
+	// this.activityForm.get('agendas').setValue(' ');
+	console.log(this.agendaArray);
 }
 
 changed2(data: {value: string[]}) {
@@ -652,36 +694,53 @@ generateAttendance(docId){
 	let allShareholder:Array<any>=[];	
 	let presentShareholder:Array<any>=[];
 	let bmid = localStorage.getItem('bmId');
+	let mdate:number;
 
-	if(this.emailto == 'director'){
-		for (let d of this.directors) {
-			let name= d['first_name']+' '+d['last_name'];
-			for(let id of this.directorsId){
-				if(d['id'] == id){
+	this.workflow.getBoardMeeting(bmid).subscribe(res=>{
+		let meetingDate = new Date(res['board_meeting']['bm_date']);
+		let today = new Date();
+		console.log(today,meetingDate);
+		// if(meetingDate > today)
+		// {
+		// 	alert('Wait for meeting to complete');
+		// 	localStorage.removeItem('calling_process');
+		// 	localStorage.removeItem('calling_activity');
+		// 	localStorage.removeItem('bmId');
+		// 	localStorage.removeItem('calling_event');
+		// 	this.router.navigateByUrl('/dashboard');
+		// 	// return;
+		// }
+		// else{
+			mdate = new Date(res['board_meeting']['bm_date']).getTime();
+			if(this.emailto == 'director'){
+				for (let d of this.directors) {
 					let name= d['first_name']+' '+d['last_name'];
-					absentDirector.push(name.toLocaleUpperCase());
-					break;
-				}
-				if(d['id'] != id){
-					let name= d['first_name']+' '+d['last_name'];
-					presentDirector.push(name.toLocaleUpperCase());	
-					break;
-				}
-			}
-			allDirector.push(name.toLocaleUpperCase());		
-			if(!presentDirector.includes(name.toLocaleUpperCase()) && !absentDirector.includes(name.toLocaleUpperCase())){
-				presentDirector.push(name.toLocaleUpperCase());
+					for(let id of this.directorsId){
+						if(d['id'] == id){
+							let name= d['first_name']+' '+d['last_name'];
+							absentDirector.push(name.toLocaleUpperCase());
+							break;
+						}
+						if(d['id'] != id){
+							let name= d['first_name']+' '+d['last_name'];
+							presentDirector.push(name.toLocaleUpperCase());	
+							break;
+						}
+					}
+					allDirector.push(name.toLocaleUpperCase());		
+					if(!presentDirector.includes(name.toLocaleUpperCase()) && !absentDirector.includes(name.toLocaleUpperCase())){
+						presentDirector.push(name.toLocaleUpperCase());
 
-			}
-		}
+					}
+				}
 		//Get Board Meeting data
-		this.workflow.getBoardMeeting(bmid).subscribe(res=>{
+		// this.workflow.getBoardMeeting(bmid).subscribe(res=>{
 			let data = {
 				doc_id:docId,
 				allDirector:allDirector,
 				absentDirector:absentDirector,
 				company:this.companyName,
-				meetingDate:new Date(res['board_meeting']['bm_date']).getTime(),
+				meetingDate:mdate,
 				addr:this.address,
 				serial:res['board_meeting']['serial'],
 				place: res['board_meeting']['address']
@@ -700,68 +759,68 @@ generateAttendance(docId){
 
 		})
 
-	})
-	}
-	if(this.emailto == 'stakeholder'){
-		for (let stk of this.stakeholders) {
-			let name = stk['first_name']+' '+stk['last_name'];
-			for(let did of this.directors){
-				let name = did['first_name']+' '+did['last_name'];
-				if (!allDirector.includes(name.toLocaleUpperCase()))
-					allDirector.push(name.toLocaleUpperCase());		
-				for(let d of this.stakeholdersId){
-					if(did['id'] == String(d)){
-						let name= did['first_name']+' '+did['last_name'];
-						if (!absentDirector.includes(name.toLocaleUpperCase())){
-							absentDirector.push(name.toLocaleUpperCase());
-						}
-						break;
+	// })
+}
+if(this.emailto == 'stakeholder'){
+	for (let stk of this.stakeholders) {
+		let name = stk['first_name']+' '+stk['last_name'];
+		for(let did of this.directors){
+			let name = did['first_name']+' '+did['last_name'];
+			if (!allDirector.includes(name.toLocaleUpperCase()))
+				allDirector.push(name.toLocaleUpperCase());		
+			for(let d of this.stakeholdersId){
+				if(did['id'] == String(d)){
+					let name= did['first_name']+' '+did['last_name'];
+					if (!absentDirector.includes(name.toLocaleUpperCase())){
+						absentDirector.push(name.toLocaleUpperCase());
 					}
-					if(did['id'] != String(d)){
-						let name= did['first_name']+' '+did['last_name'];
-						if (!presentDirector.includes(name.toLocaleUpperCase())){
-							presentDirector.push(name.toLocaleUpperCase());
-						}
-						break;
-					}
+					break;
 				}
-				if(!presentDirector.includes(name.toLocaleUpperCase()) && !absentDirector.includes(name.toLocaleUpperCase())){
-					presentDirector.push(name.toLocaleUpperCase());
+				if(did['id'] != String(d)){
+					let name= did['first_name']+' '+did['last_name'];
+					if (!presentDirector.includes(name.toLocaleUpperCase())){
+						presentDirector.push(name.toLocaleUpperCase());
+					}
+					break;
 				}
 			}
-			for(let sid of this.shareholders){
-				let name= sid['first_name']+' '+sid['last_name'];
-				if (!allShareholder.includes(name.toLocaleUpperCase()))
-					allShareholder.push(name.toLocaleUpperCase())
-				for(let s of this.stakeholdersId){
-					if(sid['id'] == String(s)){
-						let name= sid['first_name']+' '+sid['last_name'];
-						if (!absentShareholder.includes(name.toLocaleUpperCase())){
-							absentShareholder.push(name.toLocaleUpperCase());
-						}
-						break;	
-					}
-					if(sid['id'] != String(s)){
-						let name= sid['first_name']+' '+sid['last_name'];
-						if (!presentShareholder.includes(name.toLocaleUpperCase())){
-							presentShareholder.push(name.toLocaleUpperCase());
-						}
-						break;
-					}
-
-				}
-				if(!presentShareholder.includes(name.toLocaleUpperCase()) && !absentShareholder.includes(name.toLocaleUpperCase())){
-					presentShareholder.push(name.toLocaleUpperCase());
-
-				}
+			if(!presentDirector.includes(name.toLocaleUpperCase()) && !absentDirector.includes(name.toLocaleUpperCase())){
+				presentDirector.push(name.toLocaleUpperCase());
 			}
+		}
+		for(let sid of this.shareholders){
+			let name= sid['first_name']+' '+sid['last_name'];
+			if (!allShareholder.includes(name.toLocaleUpperCase()))
+				allShareholder.push(name.toLocaleUpperCase())
+			for(let s of this.stakeholdersId){
+				if(sid['id'] == String(s)){
+					let name= sid['first_name']+' '+sid['last_name'];
+					if (!absentShareholder.includes(name.toLocaleUpperCase())){
+						absentShareholder.push(name.toLocaleUpperCase());
+					}
+					break;	
+				}
+				if(sid['id'] != String(s)){
+					let name= sid['first_name']+' '+sid['last_name'];
+					if (!presentShareholder.includes(name.toLocaleUpperCase())){
+						presentShareholder.push(name.toLocaleUpperCase());
+					}
+					break;
+				}
 
+			}
+			if(!presentShareholder.includes(name.toLocaleUpperCase()) && !absentShareholder.includes(name.toLocaleUpperCase())){
+				presentShareholder.push(name.toLocaleUpperCase());
 
-			
+			}
 		}
 
 
-		this.workflow.getBoardMeeting(bmid).subscribe(res=>{
+		
+	}
+
+
+		// this.workflow.getBoardMeeting(bmid).subscribe(res=>{
 			let data = {
 				doc_id:docId,
 				allDirector:allDirector,
@@ -770,7 +829,7 @@ generateAttendance(docId){
 				absentShareholder: absentShareholder,
 				presentShareholder: presentShareholder,
 				company:this.companyName,
-				meetingDate:new Date(res['board_meeting']['bm_date']).getTime(),
+				meetingDate:mdate,
 				addr:this.address,
 				serial:res['board_meeting']['serial'],
 				place: res['board_meeting']['address']
@@ -789,10 +848,10 @@ generateAttendance(docId){
 
 		})
 
-	})
-	}
+	// })
+}
 
-	console.log(allDirector);
+console.log(allDirector);
 	// GET meeting data to generate attendance sheet
 	
 
@@ -809,6 +868,11 @@ generateAttendance(docId){
 		console.log(res);
 	})
 	this.showNext = true;
+// }
+
+});
+
+
 
 
 }
@@ -820,16 +884,18 @@ generateMinutes(docId){
 	let result:any;
 	let today = new Date();
 	let position:any;
+	let serial:any;
 
 	// GET meeting data to generate MOM
 	this.workflow.getBoardMeeting(bmid).subscribe(res=>{
 		result=res
+		serial = res['board_meeting']['serial'];
 		console.log(res);
 		if(res['board_meeting']['approved_by_director']){
 			position = 'Director';
 		}
 		else
-			position  = 'Secretory';
+			position  = 'Company Secretary';
 		let data = {
 			doc_id:docId,
 			position:position,
@@ -859,7 +925,7 @@ generateMinutes(docId){
 		this.http.post(this.baseurl+'workflow/generateAgenda',JSON.stringify(data),
 			{responseType:'blob',
 			headers:new HttpHeaders().append('Content-Type', 'text/plain; charset=utf-8')}).subscribe(res=>{
-				saveAs(res,'minutes of meeting.docx')
+				saveAs(res,'minutes of meeting-'+serial+'.docx')
 			},
 			(err:HttpErrorResponse)=>{
 				console.log(err)
@@ -881,15 +947,14 @@ generateResolution(docId){
 	let meeting_type:any;
 	if(this.activityForm.get('upload').valid &&	this.activityForm.get('matter').valid ){
 		if(this.agendaArray.length <= 0){
-			this.activityForm.get('meeting').reset();			
+			this.activityForm.get('agendas').reset();			
 			this.validateAllFormFields(this.activityForm);
 			return;
 		}
 		else{
-			alert('reset');
-			this.activityForm.get('meeting').clearValidators();
-			this.activityForm.get('meeting').setValidators(null);
-			this.activityForm.get('meeting').updateValueAndValidity();
+			this.activityForm.get('agendas').clearValidators();
+			this.activityForm.get('agendas').setValidators(null);
+			this.activityForm.get('agendas').updateValueAndValidity();
 		}
 
 		let bmid = localStorage.getItem('bmId');
@@ -898,18 +963,22 @@ generateResolution(docId){
 		let position:any;
 		let did = this.activityForm.get('upload').value;
 		let place = this.activityForm.get('matter').value;
-
+		console.log(this.agendaArray);
 		if(this.allAgendaArray.length > 0){
 			for(let a of this.allAgendaArray){
+				console.log(a);
 				if(!this.agendaArray.includes(a)){
 					this.agendaArray.push(a);
 				}
 			}
+			console.log(this.allAgendaArray);
+			console.log(this.agendaArray);
 		}
 
 		meeting_type = localStorage.getItem('meeting_type');
 		if(meeting_type == 'EGM')
 			docId = 39;
+		
 
 	// GET required data to generate Resolution from board_meeting table
 	this.workflow.getBoardMeeting(bmid).subscribe(res=>{
@@ -922,7 +991,7 @@ generateResolution(docId){
 			directorName = did;
 			din = null;
 			dirAddress = this.address;
-			position  = 'Company Secretory';
+			position  = 'Company Secretary';
 		}
 		else{	
 			for(let d of this.directors){
@@ -1098,11 +1167,61 @@ generateResolution(docId){
 
 
 	}
+	sendOfferLetter(){
+		this.uploadedCompanyDoc;
+		this.workflow.sendOfferLetter(this.uploadedCompanyDoc,this.company).subscribe(res=>{
+			console.log(res);
+			alert("Mail send");
+		});
+	}
 
+	generatePas4(){
+		let docId=45;
+
+		if(this.activityForm.valid){
+			let director = this.activityForm.get('serial').value;
+			let place = this.activityForm.get('meeting').value;
+			let din:any;
+			let directorName:any;
+			let dirAddress:any;
+			for (var d of this.directors) {
+
+				if(d['id'] == director){
+					din = d['DIN'];
+					directorName= d['first_name']+' '+d['last_name'];
+					this.signingDirector = directorName;
+					dirAddress = d['address'];
+				}
+			}
+
+			let data={
+				doc_id:docId,
+				place:place,
+				directorName:directorName,
+				din:din,
+				dirAddress:dirAddress,
+				company:this.companyName
+			}
+			console.log(data);
+			this.http.post(this.baseurl+'workflow/generatePas4',JSON.stringify(data),{responseType:'blob'}).subscribe(res=>{
+				// console.log(res);
+				saveAs(res,'PAS-4.docx');
+				
+			})
+
+
+		}
+		else{
+			this.validateAllFormFields(this.activityForm);
+		}
+	}
 	// Download previous resolution document
 	showResDoc(filename){
-		this.http.get(this.baseurl+'workflow/showResolutionDoc/'+filename,{responseType:'blob'}).subscribe(res=>{
-			saveAs(res,'resolution.docx')
+		let httpParams = new HttpParams()
+		.set('filename', filename);
+		this.http.get(this.baseurl+'workflow/showResolutionDoc',{params:httpParams, responseType:'blob', observe:'response'}).subscribe(res=>{
+			let filename = res.headers.get('Content-Disposition');
+			saveAs(res.body,filename);
 		})
 
 	}
@@ -1110,8 +1229,11 @@ generateResolution(docId){
 	// Check form validation for generate Agenda
 	generateNotice(){
 		if (this.activityForm.valid) {
+
 			this.generateAgenda();
 		} else {
+			console.log('invalid');
+			console.log(this.activityForm);
 			this.validateAllFormFields(this.activityForm);
 		}
 
@@ -1140,23 +1262,24 @@ generateResolution(docId){
 		let position:any;
 		let today = new Date();
 		let bmid = localStorage.getItem('bmId');
-		let currentBm = localStorage.getItem('currentBm');
+		let currentBm = localStorage.getItem('bmId');
 		getdate = new Date(this.activityForm.get('matter').value);
 		storedate = new Date(this.activityForm.get('matter').value);
 
 		/*SERVER*/
-		// storedate.setMinutes(storedate.getMinutes()-(getdate.getTimezoneOffset()*2));
-		// getdate.setMinutes(getdate.getMinutes()-getdate.getTimezoneOffset());
+		storedate.setMinutes(storedate.getMinutes()-(getdate.getTimezoneOffset()));
+		getdate.setMinutes(getdate.getMinutes()-getdate.getTimezoneOffset());
 		/*LOCAL*/
-		storedate.setMinutes(storedate.getMinutes()-storedate.getTimezoneOffset());
+		// storedate.setMinutes(storedate.getMinutes()-storedate.getTimezoneOffset());
 
 		diff = (Math.abs(today.getTime() - getdate.getTime()))/(1000 * 60 * 60 * 24);		
 		directorId = this.activityForm.get('serial').value;
 		addr = this.activityForm.get('date').value;
-		matter = this.activityForm.get('address').value;
+		matter = this.activityForm.get('date_1').value;
 		place = this.activityForm.get('meeting').value;
 		description = this.activityForm.get('director').value;
 		serial = this.activityForm.get('descr').value;
+		console.log(this.agendaArray);
 		if(this.allAgendaArray.length > 0){
 			for(let a of this.allAgendaArray){
 				console.log(a);
@@ -1166,12 +1289,13 @@ generateResolution(docId){
 			}
 		}
 		console.log(this.agendaArray);
+
 			// this.agendaArray = this.agendaArray.concat(this.allAgendaArray);
 
-		if(this.agendaArray.length <= 0){
-			alert("Select matter to transact");
-			return;
-		}
+			if(this.agendaArray.length <= 0){
+				alert("Select matter to transact");
+				return;
+			}
 
 		//console.log(new Set(...this.agendaArray , ...this.allAgendaArray));
 
@@ -1216,6 +1340,9 @@ generateResolution(docId){
 				fiscalYr = (today.getFullYear() - 1).toString() + "-" + nextYr2.charAt(2) + nextYr2.charAt(3);
 			}
 			console.log(today, month, fiscalYr);
+			if(currentBm){
+				this.meetingNo-=1;
+			}
 			if(this.meeting == 'BM'){
 				if(this.meetingNo <10)
 					serial = 'Q'+quarter+'-BM-0'+this.meetingNo+'/-'+fiscalYr;
@@ -1240,14 +1367,14 @@ generateResolution(docId){
 
 		if(this.showsecretory){
 			if(directorId == 'secretory' || directorId == null){
-				alert("Enter Company Secretory Name");
+				alert("Enter Company Secretary Name");
 				return;
 			}
 			this.signingDirector = directorId;
 			directorName = directorId;
 			dirAddress = this.address;
 			din = null;
-			position = 'Company Secretory';
+			position = 'Company Secretary';
 		}
 		else{	
 			for (var d of this.directors) {
@@ -1282,7 +1409,8 @@ generateResolution(docId){
 			description: description,
 			steps: this.id,
 			meeting_type:this.meeting,
-			process:this.processId
+			process:this.processId,
+			event:this.eventId
 		}
 
 		if(this.showsecretory){
@@ -1292,18 +1420,14 @@ generateResolution(docId){
 			data['approved_by_director'] = directorId;
 		}
 
-			// for(let ser of this.meetingSerials){
-			// 	if(ser[0] == serial)
-			// 	{
-			// 		alert("Serial Number Exists");
-			// 		return;
-			// 	}
-			// }
+
 
 		// If meeting is already created then update meeting data
 		if(currentBm){
 			this.workflow.getBoardMeeting(currentBm).subscribe(res=>{
 				this.meetingSerial = res['board_meeting']['serial'];
+				serial = this.meetingSerial;
+				console.log(serial);
 				this.cookie.put('meetingSerial', res['board_meeting']['serial']);
 				this.http.post(this.baseurl+'workflow/updateNotice/'+currentBm,JSON.stringify(data)).subscribe(res=>{
 					console.log(res);
@@ -1314,15 +1438,23 @@ generateResolution(docId){
 		}
 		// Save the new meeting entry in database
 		else{	
-
+			for(let ser of this.meetingSerials){
+				if(ser[0] == serial)
+				{
+					console.log(serial);
+					alert("Serial Number Exists");
+					return;
+				}
+			}
 			this.workflow.storeMeeting(data).subscribe(res=>{
 				console.log(res);
 				this.meetingId = res['id'];
 				//this.meetingSerial = res['serial'];
 				this.cookie.put('meetingSerial', res['serial']);
 				localStorage.setItem('bmId',this.meetingId);
-				localStorage.setItem('currentBm',this.meetingId);
+				// localStorage.setItem('currentBm',this.meetingId);
 				let eventId = localStorage.getItem('eventId');
+				console.log(eventId, this.meeting);
 				console.log(localStorage.getItem('bmId'));
 				let eventData:any;
 				if(this.meeting == 'BM'){
@@ -1343,10 +1475,12 @@ generateResolution(docId){
 						steps:this.activityId
 					}
 				}
-				if(eventId){
-					this.http.post(this.baseurl+'workflow/updateEvent/'+eventId,JSON.stringify(eventData)).subscribe(res=>{
-						console.log(res);
-					});		
+				if(!this.callingEvent){
+					if(eventId){
+						this.http.post(this.baseurl+'workflow/updateEvent/'+eventId,JSON.stringify(eventData)).subscribe(res=>{
+							console.log(res);
+						});		
+					}
 				}
 
 			})
@@ -1545,9 +1679,7 @@ else if(( this.meeting == 'BM' && diff < 8)){
 				},
 				(err:HttpErrorResponse)=>{
 					console.log(err)
-				})		
-
-
+				})
 			}
 
 			id = this.long_doc_id;
@@ -1579,10 +1711,61 @@ else if(( this.meeting == 'BM' && diff < 8)){
 				console.log(err)
 			})	
 		}
+		else if(( this.meeting == 'AGM' && diff < 8)){
+			let mailTo: any;
+			mailTo = this.stakeholders;
+			let id = this.short_doc_id;
+			console.log(id,diff, this.meeting);
+			let directorName1:any;
+			for(let d of mailTo){
+				console.log(d);
+			directorName1= d['first_name']+' '+d['last_name'];		
+			let data1 = {
+				doc_id : this.short_doc_id,
+				companyName: this.companyName,
+				approved_by_director: directorId,
+				director_name:directorName,
+				co_director:directorName1,
+				father_name:d['fathers_name'],
+				din: din,
+				address: this.address,
+				state: this.state,
+				city: this.city,
+				agenda: this.agendaArray,
+				place: place,
+				bm_date: bmdate,
+				serial: serial,
+				venue:venue,
+				cin:this.cin,
+				dirAddress:d['address'],
+				office:office
+
+			}
+			console.log(directorName1);
+			this.workflow.generateAgenda(data1).subscribe(res=>{
+				saveAs(res, ('Shorter Consent - AGM - '+d['first_name']+'.docx'))
+				let emailData = {
+					meeting:this.meeting,
+					company:this.companyName,
+					bm_date:bmdate,
+					address:this.address,
+					directorName:directorName,
+					stakeholder:d['first_name']+' '+d['last_name']
+				}
+				this.http.post(this.baseurl+'workflow/sendShortNotice/'+d['id'],JSON.stringify(emailData)).toPromise()
+				.then(res=>{console.log(res)})
+				.catch(err=>{console.log(err)});
+			},
+			(err:HttpErrorResponse)=>{
+				console.log(err)
+			})		
+		}	
+	}
 
 				/*If differance between meeting date and today's date is greater than 8,
 				generate Agenda*/
 				else{
+
 					let id = this.long_doc_id;
 					let data = {
 						doc_id : id,
@@ -1616,95 +1799,93 @@ else if(( this.meeting == 'BM' && diff < 8)){
 					this.meetingSerials = res;
 				})
 
-		/*this.activityForm.reset();
-		this.showNext = true;
-		*/
-		this.agendaArray = [];		
-	}
+				this.showNext = true;
 
-
-	onChange(id:string, isChecked:boolean){
-		if(isChecked) {
-			if(this.emailto == 'director'){
-				this.directorsId.push(id);
-				console.log(this.directorsId);
-			}    
-			if(this.emailto == 'stakeholder'){
-				this.stakeholdersId.push(id);
 			}
-			console.log(this.emailto);
 
-		} else {
-			if(this.emailto == 'director'){
-				let index = this.directorsId.indexOf(id)
-				console.log(index);
-				this.directorsId.splice(index,1);	
+
+			onChange(id:string, isChecked:boolean){
+				if(isChecked) {
+					if(this.emailto == 'director'){
+						this.directorsId.push(id);
+						console.log(this.directorsId);
+					}    
+					if(this.emailto == 'stakeholder'){
+						this.stakeholdersId.push(id);
+					}
+					console.log(this.emailto);
+
+				} else {
+					if(this.emailto == 'director'){
+						let index = this.directorsId.indexOf(id)
+						console.log(index);
+						this.directorsId.splice(index,1);	
+					}
+					if(this.emailto == 'stakeholder'){
+						let index = this.stakeholdersId.indexOf(id)
+						this.stakeholdersId.splice(index,1);
+					}	
+					console.log(this.directorsId);
+
+				}
 			}
-			if(this.emailto == 'stakeholder'){
-				let index = this.stakeholdersId.indexOf(id)
-				this.stakeholdersId.splice(index,1);
-			}	
-			console.log(this.directorsId);
 
-		}
-	}
-
-	ValidateEmail(mail) 
-	{
-		if(mail){
-			let mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-			if (mail.match(mailformat))
+			ValidateEmail(mail) 
 			{
-				return (true)
-			}
-			alert("Please enter valid email address!")
-			return (false)
-		}
-	}
-
-	checkEmail(key,event){
-
-		if (event.key === 'Tab' || event.key === 'Enter' || event.type == 'change'){
-			if(key == 'address_1'){
-				if (!this.ValidateEmail(this.activityForm.get('address_1').value)) {
-					return;
-				}
-
-				if(this.activityForm.get('address_1').valid){
-					let email = this.activityForm.get('address_1').value;
-					if(!this.bodyEmail.includes(email))
-						this.bodyEmail.push(email);    
-					this.activityForm.get('address_1').clearValidators();
-
+				if(mail){
+					let mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+					if (mail.match(mailformat))
+					{
+						return (true)
+					}
+					alert("Please enter valid email address!")
+					return (false)
 				}
 			}
-			else if(key == 'company'){	
-				if(this.activityForm.get('company').valid){
-					let email = this.activityForm.get('company').value;
-					this.bodyEmail.push(email);    
-					this.activityForm.get('company').reset();
-					this.activityForm.get('company').setErrors(null);
+
+			checkEmail(key,event){
+
+				if (event.key === 'Tab' || event.key === 'Enter' || event.type == 'change'){
+					if(key == 'address_1'){
+						if (!this.ValidateEmail(this.activityForm.get('address_1').value)) {
+							return;
+						}
+
+						if(this.activityForm.get('address_1').valid){
+							let email = this.activityForm.get('address_1').value;
+							if(!this.bodyEmail.includes(email))
+								this.bodyEmail.push(email);    
+							this.activityForm.get('address_1').clearValidators();
+
+						}
+					}
+					else if(key == 'company'){	
+						if(this.activityForm.get('company').valid){
+							let email = this.activityForm.get('company').value;
+							this.bodyEmail.push(email);    
+							this.activityForm.get('company').reset();
+							this.activityForm.get('company').setErrors(null);
+						}
+					}
 				}
 			}
-		}
-	}
 
-	removeBodyEmail(email){
-		if(email){
-			let i = this.bodyEmail.indexOf(email);
-			this.bodyEmail.splice(i,1);
-			console.log(this.bodyEmail);
-		}
-	}
+			removeBodyEmail(email){
+				if(email){
+					let i = this.bodyEmail.indexOf(email);
+					this.bodyEmail.splice(i,1);
+					console.log(this.bodyEmail);
+				}
+			}
 
 	// On form submit check for valid form
 	onSubmit() {
-
 		if (this.activityForm.valid && this.showNext) {
 			this.submitDecision();
 		} else {
 			this.validateAllFormFields(this.activityForm);
 			console.log('invalid form');
+			console.log(this.activityForm.valid, this.showNext);
 			this.screenError = "Please Complete action";
 		}
 	}
@@ -1726,8 +1907,8 @@ else if(( this.meeting == 'BM' && diff < 8)){
 			this.next = true
 
 		}		
+		if(this.eventId){
 		// Post the activity data and get next activity id
-
 		this.workflow.storeProcessActivity(this.eventId,this.activityId,this.actdata).subscribe(updateres=>{
 			console.log(updateres)
 			// Get the next activity 
@@ -1757,9 +1938,9 @@ else if(( this.meeting == 'BM' && diff < 8)){
 							this.http.post(this.baseurl+'workflow/storeEvent',JSON.stringify(data)).subscribe(res1=>{
 								console.log(res1);
 								localStorage.setItem('eventId',res1['id']);          
-					          this.router.navigateByUrl('/activity/'+this.company+'/'+res['next']+'/'+activityid);
+								this.router.navigateByUrl('/activity/'+this.company+'/'+res['next']+'/'+activityid);
 
-					      });
+							});
 
 						}
 						else{
@@ -1779,9 +1960,11 @@ else if(( this.meeting == 'BM' && diff < 8)){
 							let eventData = {
 								steps: parseInt(this.activityId)+ 1
 							}
-							this.http.post(this.baseurl+'workflow/updateEvent/'+this.eventId,JSON.stringify(eventData)).subscribe(res=>{
-								console.log(res);
-							})	
+							if(!this.callingEvent){
+								this.http.post(this.baseurl+'workflow/updateEvent/'+this.eventId,JSON.stringify(eventData)).subscribe(res=>{
+									console.log(res);
+								})	
+							}
 							this.http.get(this.baseurl+'workflow/processStatus/'+this.processId).subscribe(res=>{
 								console.log(res);
 							})
@@ -1808,12 +1991,14 @@ else if(( this.meeting == 'BM' && diff < 8)){
 								localStorage.setItem('eventId',calling_event);
 								this.meetingSerial=null;
 								calling_act+=1;
-								let action = confirm("Process completed");						
-								if (action == true) {
-									this.cookie.remove('meetingSerial');
-									this.router.navigateByUrl('/activity/'+this.company+'/'+calling_process+'/'+calling_act);    
-								} 
-								
+								// let action = confirm("Process completed");						
+								// if (action == true) {
+								// 	this.cookie.remove('meetingSerial');
+								// 	this.router.navigateByUrl('/activity/'+this.company+'/'+calling_process+'/'+calling_act);    
+								// } 
+								this.cookie.remove('meetingSerial');
+								this.router.navigateByUrl('/activity/'+this.company+'/'+calling_process+'/'+calling_act);    
+
 							}
 
 							//If calling process is not present mark process completed and navigate to dashboard
@@ -1845,21 +2030,27 @@ else if(( this.meeting == 'BM' && diff < 8)){
 
 					// If next activity id present navigate to next activity
 					else{
-							let eventData = {
-								steps: parseInt(this.activityId)+ 1
-							}
+						let eventData = {
+							steps: parseInt(this.activityId)+ 1
+						}
+						if(!this.callingEvent){
 							this.http.post(this.baseurl+'workflow/updateEvent/'+this.eventId,JSON.stringify(eventData)).subscribe(res=>{
 								console.log(res);
 							})	
-
-							this.formdata.delete("file");
-
-							this.router.navigateByUrl('/activity/'+this.company+'/'+this.processId+'/'+res['next']);
 						}
-					}
 
-				});
+						this.formdata.delete("file");
+
+						this.router.navigateByUrl('/activity/'+this.company+'/'+this.processId+'/'+res['next']);
+					}
+				}
+
+			});
 });
+}
+else{
+	this.router.navigateByUrl('/dashboard') 
+}
 
 //this.activityForm.reset();
 
@@ -1872,6 +2063,7 @@ handleFileInput(file: FileList){
 	this.formdata.append("file", this.files, this.files.name);
 	this.http.post(this.baseurl+'workflow/uploader/'+this.eventId+'/'+this.activityId,this.formdata).subscribe(res=>{
 		console.log(res);
+		this.uploadedCompanyDoc = res['id'];
 		this.formdata.delete("file");
 		this.uploadedFile="file uploaded";
 	})
@@ -1888,8 +2080,12 @@ uploadFiles1(id){
 	})
 }
 		//Show uploaded files for agenda, mom, attendance
-		showFiles(field,files){
-			this.http.get(this.baseurl+'workflow/showAgendaDoc/'+field+'/'+files,{responseType:'blob',observe: 'response'}).subscribe(res=>{
+		showFiles(field,files:string){
+			console.log(files);
+			let httpParams = new HttpParams()
+			.set('field', field)
+			.set('fileName', files);
+			this.http.get(this.baseurl+'workflow/showAgendaDoc',{params:httpParams, responseType:'blob',observe: 'response'}).subscribe(res=>{
 				let filename = res.headers.get('Content-Disposition');
 				saveAs(res.body,filename);
 			})
@@ -1943,14 +2139,19 @@ uploadFiles1(id){
 					if(this.emailto=='director'){
 						for(let d of this.directors){
 							console.log(d);
-							let data ={'file':filename,'agendaType':'Minutes of Meeting','serial':serial, 'company':this.companyName};
+							let data ={
+								'file':filename,
+								'agendaType':'Minutes of Meeting',
+								'serial':serial, 
+								'company':this.companyName
+							};
 
-							this.http.post(this.baseurl+'workflow/sendToStakeholder/'+d['id'], JSON.stringify(data)).subscribe(res=>{
-								console.log(res);
-							},
-							(err:HttpErrorResponse)=>{
-								console.log(err)
-							})
+							// this.http.post(this.baseurl+'workflow/sendToStakeholder/'+d['id'], JSON.stringify(data)).subscribe(res=>{
+							// 	console.log(res);
+							// },
+							// (err:HttpErrorResponse)=>{
+							// 	console.log(err)
+							// })
 						}
 					}
 					let steps = Number(this.id) + 1;
@@ -1968,7 +2169,7 @@ uploadFiles1(id){
 
 				}
 				else{
-					let data={steps:this.id + 1};
+					let data={steps:Number(this.id) + 1};
 					this.showNext = true;
 
 					this.http.post(this.baseurl+'workflow/updateNotice/'+id,JSON.stringify(data)).subscribe(res=>{

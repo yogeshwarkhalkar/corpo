@@ -32,7 +32,7 @@
 					</a>
 				</li>
 			</ul>
-			<form id="form-create-company-step3" class="form-create-company" [formGroup]="form3" novalidate>
+			<form id="form-create-company-step3" class="form-create-company" [formGroup]="intellectualProperty" novalidate>
 				
 				<div class="form-group row custom-radio-type">
 					<label for="" class="col-sm-3 col-form-label">Would you like us to request a trademark search regarding the name?</label>
@@ -49,7 +49,7 @@
 							<span class="custom-control-description">No</span>
 						</label>
 						<div class="alert alert-danger" 
-						*ngIf="form3.get('trademark').invalid && form3.get('trademark').touched">
+						*ngIf="intellectualProperty.get('trademark').invalid && intellectualProperty.get('trademark').touched">
 						Trademark search required
 					</div>
 					<p>&nbsp;</p>

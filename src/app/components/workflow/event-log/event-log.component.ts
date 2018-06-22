@@ -1,7 +1,7 @@
 /* Component to show all event(Workflow) log*/
 
 import { Component, OnInit, Input, forwardRef } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 import { UrlserviceService } from '../../../services/urlservice.service';
 import { saveAs,Blob } from 'file-saver/FileSaver';
@@ -10,6 +10,7 @@ import { FormGroup, FormArray, FormBuilder, Validators, FormControl } from '@ang
 import { Select2OptionData } from 'ng4-select2';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { CookieService } from 'ngx-cookie';
+import { WorkflowService } from '../../../services/workflow.service';
 declare var $:any;
 declare var jQuery:any;
 
@@ -28,7 +29,8 @@ export class EventLogComponent implements OnInit {
   objectKeys = Object.keys;
   baseurl:string=this.url.BASE_URL;
   constructor(private http: HttpClient, private url:UrlserviceService, private cookie: CookieService,
-  	private router: Router, private actRoute:ActivatedRoute, private pagerService: PagerService,private fb: FormBuilder) {
+  	private router: Router, private actRoute:ActivatedRoute, private pagerService: PagerService,
+    private fb: FormBuilder, private workflow:WorkflowService) {
   	actRoute.params.subscribe(param=>{
       this.company = param['id'];
       this.status = param['status'];
@@ -70,16 +72,46 @@ export class EventLogComponent implements OnInit {
     this.cookie.remove('meetingSerial');
 
     this.http.get(this.baseurl+'workflow/updateEvent/'+id).subscribe(res=>{
+      console.log(res);
       let step = +res['steps'];
       let process = res['process'];
+      let egm = res['egm']
+      if(res['board_meeting']){
+        this.workflow.getBoardMeeting(res['board_meeting']).subscribe(bm=>{
+          console.log(bm);
+          console.log(bm['board_meeting']['status']);
+          if(bm['board_meeting']['status'] == 'open'){
+            localStorage.setItem('bmId',bm['board_meeting']['id']);      
+          }
+        })
+      }
+      if(res['egm']){
+        this.workflow.getBoardMeeting(res['egm']).subscribe(bm=>{
+          console.log(bm);
+          if(bm['board_meeting']['status'] == 'open'){
+            localStorage.setItem('bmId',bm['board_meeting']['id']);      
+          }
+        })
+      }
+      if(res['agm']){
+        this.workflow.getBoardMeeting(res['agm']).subscribe(bm=>{
+          console.log(bm);
+          if(bm['board_meeting']['status'] == 'open'){
+            localStorage.setItem('bmId',bm['board_meeting']['id']);      
+          }
+        })
+      }
       localStorage.setItem('eventId',id);
       this.router.navigateByUrl('/activity/'+this.company+'/'+process+'/'+step);
     })
   }
 
   showFiles(name, files){
-    this.http.get(this.baseurl+'workflow/uploadFilling/'+files,{responseType:'blob'}).subscribe(res=>{
-      saveAs(res,name+'.docx')
+    let httpParams = new HttpParams()
+                  .set('filename', files);
+    this.http.get(this.baseurl+'workflow/uploadFilling',{params:httpParams, responseType:'blob',observe:'response'}).subscribe(res=>{
+      let filename = res.headers.get('Content-Disposition');
+      saveAs(res.body,filename);
     })
   }
 

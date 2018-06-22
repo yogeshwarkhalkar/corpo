@@ -1,7 +1,7 @@
 /* Component to show all Meeting(BM,EGM,AGM) logs */
 
 import { Component, OnInit, Input, forwardRef } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { UrlserviceService } from '../../../services/urlservice.service';
 import { saveAs,Blob } from 'file-saver/FileSaver';
@@ -108,7 +108,7 @@ export class MeetingLogComponent implements OnInit {
   baseurl:string=this.url.BASE_URL;
 
   ngOnInit() {
-
+     this.cookie.remove('agendas');
     this.actRoute.paramMap.subscribe((param: ParamMap)=>{
       this.selectedId = parseInt(param.get('selected'));
     })
@@ -161,8 +161,12 @@ setPage(page: number) {
       }
 
       showFiles(field,files){
-        this.http.get(this.baseurl+'workflow/showAgendaDoc/'+field+'/'+files,{responseType:'blob'}).subscribe(res=>{
-          saveAs(res,field+'.docx')
+        let httpParams = new HttpParams()
+                  .set('field',field)
+                  .set('fileName', files);
+        this.http.get(this.baseurl+'workflow/showAgendaDoc',{params:httpParams, responseType:'blob',observe:'response'}).subscribe(res=>{
+          let filename = res.headers.get('Content-Disposition');
+          saveAs(res.body,filename);
         })
       }
 
@@ -179,12 +183,15 @@ setPage(page: number) {
       goto(id){
         console.log(id);
         this.http.get(this.baseurl+'workflow/updateBMSteps/'+id).subscribe(res=>{
+
           let step = +res['steps'];
           let process = res['process'];
           
-          this.http.get(this.baseurl+'workflow/getMeeting/'+id).subscribe(res=>{
-            this.cookie.put('meetingSerial',res['board_meeting']['serial'])
+          this.http.get(this.baseurl+'workflow/getMeeting/'+id).subscribe(res1=>{
+            this.cookie.put('meetingSerial',res1['board_meeting']['serial'])
             localStorage.setItem('bmId',id);
+            localStorage.setItem('eventId',res1['board_meeting']['event']);
+            console.log(res1['board_meeting']['event']);
             this.router.navigateByUrl('/activity/'+this.company+'/'+process+'/'+step);
           });    
         })
@@ -238,7 +245,6 @@ setPage(page: number) {
           }
           localStorage.setItem('bmId',id);
           this.cookie.putObject('agendas',this.exampleData);
-
           this.router.navigateByUrl('/activity/'+this.company+'/2/35');
           
           console.log(this.exampleData);

@@ -1,0 +1,69 @@
+<form [formGroup]="addressForm">
+	<input type="text" class="form-control" placeholder="Address line 1" formControlName="addressLine1">
+	<div class="alert alert-danger"
+		*ngIf="addressForm.get('addressLine1').invalid &&
+		addressForm.get('addressLine1').touched">
+		Enter Address Line 1
+	</div>
+	<input type="text" class="form-control" placeholder="Address line 2" formControlName="addressLine2">
+	<input type="text" class="form-control" placeholder="Address line 3" formControlName="addressLine3">
+	<div class="row">
+		<div class="col-sm-6">
+			<select class="custom-select" formControlName="country"
+				(change)="getState(addressForm.get('country').value)">
+				<option selected>Select Country</option>
+				<option *ngFor="let country of contries" value={{country.id}}>
+					{{country.name}}
+				</option>
+				<div class="alert alert-danger"
+					*ngIf="addressForm.get('country').value == 'Select Country' && addressForm.get('country').touched">
+						Select country
+				</div>
+			</select>
+		</div>
+		<div class="col-sm-6">
+			<select class="custom-select" formControlName="state" (change)="getCity(addressForm.get('state').value)">
+				<option selected>Select State</option>
+				<option *ngFor="let state of states" value={{state.id}}>
+					{{state.name}}
+				</option>
+			</select>
+			<div class="alert alert-danger"
+			*ngIf="addressForm.get('state').value == 'Select State' &&
+			addressForm.get('state').touched">
+			Select State
+		</div>
+	</div>
+	
+	<div class="col-sm-6">
+		<select class="custom-select" formControlName="city">
+			<option selected>Select City</option>
+			<option *ngFor="let city of cities" value={{city.id}}>
+				{{city.name}}
+			</option>
+		</select>
+		<div class="alert alert-danger"
+		*ngIf="addressForm.get('city').value == 'Select City' &&
+		addressForm.get('city').touched">
+		Select City
+	</div>
+	</div>
+
+	<div class="col-sm-6">
+		<input type="text" class="form-control" placeholder="Pincode" formControlName="pincode">
+		<div class="alert alert-danger"
+		*ngIf="addressForm.get('pincode').invalid && (addressForm.get('pincode').dirty || addressForm.get('pincode').touched)">
+
+		<div *ngIf="addressForm.get('pincode').errors.required">
+			Pincode is required.
+		</div>
+		<div *ngIf="addressForm.get('pincode').errors.maxlength">
+			Pincode must be 6 characters long.
+		</div>
+		<div *ngIf="addressForm.get('pincode').errors.minlength">
+			Pincode must be at least 6 characters long.
+		</div>
+	</div>										
+	</div>
+	</div>
+</form>

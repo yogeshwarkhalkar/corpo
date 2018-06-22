@@ -24,7 +24,7 @@ export class ExistingCompanyComponent implements OnInit {
   		let val = this.myform.get('inc').value;
 
   		if(val == 'Yes'){
-  			this.router.navigateByUrl('/searchCompany');
+  			this.router.navigateByUrl('/incorporated');
   		}
   		else{
   			this.router.navigateByUrl('/createCompany2');	

@@ -71,7 +71,7 @@ export class CompanyService {
 
   postStakeholders(data){
   	
-  	this.http.post(this.baseurl+'company/company_stakeholder/'+this.userId+'/'+this.companyId,
+  	this.http.post(this.baseurl+'company/company_stakeholder/'+this.companyId,
   		JSON.stringify(data)).subscribe(res=>{
   		console.log(res);
   	})

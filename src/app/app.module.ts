@@ -13,6 +13,8 @@ import {CookieModule} from 'ngx-cookie';
 import { Select2Module } from 'ng4-select2';
 import { NgProgressModule, NgProgressInterceptor } from 'ngx-progressbar';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { UserIdleModule } from 'angular-user-idle';
+
 
 import { AppComponent } from './app.component';
 import { LoginComponent } from './components/login/login.component';
@@ -53,6 +55,7 @@ import { routerConfig } from './router.config';
 import { ExistingCompanyComponent } from './components/company-creation/existing-company/existing-company.component';
 import { SearchCompanyComponent } from './components/company-creation/search-company/search-company.component';
 import { IncorporatedCompanyComponent } from './components/company-creation/incorporated-company/incorporated-company.component';
+import { AddressComponent } from './components/address/address.component';
 
 
 
@@ -88,7 +91,9 @@ import { IncorporatedCompanyComponent } from './components/company-creation/inco
     
     SearchCompanyComponent,
     
-    IncorporatedCompanyComponent
+    IncorporatedCompanyComponent,
+    
+    AddressComponent
     
   ],
   imports: [
@@ -107,7 +112,8 @@ import { IncorporatedCompanyComponent } from './components/company-creation/inco
     CookieModule.forRoot(),
     NgbModule.forRoot(),
   //  MaterialModule,
-    RouterModule.forRoot(routerConfig)
+    RouterModule.forRoot(routerConfig),
+    UserIdleModule.forRoot({idle: 600, timeout: 10, ping: 5})
   ],
   providers: [
   AuthService,

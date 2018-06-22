@@ -79,7 +79,7 @@ export const routerConfig : Routes = [
        canActivate: [EnsureAuthenticatedService]
       },
       {
-        path: 'selectCompany',
+        path: 'existingCompany',
         component: ExistingCompanyComponent,
         canActivate: [EnsureAuthenticatedService]
       },

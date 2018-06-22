@@ -62,7 +62,7 @@ export class NavbarComponent implements OnInit {
   }
   addCompany(){
     localStorage.removeItem('editCompany');
-    this.router.navigateByUrl("/createCompany2")
+    this.router.navigateByUrl("/existingCompany")
   }
   logout(){
   	this.auth.logout();

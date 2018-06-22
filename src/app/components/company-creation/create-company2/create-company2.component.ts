@@ -17,7 +17,7 @@ import { UrlserviceService } from '../../../services/urlservice.service';
 })
 export class CreateCompany2Component implements OnInit {
 
-  form2: FormGroup;
+  incorporationDetails: FormGroup;
   userName: any;
   editCompany:any;
 
@@ -34,71 +34,71 @@ export class CreateCompany2Component implements OnInit {
 
   cities: any;
   states: any;
+  contries:any;
   baseurl:string = this.url.BASE_URL;
 
 
   ngOnInit() {
-
-        this.form2 = this.fb.group({
+      this.incorporationDetails = this.fb.group({
       name: [null, Validators.required],
       property_type: [null, Validators.required],
       industry_type: this.fb.array([]),
       address: this.fb.group({
-        address1: [null, Validators.required],
-        address2:[null],
-        address3:[null],
-        city: ["Select City",Validators.required],
-        state_or_province: ["Select State", Validators.required],
-        pincode: [null, [Validators.required,Validators.minLength(6), Validators.maxLength(6)]]
-      }),
+          addressLine1: [null, Validators.required],
+          addressLine2: [null],
+          addressLine3: [null],
+          country: ['Select Country', Validators.required],
+          state: ['Select State', Validators.required],        
+          city: ['Select City', Validators.required],
+          pincode: [null, [Validators.required, Validators.minLength(6), Validators.maxLength(6)]]
+        }),    
       description: [null, Validators.required]      
     });
     if(this.editCompany){
       this.http.get(this.baseurl+'company/editCompany/'+this.editCompany).toPromise()
       .then(res=>{
-        console.log(res);
-      // console.log(this.company.editCompanyData);
-      // let addr = this.company.editCompanyData['address'];
       let addr = res['address'];
+      let leng = addr.length;
+      let pinl = leng - 6;
+      let pincode = addr.substring(pinl);
+      addr = addr.substring(0,pinl);
+      addr = addr.replace(/,\s*$/, "");
+      console.log(pincode,leng);
       let splitted = addr.split(',');
       let len = splitted.length;
       let industry = res['metadata']['industry_type'];
+      if(industry == null){
+      industry = [];     
+      }
       console.log(industry);
-      this.form2 = this.fb.group({
+      this.incorporationDetails = this.fb.group({
         name: [res['name'], Validators.required],
+        industry_type: this.fb.array(industry),
         property_type: [res['metadata']['property_type'], Validators.required],
-        industry_type: this.fb.array([industry]),
+        
         address: this.fb.group({
-          address1: [addr, Validators.required],
-          address2:[null],
-          address3:[null],
-          state_or_province: [res['state_or_province'], Validators.required],
-          city: [res['city'],Validators.required],
-          pincode: [splitted[len-1], [Validators.required,Validators.minLength(6), Validators.maxLength(6)]]
-        }),
+          addressLine1: [addr, Validators.required],
+          addressLine2: [null],
+          addressLine3: [null],
+          country: [res['country'], Validators.required],
+          state: [res['state'], Validators.required],        
+          city: [res['city'], Validators.required],
+          pincode: [pincode, [Validators.required, Validators.minLength(6), Validators.maxLength(6)]]
+        }),    
         description: [res['description'], Validators.required]      
       });
-
-      this.company.getState(101).then(result=>{
-        this.states = result;
-        this.getCity();  
-      });
+      console.log(res['country'],res['state'],res['city']);
+      
       
     });
     
 
   }
-  else{
-    this.company.getState(101).then(result=>{
-        this.states = result;
-      });
-  }
-
- 
+  
   }
 
   onChange(industry:string, isChecked: boolean) {
-    const industryTypeArray = <FormArray>this.form2.controls.industry_type;
+    const industryTypeArray = <FormArray>this.incorporationDetails.controls.industry_type;
     
     if(isChecked) {
       industryTypeArray.push(new FormControl(industry));
@@ -111,13 +111,13 @@ export class CreateCompany2Component implements OnInit {
   validateSpecialCharacters() 
   { 
 let spclChars = "!@#$%^&*()"; // specify special characters 
-let content = this.form2.get('name').value; 
+let content = this.incorporationDetails.get('name').value; 
 for (var i = 0; i < content.length; i++) 
 { 
   if (spclChars.indexOf(content.charAt(i)) != -1) 
   { 
     alert ("Special characters are not allowed."); 
-    this.form2.get('name').setValue(""); 
+    this.incorporationDetails.get('name').setValue(""); 
     return false; 
   } 
 } 
@@ -136,26 +136,19 @@ validateAllFormFields(formGroup: FormGroup) {
 }
 
 
-getCity(){
-  let state= this.form2.get('address').get('state_or_province').value;
-  this.company.getCity(state).then(result=>{
-    this.cities = result;
-  })
-}
-
 saveInfo(){
-  if(this.form2.valid){
+  if(this.incorporationDetails.valid){
     if(this.editCompany){
-      this.company.updateData(this.form2.value,this.editCompany);
+      this.company.updateData(this.incorporationDetails.value,this.editCompany);
       this.router.navigateByUrl('/createCompany3');
     }
     else{
-    this.company.addData(this.form2.value);
+    this.company.addData(this.incorporationDetails.value);
     this.router.navigateByUrl('/createCompany3');
   }
   }
   else{
-    this.validateAllFormFields(this.form2)
+    this.validateAllFormFields(this.incorporationDetails)
   }
 
   }

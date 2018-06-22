@@ -1,3 +1,15 @@
 .dashFont {
 	font-family: Arial;
 }
+
+.completed {
+	font-family: inherit;
+    width: 100%;
+    display: inline-block;
+    position: absolute;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    /*text-overflow: ellipsis;*/
+    font-weight: normal;
+}

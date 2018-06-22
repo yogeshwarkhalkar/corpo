@@ -87,7 +87,12 @@ export class WorkflowService {
 
 /* Get All agenda*/
   getAgenda():Observable<any>{
-  	return this.http.get(this.baseurl+'workflow/getAgenda/agenda_table')
+  	return this.http.get(this.baseurl+'workflow/getAgenda')
+  }
+
+/* Get All agenda*/
+  getProcessAgenda(process):Observable<any>{
+    return this.http.get(this.baseurl+'workflow/getAgenda/'+process)
   }
 
 /* Get all workfliow steps*/
@@ -106,6 +111,10 @@ export class WorkflowService {
   updateProcessActivity(eventId,activityId):Observable<any>{
     return this.http.get(this.baseurl+'workflow/storeProcessActivity/'+eventId+'/'+activityId)
 
+  }
+
+  sendOfferLetter(id,company):Observable<any>{
+    return this.http.get(this.baseurl+'workflow/sendOfferLetter/'+id+'/'+company)
   }
 
 }
